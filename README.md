@@ -1,4 +1,6 @@
-portal
-======
+Systers Portal Project
+======================
 
-Systers Portal for communities
+Systers Portal is for Systers communities to post and share information within and with other communities.
+
+
