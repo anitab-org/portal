@@ -40,3 +40,6 @@ venv
 
 # PyCharm IDE
 .idea
+
+# Documentation build
+_build
