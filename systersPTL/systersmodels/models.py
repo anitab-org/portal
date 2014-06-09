@@ -6,8 +6,8 @@ from django_countries.fields import CountryField
 
 class SysterUser(models.Model):
 
-    """Profile model to store additional information about a user
-    """
+    """Profile model to store additional information about a user"""
+   
     user = models.OneToOneField(User)
     country = CountryField(blank=True, null=True)
     BlogURL = models.URLField(max_length=255, blank=True, null=True)
@@ -26,26 +26,24 @@ class SysterUser(models.Model):
 
 class Community(models.Model):
 
-    """Model to represent a Syster Community
-    """
+    """Model to represent a Syster Community"""
     name = models.CharField(max_length=255, blank=False, null=False)
     email = models.EmailField(max_length=255, blank=False, null=False)
     mailing_list = models.EmailField(max_length=255, blank=True, null=True)
     resource_area = models.URLField(max_length=255, blank=True, null=True)
     members = models.ManyToManyField(SysterUser, blank=True, null=True)
-    admin = models.ForeignKey(User)
-    website = models.URLField(max_length=255, blank=True, null=True)
-    facebook = models.URLField(max_length=255, blank=True, null=True)
-    googleplus = models.URLField(max_length=255, blank=True, null=True)
-    twitter = models.URLField(max_length=255, blank=True, null=True)
+    community_admin = models.ForeignKey(User)
+    website = models.URLField(max_length=30, blank=True, null=True)
+    facebook = models.URLField(max_length=30, blank=True, null=True)
+    googleplus = models.URLField(max_length=30, blank=True, null=True)
+    twitter = models.URLField(max_length=30, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
 
 
 class News(models.Model):
-    """Model to represent a News section on Community resource area
-    """
+    """Model to represent a News section on Community resource area"""
     title = models.CharField(max_length=255, blank=False, null=True)
     community = models.ForeignKey(Community)
     author = models.ForeignKey(SysterUser)
@@ -59,8 +57,7 @@ class News(models.Model):
 
 
 class FAQ(models.Model):
-    """Model to represent a FAQ section on Community resource area
-    """
+    """Model to represent a FAQ section on Community resource area"""
     title = models.CharField(max_length=255, blank=False, null=True)
     community = models.ForeignKey(Community)
     author = models.ForeignKey(SysterUser)
@@ -73,8 +70,7 @@ class FAQ(models.Model):
 
 
 class Resource(models.Model):
-    """Model to represent a Resources section on Community resource area
-    """
+    """Model to represent a Resources section on Community resource area"""
     RESOURCE_TYPES = (
         ('scholarship', 'Scholarship'),
         ('grant', 'Grant'),
