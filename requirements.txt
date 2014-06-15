@@ -1,3 +1,20 @@
-Django==1.6.5
-Sphinx==1.2.2
-django-allauth==0.16.1
+Installation
+
+Make sure you have installed Python 2.6.5 or higher, pip, virtualenv,postgres
+Run the following below command to install dependencies for PostgreSQL to work with Django
+sudo apt-get install libpq-dev python-dev
+Run the following commands
+virtualenv venv
+source venv/bin/activate
+pip install django
+pip install psycopg2
+pip install pillow
+Install Django Allauth following :
+https://github.com/pennersr/django-allauth
+
+Configuration
+sudo su - postgres
+createdb systersdb
+createuser -P
+psql
+GRANT ALL PRIVILEGES ON DATABASE systersdb TO (user that was created in previous command);
