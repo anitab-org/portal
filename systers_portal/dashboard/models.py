@@ -7,6 +7,7 @@ from django_countries.fields import CountryField
 
 
 class SysterUser(models.Model):
+
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User)
     country = CountryField(blank=True, null=True)
@@ -35,6 +36,7 @@ post_save.connect(user_post_save, sender=User)
 
 
 class Tag(models.Model):
+
     """Model to represent the tags a resource can have"""
     name = models.CharField(max_length=255, blank=False, null=False)
 
