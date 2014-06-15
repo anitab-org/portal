@@ -41,11 +41,11 @@
 
             <div class="nav-collapse collapse">
                 <ul class="nav pull-right">
-                    {% if user.is_authenticated and user.is_active%}
+                   {% if user.is_authenticated and user.is_active%}
                     <li class="navbar-text">Welcome</li>
-	            <li><a href="/dashboard/community/Systers">Systers</a></li>	
-                    <li><a href="/superadmin_dashboard/add_community/">Add Community</a></li>
-                    <li><a href="{% url 'account_logout' %}">Logout</a></li>	                                  
+	            <li><a href="/dashboard/profile/{{ user.username }}">{{user.username }}</a></li>	
+                    <li><a href="/dashboard/edit_profile/">Edit Profile</a></li>
+                    <li><a href="{% url 'account_logout' %}">Logout</a></li>                                  
                     {% endif %}
                 </ul>
                 <ul class="nav">

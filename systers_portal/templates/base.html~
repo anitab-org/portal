@@ -56,6 +56,10 @@
 
                 <ul class="nav">
                     <li><a href="http://anitaborg.org/">About</a></li>
+{% if user.is_authenticated and user.is_active and user.is_superuser%}
+<li><a href="/superadmin_dashboard/">Admin Dashboard</a></li>
+{% endif %}
+
                 </ul>
             </div>
             <!--/.nav-collapse -->

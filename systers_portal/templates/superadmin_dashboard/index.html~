@@ -2,14 +2,16 @@
 {% block title %}Welcome to Systers Portal!{% endblock %}
 {% block body_block %}
 <div class="hero-unit">
-{% if communities %}
-            <ul>
-                {% for community in communities %}
-                <li><a href="/superadmin_dashbaord/edit_communityprofile/{{category.name}}"> {{community.name }} </a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <strong>There are no  communities present.</strong>
-        {% endif %}
+{% if user.is_authenticated and user.is_active and user.is_superuser%}
+<h3> Super Admin Dashboard </h3>
+<a href="/superadmin_dashboard/edit_communityprofile/Systers">Edit Systers Profile </a><br>
+<a href="/dashboard/index/">Edit Resource Area</a><br>
+<a href="/dashboard/index/">Create Meetups </a><br>
+<a href="/superadmin_dashboard/add_community/">Create new Community </a><br>
+<a href="/dashboard/index/">Manage Users</a><br>
+<a href="/superadmin_dashboard/ShowCommunities/">Communities </a><br>
+{% else %}
+<strong > You should be logged in as Super User!! Please login into super user account by clicking <a href="/accounts/login/">here</a></h3>
+{%endif%}
 </div>
 {% endblock %}

@@ -78,9 +78,9 @@ TEMPLATE_DIRS = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-                'USER': '',
-                'PASSWORD': '',
+        'NAME': 'systersdb',
+                'USER': 'root',
+                'PASSWORD': 'root',
                 'HOST': 'localhost',
                 'PORT': '5432',
     }
@@ -115,8 +115,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = 'reedlepee123@gmail.com'
+EMAIL_HOST_PASSWORD = 'CKT@MPDV19!'
 
 
 STATIC_PATH = os.path.join(BASE_DIR, 'static')

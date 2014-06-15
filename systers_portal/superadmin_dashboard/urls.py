@@ -7,4 +7,6 @@ urlpatterns = patterns('',
                            name='add_community'),
                        url(r'^edit_communityprofile/(?P<community_name_url>\w+)$',
                            views.edit_communityprofile, name='edit_communityprofile'),
+                       url(r'^ShowCommunities/$',
+                           views.ShowCommunities, name='ShowCommunities'),
                        )

@@ -5,13 +5,14 @@
 {% block body_block %}
 
 <div class="hero-unit">
-    <h1>{{ community_name }}</h1>
+    <h3>{{ community_name }}</h3>
     <br/>
  <div class="container">
 
-{% if community %}
+{% if community %}	
 {% if members %}
 <ul>
+<h4> Members <h4> 
 {% for member in members %}
 <li><a href="/dashboard/profile/{{member.user.username}}">{{ member.user.username }}</a></li>
 {% endfor %}
@@ -20,7 +21,7 @@
 <strong>No members currently in community.</strong>
 {% endif %}
 {% else %}
-The specified category {{ community_name }} does not exist!
+The specified community {{ community_name }} does not exist!
 {% endif %}
     </div>
 </div>

@@ -1,13 +1,21 @@
-{% extends "dashboard/base.html" %}
+{% extends "superadmin_dashboard/base.html" %}
 {% block title %}Add Community{% endblock %}
 {% block body_block %}
 <div class="hero-unit">
-    <h1>Add Community</h1>
+{% if user.is_authenticated and user.is_active and user.is_superuser%}
+    <h3>Add Community</h3>
     <br/>
  <div class="container">
-<form id="community_form" method="post" action="/dashboard/add_community/">
+<form id="community_form" method="post" action="/superadmin_dashboard/add_community/">
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" name="submit" value="Create Community" />
 </form>
+{% elif   user.is_authenticated and user.is_active %}
+<strong > You should be logged in as Super User!! Please login into super user account </h3>
+{%else%}
+<strong > You should be logged in as Super User!! Please login into super user account by clicking <a href="/accounts/login/">here</a></h3>
+{%endif%}
+</div>
+</div>
 {% endblock %}

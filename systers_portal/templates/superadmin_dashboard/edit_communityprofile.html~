@@ -1,18 +1,26 @@
-{% extends "dashboard/base.html" %}
+{% extends "superadmin_dashboard/base.html" %}
 {% block title %}Edit Profile{% endblock %}
 {% block body_block %}
 <div class="hero-unit">
-    <h1>Edit Community Profile</h1>
+{% if user.is_authenticated and user.is_active and user.is_superuser%}
+    <h3>Edit {{community_name}} Profile</h3>
     <br/>
  <div class="container">
 {% if community %}
-<form id="useredit_form" method="post" action="/superadmin_dashboard/edit_communityprofile/{{community_name}}"
+<form id="useredit_form" method="post" action="/superadmin_dashboard/edit_communityprofile/{{community_name_url}}"
 enctype="multipart/form-data">
 {% csrf_token %}
 {{ communityform.as_p }}
 <input type="submit" name="submit" value="Save" />
 </form>
 {% else %}
-The specified category {{ community_name }} does not exist!
+The specified community {{ community_name }} does not exist!
 {% endif %}
+{% elif   user.is_authenticated and user.is_active %}
+<strong > You should be logged in as Super User!! Please login into super user account </h3>
+{%else%}
+<strong > You should be logged in as Super User!! Please login into super user account by clicking <a href="/accounts/login/">here</a></h3>
+{%endif%}
+</div>
+</div>
 {% endblock %}
