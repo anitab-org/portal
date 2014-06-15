@@ -3,7 +3,6 @@ from django.http import HttpResponse, HttpRequest
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from dashboard.models import SysterUser, Community, News, FAQ
-from dashboard.forms import CommunityForm
 from dashboard.forms import SysterUserForm, UserForm, UserEditForm
 from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect, HttpResponse

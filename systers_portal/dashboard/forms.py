@@ -25,9 +25,3 @@ class UserEditForm(forms.ModelForm):
         model = User
         fields = ('first_name', 'last_name')
 
-
-class CommunityForm(forms.ModelForm):
-
-    class Meta:
-        model = Community
-        fields = ('name', 'email', 'communityadmin')
