@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body_block %}
+
+<div class="hero-unit">
+    <h1>Edit Profile</h1>
+    <br/>
+ <div class="container">
+{% if user.is_authenticated%}
+<form id="useredit_form" method="post" action="/dashboard/edit_profile/"
+enctype="multipart/form-data">
+
+{% csrf_token %}
+
+<!-- Display each form. The as_p method wraps each element in a paragraph
+(<p>) element. This ensures each element appears on a new line,
+making everything look neater. -->
+{{ userform.as_p }}
+{{ systeruserform.as_p }}
+
+<!-- Provide a button to click to submit the form. -->
+<input type="submit" name="submit" value="Save" />
+</form>
+{% endif %}
+    </div>
+    <div class="container">
+<a href="{% url 'account_change_password' %}">Change Password </a>
+</div>
+<div class="container">
+<a href="{% url 'account_email' %}">Change E-mail</a>
+</div>
+</div>
+<div class="container">
+</div>
+{% endblock %}

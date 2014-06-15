@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}{{user_name }} Profile {% endblock %}
+
+{% block body_block %}
+<div class="hero-unit">
+    <h1> Profile <h1> <br/>
+<h2>{{ user.username }}</h2>
+       <p>Email: {{ user.email }}</p>
+       <p>Country: {{ systeruser.country }}</p>     
+{% if systeruser.BlogURL %}
+<p>BlogURL: {{ systeruser.BlogURL }}</p>
+{% endif %}
+
+{% if systeruser.HomepageURL %}
+<p>BlogURL: {{ systeruser.HomepageURL }}</p>
+{% endif %}
+<p>Photo:</p>
+ {% if systeruser.Profilepicture %}
+<a href="{{ systeruser.Profilepicture.url }}"><img src="{{ systeruser.Profilepicture.url }}" height="100" width="100" /></a>
+{% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "superadmin_dashboard/base.html" %}
+{% block title %}Welcome to Systers Portal!{% endblock %}
+{% block body_block %}
+<div class="hero-unit">
+{% if communities %}
+            <ul>
+                {% for community in communities %}
+                <li><a href="/superadmin_dashbaord/edit_communityprofile/{{category.name}}"> {{community.name }} </a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <strong>There are no  communities present.</strong>
+        {% endif %}
+</div>
+{% endblock %}
