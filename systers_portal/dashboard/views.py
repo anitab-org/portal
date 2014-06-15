@@ -2,18 +2,20 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from dashboard.models import SysterUser,Community,News,FAQ
+from dashboard.models import SysterUser, Community, News, FAQ
 from dashboard.forms import CommunityForm
-from dashboard.forms import SysterUserForm,UserForm, UserEditForm
+from dashboard.forms import SysterUserForm, UserForm, UserEditForm
 from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 
+
 def index(request):
     context = RequestContext(request)
     return render_to_response('dashboard/index.html', {}, context)
+
 
 def profiles(request, user_name_url):
     context = RequestContext(request)
@@ -27,6 +29,7 @@ def profiles(request, user_name_url):
     except User.DoesNotExist:
         pass
     return render_to_response('dashboard/profile.html', context_dic, context)
+
 
 @login_required
 def edit_profile(request):
@@ -52,16 +55,15 @@ def edit_profile(request):
     return render_to_response('dashboard/edit_profile.html', {'userform': userform, 'systeruserform': systeruserform}, context)
 
 
-
-def community(request,community_name_url):
-	context=RequestContext(request)
-	community_name=community_name_url.replace('_' ,' ')
-	context_dic={'community_name':community_name}
-	try:
-		community=Community.objects.get(name=community_name)
-		members=SysterUser.objects.filter(community__name=community.name)
-		context_dic['community']=community
-		context_dic['members']=members
-	except Community.DoesNotExist:
-		pass
-	return render_to_response('dashboard/community.html',context_dic,context)
+def community(request, community_name_url):
+    context = RequestContext(request)
+    community_name = community_name_url.replace('_', ' ')
+    context_dic = {'community_name': community_name}
+    try:
+        community = Community.objects.get(name=community_name)
+        members = SysterUser.objects.filter(community__name=community.name)
+        context_dic['community'] = community
+        context_dic['members'] = members
+    except Community.DoesNotExist:
+        pass
+    return render_to_response('dashboard/community.html', context_dic, context)

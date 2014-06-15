@@ -76,14 +76,14 @@ TEMPLATE_DIRS = (
 
 
 DATABASES = {
-	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2',
-		'NAME': 'systersdb',  
-		'USER': 'root',   
-		'PASSWORD': 'root',   
-		'HOST': 'localhost', 
-		'PORT': '5432', 
-	}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'systersdb',
+                'USER': 'root',
+                'PASSWORD': 'root',
+                'HOST': 'localhost',
+                'PORT': '5432',
+    }
 }
 INTERNAL_IPS = ('127.0.0.1',)
 
@@ -119,15 +119,13 @@ EMAIL_HOST_USER = 'reedlepee123@gmail.com'
 EMAIL_HOST_PASSWORD = 'CKT@MPDV19!'
 
 
-
 STATIC_PATH = os.path.join(BASE_DIR, 'static')
 print STATIC_PATH
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-		STATIC_PATH,
-		)
+    STATIC_PATH,
+)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 LOGIN_URL = '/accounts/login/'
-#LOGIN_REDIRECT_URL = '/dashboard/profile/{{user.username}}'

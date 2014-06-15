@@ -1,5 +1,5 @@
 from django.contrib import admin
-from dashboard.models import SysterUser,Community,News,FAQ
+from dashboard.models import SysterUser, Community, News, FAQ
 admin.site.register(SysterUser)
 admin.site.register(Community)
 admin.site.register(News)

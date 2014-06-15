@@ -1,6 +1,7 @@
 from django import forms
-from dashboard.models import SysterUser,Community
+from dashboard.models import SysterUser, Community
 from django.contrib.auth.models import User
+
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
@@ -19,11 +20,14 @@ class SysterUserForm(forms.ModelForm):
 
 
 class UserEditForm(forms.ModelForm):
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
 
+
 class CommunityForm(forms.ModelForm):
-	class Meta:
-		model=Community
-		fields=('name','email','communityadmin')
+
+    class Meta:
+        model = Community
+        fields = ('name', 'email', 'communityadmin')
