@@ -4,4 +4,3 @@ admin.site.register(SysterUser)
 admin.site.register(Community)
 admin.site.register(News)
 admin.site.register(FAQ)
-

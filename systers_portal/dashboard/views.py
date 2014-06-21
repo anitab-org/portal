@@ -10,9 +10,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 
+
 def index(request):
     context = RequestContext(request)
     return render_to_response('dashboard/index.html', {}, context)
+
 
 def profiles(request, user_name_url):
     context = RequestContext(request)
@@ -26,6 +28,7 @@ def profiles(request, user_name_url):
     except User.DoesNotExist:
         pass
     return render_to_response('dashboard/profile.html', context_dic, context)
+
 
 @login_required
 def edit_profile(request):
@@ -49,6 +52,7 @@ def edit_profile(request):
         systeruserform = SysterUserForm(
             instance=SysterUser.objects.get(user=request.user))
     return render_to_response('dashboard/edit_profile.html', {'userform': userform, 'systeruserform': systeruserform}, context)
+
 
 def community(request, community_name_url):
     context = RequestContext(request)
