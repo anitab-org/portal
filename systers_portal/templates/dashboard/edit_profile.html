@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block body_block %}
+
+<div class="hero-unit">
+    <h3>Edit Profile</h3>
+    <br/>
+ <div class="container">
+{% if user.is_authenticated%}
+<form id="useredit_form" method="post" action="/dashboard/edit_profile/"
+enctype="multipart/form-data">
+
+{% csrf_token %}
+{{ userform.as_p }}
+{{ systeruserform.as_p }}
+<input type="submit" name="submit" value="Save" />
+</form>
+{% endif %}
+    </div>
+    <div class="container">
+<a href="{% url 'account_change_password' %}">Change Password </a>
+</div>
+<div class="container">
+<a href="{% url 'account_email' %}">Change E-mail</a>
+</div>
+</div>
+<div class="container">
+</div>
+{% endblock %}

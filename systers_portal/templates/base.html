@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+{% load static %}
+{% load url from future %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="{% static 'css/bootstrap-fluid-adj.css'%} " rel="stylesheet">
+    <link href="{% static 'css/bootstrap.min.css'%} " rel="stylesheet" media="screen">
+    <link href="{% static 'css/bootstrap-responsive.css' %}" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'img/index.ico'%}" />
+
+    <title>Anita Borg Institute - {% block head_title %}Welcome to Systers Portal!{% endblock %}</title>
+
+{% block extra_head %}
+    {% endblock %}
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44397330-1', 'tangowithdjango.com');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="brand" href="/dashboard/">Systers</a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav pull-right">
+                    {% if user.is_authenticated and user.is_active%}
+                    <li class="navbar-text">Welcome</li>
+<li><a href="/dashboard/profile/{{ user.username }}">{{user.username }}</a></li>	
+                    <li><a href="/dashboard/edit_profile/">Edit Profile</a></li>
+                    <li><a href="{% url 'account_logout' %}">Logout</a></li>
+{% else %}
+
+                    <li><a href="{% url 'account_signup' %}">Register</a></li>
+                   <li><a href="{% url 'account_login' %}">Login</a></li>
+
+                    {% endif %}
+                </ul>
+
+                <ul class="nav">
+                    <li><a href="http://anitaborg.org/">About</a></li>
+{% if user.is_authenticated and user.is_active and user.is_superuser%}
+<li><a href="/superadmin_dashboard/">Admin Dashboard</a></li>
+{% endif %}
+               </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span3">
+          
+            <!--/.well -->
+
+        </div>
+        <!--/span-->
+        <div class="span9">
+
+            {% block body_block %}
+            {% endblock %}
+
+{% block body %}
+
+    {% if messages %}
+    <div>
+      <strong>Messages:</strong>
+      <ul>
+{% for message in messages %}
+<li>{{message}}</li>
+{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+    {% endblock %}
+    {% block extra_body %}
+    {% endblock %}
+
+        </div>
+        <!--/span-->
+    </div>
+    <!--/row-->
+
+</div>
+<!--/.fluid-container-->
+
+<hr>
+
+<footer>
+    <div class="container">
+        <p>&copy; Systers , An Anitaborg Institute</p>
+    </div>
+</footer>
+
+
+<hr/>
+
+
+<script src="{% static 'js/jquery-2.0.3.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+
+</body>
+</html>
