@@ -3,7 +3,7 @@ python:
   - "2.7"
 install: "pip install -r requirements.txt"
 env:
-  secure: "AYK+qBrFfjH2QQQri17LdI3iyyuHnrFd7eQxoTar0A0qb4JxEHV79B/9KVlaCr+avVBVVUIJvDnzP1DETwm9twhyfvtPyB+J5INXGp5EkiUR4a1GiXBs1GUW8qg4HB2TBZjDy0OB+YDWphi+Obm/ZRCuIT5mE4tCZrZ4dzjWc/Y="
+  secure: "MU+x68snHYqrm/aYHgdJcutZoTiRo1sl4MU8K09GfMp/Y4s6McNllqLheg8hM6MZAlQcOTPyp/kE8nr8cneYExl0tvH4yU6gVIZj9C7oOYJm4Qx++uNRlevbQ2Yo1lkHZnL8iNlXvqsOzxrB9ryxNClyc/M4OS6fQuyXzYcC/Fg="
 before_script:
   - psql -c "CREATE DATABASE systersdb;" -U postgres
 script: 
