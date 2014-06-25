@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'south',
     'sekizai',
     'django.contrib.messages',
+    'dashboard',
 )
 
 MIDDLEWARE_CLASSES = (
