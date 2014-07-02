@@ -1,7 +1,7 @@
 language: python
 python:
   - "2.7"
-install: "pip install -r requirements.txt"
+install: "pip install -r requirements-dev.txt"
 env:
   secure: "MU+x68snHYqrm/aYHgdJcutZoTiRo1sl4MU8K09GfMp/Y4s6McNllqLheg8hM6MZAlQcOTPyp/kE8nr8cneYExl0tvH4yU6gVIZj9C7oOYJm4Qx++uNRlevbQ2Yo1lkHZnL8iNlXvqsOzxrB9ryxNClyc/M4OS6fQuyXzYcC/Fg="
 before_script:

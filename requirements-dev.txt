@@ -1,0 +1,4 @@
+-r requirements-prod.txt
+Sphinx==1.2.2
+django-nose==1.2
+flake8==2.1.0
