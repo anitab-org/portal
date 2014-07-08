@@ -18,7 +18,7 @@ Setup for developers
  ```bash
  $ virtualenv venv
  $ source venv/bin/activate
- $ pip install -r requirements.txt
+ $ pip install -r requirements-dev.txt
  ```
 3. Make sure you have PostgreSQL database up and running
 4. Create `systersdb` database, where `systersdb` might be any suitable name
