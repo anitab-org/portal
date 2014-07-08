@@ -1,7 +1,8 @@
 Django==1.6.5
 Sphinx==1.2.2
+django-cms==3.0
+django-countries==2.1.2
 django-nose==1.2
+djangocms-text-ckeditor==2.1.6
 flake8==2.1.0
 psycopg2==2.5.3
-django-cms==3.0
-djangocms-text-ckeditor==2.1.6
