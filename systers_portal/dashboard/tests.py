@@ -1,10 +1,15 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.contrib.auth.models import Group
 from cms.models.pagemodel import Page
 from cms.api import create_page
-from dashboard.models import (
-    SysterUser, Community, News, Resource, Tag, ResourceType,
-    CommunityPage)
+
+from dashboard.management import (content_contributor_permissions,
+                                  content_manager_permissions,
+                                  user_content_manager_permissions,
+                                  community_admin_permissions)
+from dashboard.models import (SysterUser, Community, News, Resource, Tag,
+                              ResourceType, CommunityPage)
 
 
 class DashboardTestCase(TestCase):
@@ -188,3 +193,18 @@ class DashboardTestCase(TestCase):
             communitypage=about_page_for_second_dummy_community)
         self.assertEqual(about_second_dummy_community,
                          second_dummy_community_about)
+
+    def test_group_permissions(self):
+        groups = ["Content Contributor",
+                  "Content Manager",
+                  "User and Content Manager",
+                  "Community Admin", ]
+        permissions = [content_contributor_permissions,
+                       content_manager_permissions,
+                       user_content_manager_permissions,
+                       community_admin_permissions, ]
+        for i, group_name in enumerate(groups):
+            group = Group.objects.get(name=group_name)
+            group_permissions = [p.codename for p in
+                                 list(group.permissions.all())]
+            self.assertItemsEqual(group_permissions, permissions[i])
