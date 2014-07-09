@@ -1,4 +1,5 @@
 Django==1.6.5
+django-allauth==0.16.1
 django-cms==3.0
 django-countries==2.1.2
 djangocms-text-ckeditor==2.1.6

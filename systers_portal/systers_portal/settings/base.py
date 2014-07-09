@@ -41,6 +41,13 @@ INSTALLED_APPS = (
     'south',
     'sekizai',
     'django.contrib.messages',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
     'dashboard',
 )
 
@@ -58,6 +65,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
 )
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
@@ -67,6 +75,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'sekizai.context_processors.sekizai',
     'cms.context_processors.cms_settings',
+    'allauth.account.context_processors.account',
+    'allauth.socialaccount.context_processors.socialaccount',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'systers_portal.urls'
@@ -99,11 +114,15 @@ USE_L10N = True
 USE_TZ = True
 
 SITE_ID = 1
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
-
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATIC_URL = "/static/"
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# Django-allauth settings
+# https://django-allauth.readthedocs.org/en/latest/#configuration
+ACCOUNT_EMAIL_REQUIRED = True
