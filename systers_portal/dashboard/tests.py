@@ -3,13 +3,14 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 from cms.models.pagemodel import Page
 from cms.api import create_page
+from allauth.account import signals
 
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
                                   user_content_manager_permissions,
                                   community_admin_permissions)
 from dashboard.models import (SysterUser, Community, News, Resource, Tag,
-                              ResourceType, CommunityPage)
+                              ResourceType, CommunityPage, create_syster_user)
 
 
 class DashboardTestCase(TestCase):
@@ -193,6 +194,22 @@ class DashboardTestCase(TestCase):
             communitypage=about_page_for_second_dummy_community)
         self.assertEqual(about_second_dummy_community,
                          second_dummy_community_about)
+
+    def test_signal_registry(self):
+        """Test if the function was registered as a signal receiver"""
+        registered_funcs = [r[1]() for r in signals.user_signed_up.receivers]
+        self.assertIn(create_syster_user, registered_funcs)
+
+    def test_create_syster_user(self):
+        """Test the creation of SysterUser object on user signup"""
+        self.assertQuerysetEqual(SysterUser.objects.all(), [])
+        request = {'user': self.auth_user}
+        create_syster_user(self.test_create_syster_user, **request)
+        users = User.objects.all()
+        systerusers = SysterUser.objects.all()
+        self.assertEqual(len(systerusers), len(users))
+        self.assertEqual(len(users), 1)
+        self.assertEqual(systerusers[0].user, users[0])
 
     def test_group_permissions(self):
         groups = ["Content Contributor",

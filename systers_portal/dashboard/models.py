@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
 from django_countries.fields import CountryField
+from allauth.account.signals import user_signed_up
 from cms.models.pagemodel import Page
 
 
@@ -108,3 +110,14 @@ class Resource(models.Model):
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
+
+
+@receiver(user_signed_up)
+def create_syster_user(sender, **kwargs):
+    """Keep User and SysterUser synchronized. Create a SystersUser instance on
+    receiving a signal about new user signup.
+    """
+    user = kwargs.get('user')
+    if user is not None:
+        syster_user = SysterUser(user=user)
+        syster_user.save()
