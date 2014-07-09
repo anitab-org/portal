@@ -28,9 +28,10 @@ Setup for developers
 7. Run `python systers_portal/manage.py syncdb`
 8. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
   or production, feed the respective settings file from the command line, e.g. for  
-  testing `python manage.py runserver settings=systers_portal.settings.testing`
+  testing `python manage.py runserver --settings=systers_portal.settings.testing`
 9. Before commiting run `flake8 systers_portal` and fix PEP8 warnings
-10. Run `python systers_portal/manage.py test` to run all the tests
+10. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
+  to run all the tests
 
 
 Documentation

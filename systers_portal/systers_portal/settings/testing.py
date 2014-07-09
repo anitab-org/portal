@@ -13,6 +13,14 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
 INTERNAL_IPS = ('127.0.0.1',)
 
 ROOT_URLCONF = 'systers_portal.systers_portal.urls'
+
+NOSE_ARGS = [
+    '--nocapture',
+    '--nologcapture',
+    '--with-doctest',
+    '--doctest-options=+ELLIPSIS',
+]
