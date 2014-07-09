@@ -24,6 +24,10 @@ class SysterUser(models.Model):
         else:
             return self.user.username
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('view_userprofile', None, {'username': self.user.username})
+
 
 class Community(models.Model):
 

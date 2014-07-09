@@ -3,13 +3,17 @@ from django.test import TestCase
 from django.contrib.auth.models import Group
 from cms.models.pagemodel import Page
 from cms.api import create_page
-
+from django.test.client import Client
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
                                   user_content_manager_permissions,
                                   community_admin_permissions)
 from dashboard.models import (SysterUser, Community, News, Resource, Tag,
                               ResourceType, CommunityPage)
+from dashboard.forms import SysterUserForm
+from dashboard.forms import UserForm
+from django.test import RequestFactory
+from dashboard.views import edit_userprofile, view_userprofile
 
 
 class DashboardTestCase(TestCase):
@@ -19,6 +23,7 @@ class DashboardTestCase(TestCase):
         self.tag = Tag.objects.create(name='dummy_tag')
         self.resource_type = ResourceType.objects.create(
             name='dummy_resource_type')
+        self.client = Client()
 
     def test_user_and_syster_user(self):
         self.assertQuerysetEqual(SysterUser.objects.all(), [])
@@ -208,3 +213,84 @@ class DashboardTestCase(TestCase):
             group_permissions = [p.codename for p in
                                  list(group.permissions.all())]
             self.assertItemsEqual(group_permissions, permissions[i])
+
+    def test_userform(self):
+        """Test userform"""
+        user1 = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        form_data = {
+            'first_name': 'FOO',
+            'last_name': 'BAR',
+        }
+        form = UserForm(data=form_data, instance=user1)
+        self.assert_(form.is_valid())
+        self.assertEqual(form.instance.first_name, 'FOO')
+        form.save()
+        self.assertEqual(
+            User.objects.get(id=form.instance.id).first_name,
+            'FOO'
+        )
+
+    def test_systeruserform(self):
+        """Test systeruserform"""
+        user1 = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        systeruser = SysterUser.objects.create(user=user1)
+        form_data = {
+            'country': 'FO',
+            "blog_url": "http://anitaborg.org/",
+            "homepage_url": "http://anitaborg.org/",
+        }
+        form = SysterUserForm(data=form_data, instance=systeruser)
+        self.assert_(form.is_valid())
+        self.assertEqual(form.instance.country, 'FO')
+        self.assertEqual(form.instance.blog_url, "http://anitaborg.org/")
+        self.assertEqual(form.instance.homepage_url, "http://anitaborg.org/")
+        form.save()
+        self.assertEqual(systeruser.blog_url, "http://anitaborg.org/")
+        self.assertEqual(systeruser.homepage_url, "http://anitaborg.org/")
+
+    def test_viewuserprofile(self):
+        """Test the view_userprofile function"""
+        user1 = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        systeruser = SysterUser.objects.create(user=user1)  # NOQA
+        factory = RequestFactory()
+        request = factory.get('/users/john/')
+        response = view_userprofile(request, username=user1.username)
+        self.assertEqual(response.status_code, 200)
+
+    def test_edituserprofile(self):
+        """Test the edit_userprofile function"""
+        user1 = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        systeruser = SysterUser.objects.create(
+            user=user1,
+            blog_url="http://anitaborg.org/",
+            homepage_url="http://anitaborg.org/")
+        self.assertEqual(systeruser.user.first_name, '')
+        self.assertEqual(systeruser.user.last_name, '')
+        self.assertEqual(unicode(systeruser), user1.username)
+        factory = RequestFactory()
+        form_data = {
+            'first_name': 'ullu',
+            'last_name': 'bar',
+            "blog_url": "http://anitaborg.org/",
+            "homepage_url": "http://anitaborg.org/",
+        }
+        request = factory.post('/users/john/edit/', form_data)
+        request.user = user1
+        edit_userprofile(request, user1.username)
+        self.assertEqual(systeruser.user.first_name, "ullu")
+        self.assertEqual(systeruser.user.last_name, "bar")
+        self.assertEqual(systeruser.blog_url, "http://anitaborg.org/")
+        self.assertEqual(systeruser.homepage_url, "http://anitaborg.org/")
+        self.assertEqual(unicode(systeruser), "ullu bar")

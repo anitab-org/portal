@@ -1,0 +1,29 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{user_name }} Profile {% endblock %}
+{% block content %}
+<div>
+    <h3>
+    Profile 
+    <h3>
+    <br>
+    <h4>{{ user.username }}</h4>
+    {% if user.first_name and user.last_name %}
+    <p>Name: {{ user.first_name }} {{ user.last_name}}</p>
+    {% elif user.first_name %}
+    <p>Name: {{ user.first_name }}</p>
+    {% endif %}
+    <p>Email: {{ user.email }}</p>
+    <p>Country: {{ systeruser.country }}</p>
+    {% if systeruser.blog_url %}
+    <p>BlogURL: <a href="{{ systeruser.blog_url }}"> {{ systeruser.blog_url }} </a>
+        {% endif %}
+        {% if systeruser.homepage_url %}
+    <p>HomePageURL: <a href="{{ systeruser.homepage_url }}"> {{ systeruser.homepage_url }} </a></p>
+    {% endif %}
+    <p>Photo:</p>
+    {% if systeruser.profile_picture %}
+    <a href="{{ systeruser.profile_picture.url }}"><img src="{{ systeruser.profile_picture.url }}" height="150" width="150" /></a>
+    {% endif %}
+</div>
+{% endblock %}
+
