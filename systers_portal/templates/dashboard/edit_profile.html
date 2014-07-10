@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div>
+  <h3>Edit Profile</h3>
+  <br>
+  <div class="container">
+    {% if user.is_authenticated %}
+    <form id="useredit_form" method="post" action="{% url 'edit_userprofile' user.username %}"
+      enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ userform.as_p }} 
+      <input type="submit" name="submit" value="Save" />
+    </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

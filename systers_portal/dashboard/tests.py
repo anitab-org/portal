@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
 from django.contrib.auth.models import Group
-from cms.models.pagemodel import Page
+from django.core.urlresolvers import reverse
+from django.test import RequestFactory
+from django.test import TestCase
+
 from cms.api import create_page
+from cms.models.pagemodel import Page
 
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
@@ -10,6 +13,7 @@ from dashboard.management import (content_contributor_permissions,
                                   community_admin_permissions)
 from dashboard.models import (SysterUser, Community, News, Resource, Tag,
                               ResourceType, CommunityPage)
+from dashboard.views import edit_userprofile
 
 
 class DashboardTestCase(TestCase):
@@ -208,3 +212,38 @@ class DashboardTestCase(TestCase):
             group_permissions = [p.codename for p in
                                  list(group.permissions.all())]
             self.assertItemsEqual(group_permissions, permissions[i])
+
+
+class DashboardViewsTestCase(TestCase):
+
+    def test_edituserprofile(self):
+        """Test the edit_userprofile function"""
+        user = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        systeruser = SysterUser.objects.create(
+            user=user,
+            blog_url="http://anitaborg.org/",
+            homepage_url="http://anitaborg.org/")
+        self.assertEqual(systeruser.user.first_name, '')
+        self.assertEqual(systeruser.user.last_name, '')
+        self.assertEqual(systeruser.blog_url, "http://anitaborg.org/")
+        self.assertEqual(unicode(systeruser), user.username)
+        factory = RequestFactory()
+        form_data = {
+            'first_name': 'ullu',
+            'last_name': 'bar',
+            "blog_url": "http://systers.org/",
+            "homepage_url": "http://borg.org/",
+        }
+        request = factory.get(reverse('edit_userprofile',
+                                      args=(systeruser.user.username,)),
+                              form_data)
+        request.user = user
+        edit_userprofile(request, user.username)
+        self.assertEqual(systeruser.user.first_name, "ullu")
+        self.assertEqual(systeruser.user.last_name, "bar")
+        self.assertEqual(systeruser.blog_url, "http://systers.org/")
+        self.assertNotEqual(systeruser.homepage_url, "http://anitaborg.org/")
+        self.assertEqual(unicode(systeruser), "ullu bar")
