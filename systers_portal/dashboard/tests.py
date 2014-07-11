@@ -1,10 +1,15 @@
+import mock
+
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from django.contrib.auth.models import Group
 from cms.models.pagemodel import Page
 from cms.api import create_page
 from allauth.account import signals
 
+from dashboard.decorators import (membership_required, admin_required,
+                                  authorship_required)
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
                                   user_content_manager_permissions,
@@ -13,7 +18,7 @@ from dashboard.models import (SysterUser, Community, News, Resource, Tag,
                               ResourceType, CommunityPage, create_syster_user)
 
 
-class DashboardTestCase(TestCase):
+class DashboardModelsTestCase(TestCase):
 
     def setUp(self):
         self.auth_user = User.objects.create(username='foo', password='foobar')
@@ -225,3 +230,52 @@ class DashboardTestCase(TestCase):
             group_permissions = [p.codename for p in
                                  list(group.permissions.all())]
             self.assertItemsEqual(group_permissions, permissions[i])
+
+
+class DashboardDecoratorsTestCase(TestCase):
+    def setUp(self):
+        self.auth_user_foo = User.objects.create_user(username="foo",
+                                                      password="foobar")
+        self.user_foo = SysterUser(user=self.auth_user_foo)
+        self.user_foo.save()
+        self.auth_user_bar = User.objects.create_user(username="bar",
+                                                      password="foobar")
+        self.user_bar = SysterUser(user=self.auth_user_bar)
+        self.user_bar.save()
+        self.community = Community(community_admin=self.user_foo)
+        self.community.save()
+        self.community.members.add(self.user_foo)
+        self.community.save()
+        self.resource = Resource(community=self.community,
+                                 author=self.user_foo)
+        self.resource.save()
+
+    def test_decorators(self):
+        request = mock.MagicMock()
+        view = mock.MagicMock(return_value='foo response')
+
+        test_objects = [self.community, self.resource, ]
+        mockup_tests = [
+            {"user": self.auth_user_foo, "success": True},
+            {"user": self.auth_user_bar, "success": False},
+        ]
+        tests = []
+        for obj in test_objects:
+            for mockup_test in mockup_tests:
+                tests.append(mockup_test)
+                tests[-1]["model"] = type(obj)
+                tests[-1]["object"] = obj
+        decorators = [membership_required, admin_required, authorship_required]
+        for decorator in decorators:
+            for test in tests:
+                request.user = test["user"]
+                request_kwargs = {"id": test["object"].id}
+                decorated = decorator(test["model"], "id__exact", "id")
+                wrapped = decorated(view)
+
+                if test["success"]:
+                    response = wrapped(request, **request_kwargs)
+                    self.assertEqual(response, view.return_value)
+                else:
+                    self.assertRaises(PermissionDenied, wrapped, request,
+                                      **request_kwargs)
