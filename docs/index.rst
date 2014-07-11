@@ -11,6 +11,14 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+Administration of Systers Portal
+--------------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   config/social_login
+
 
 
 Indices and tables
