@@ -1,9 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from django.contrib.auth.models import Group
-from cms.models.pagemodel import Page
-from cms.api import create_page
 
+from cms.api import create_page
+from cms.models.pagemodel import Page
+
+from dashboard.forms import NewsForm
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
                                   user_content_manager_permissions,
@@ -208,3 +209,40 @@ class DashboardTestCase(TestCase):
             group_permissions = [p.codename for p in
                                  list(group.permissions.all())]
             self.assertItemsEqual(group_permissions, permissions[i])
+
+
+class DashboardFormsTestCase(TestCase):
+
+    def setUp(self):
+        auth_user = User.objects.create_user(username="foo", password="foobar")
+        self.user = SysterUser(user=auth_user)
+        self.user.save()
+        self.community = Community(name='bar', community_admin=self.user)
+        self.community.save()
+        self.tag = Tag.objects.create(name='foo_tag')
+        self.tag.save()
+
+    def test_News_form(self):
+        form_data = [
+            {},
+            {'title': 'news'},
+            {'slug': 'foo'},
+            {'content': 'This is dummy news'},
+            {'title': 'foo', 'slug': 'foo'},
+            {'title': 'foo',
+             'slug': 'foo',
+             'tags': self.tag},
+            {'title': 'foo',
+             'slug': 'foo',
+             'is_public': True,
+             'tags': [self.tag.id],
+             'content': 'This is dummy news'},
+            {'title': 'foo',
+             'slug': 'foo',
+             'is_public': True,
+             'content': 'This is dummy news'},
+        ]
+        result = [False] * 6 + [True] * 2
+        for i, data in enumerate(form_data):
+            form = NewsForm(data=data)
+            self.assertEqual(form.is_valid(), result[i])
