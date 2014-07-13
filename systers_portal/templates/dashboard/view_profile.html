@@ -1,0 +1,30 @@
+{% extends "dashboard/base.html" %}
+{% load dashboard_extras %}
+{% block title %}{{ systeruser.user.username }} Profile{% endblock %}
+{% block content %}
+  <div>
+    <h3>{{ systeruser.user.username }} Profile</h3>
+    <ul>    
+      {% for name, value in systeruser.get_user_fields %}
+        {% with "first_name last_name email_address" as necessary_fields %}
+          {% if value and name in necessary_fields %}
+            <p>{% verbose_name systeruser.user name %}: {{ value|urlize }}</p>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+      {% for name, value in systeruser.get_fields %}
+        {% with "id user profile_picture" as unnecessary_fields %}
+          {% if value and name not in unnecessary_fields %}
+            <p>{% verbose_name systeruser name %}: {{ value|urlize }}</p>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+      <p>Photo:</p>
+        {% if systeruser.profile_picture %}
+          <a href="{{ systeruser.profile_picture.url }}"><img src="{{ systeruser.profile_picture.url }}" height="150" width="150" /></a>
+        {% else %}
+          <p>No Image Available</p>
+        {% endif %}
+    </ul>
+  </div>
+{% endblock %}

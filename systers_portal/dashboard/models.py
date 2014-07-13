@@ -4,19 +4,21 @@ from django.dispatch import receiver
 from django_countries.fields import CountryField
 from allauth.account.signals import user_signed_up
 from cms.models.pagemodel import Page
+from django.core.urlresolvers import reverse
 
 
 class SysterUser(models.Model):
-
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User)
-    country = CountryField(blank=True, null=True)
-    blog_url = models.URLField(max_length=255, blank=True)
-    homepage_url = models.URLField(max_length=255, blank=True)
+    country = CountryField(blank=True, null=True, verbose_name="Country")
+    blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
+    homepage_url = models.URLField(max_length=255, blank=True,
+                                   verbose_name="Homepage")
     profile_picture = models.ImageField(upload_to='photos/',
                                         default='photos/dummy.jpeg',
                                         blank=True,
-                                        null=True)
+                                        null=True,
+                                        verbose_name="Photo")
 
     def __unicode__(self):
         firstname = self.user.first_name
@@ -26,9 +28,30 @@ class SysterUser(models.Model):
         else:
             return self.user.username
 
+    def get_absolute_url(self):
+        return reverse('view_userprofile', args=[self.user.username])
+
+    def get_user_fields(self):
+        """Set verbose name for User fields and Get model fields of a User object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        User._meta.get_field('first_name').verbose_name = 'Firstname'
+        User._meta.get_field('last_name').verbose_name = 'Lastname'
+        User._meta.get_field('email').verbose_name = 'Email'
+        return [(field.name, getattr(self.user, field.name)) for field in
+                User._meta.fields]
+
+    def get_fields(self):
+        """Get model fields of a SysterUser object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        return [(field.name, getattr(self, field.name)) for field in
+                SysterUser._meta.fields]
+
 
 class Community(models.Model):
-
     """Model to represent a Syster Community"""
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, blank=True)
@@ -49,7 +72,6 @@ class Community(models.Model):
 
 
 class Tag(models.Model):
-
     """Model to represent the tags a resource can have"""
     name = models.CharField(max_length=255)
 
@@ -58,7 +80,6 @@ class Tag(models.Model):
 
 
 class ResourceType(models.Model):
-
     """Model to represent the types a resource can have"""
     name = models.CharField(max_length=255)
 
@@ -67,7 +88,6 @@ class ResourceType(models.Model):
 
 
 class News(models.Model):
-
     """Model to represent a News section on Community resource area"""
     title = models.CharField(max_length=255)
     community = models.ForeignKey(Community)
@@ -84,7 +104,6 @@ class News(models.Model):
 
 
 class CommunityPage(models.Model):
-
     """Model to represent community pages"""
     title = models.CharField(max_length=255)
     page = models.OneToOneField(Page)
@@ -95,7 +114,6 @@ class CommunityPage(models.Model):
 
 
 class Resource(models.Model):
-
     """Model to represent a Resources section on Community resource area"""
     title = models.CharField(max_length=255)
     community = models.ForeignKey(Community)
