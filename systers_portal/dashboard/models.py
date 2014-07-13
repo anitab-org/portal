@@ -1,8 +1,11 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.dispatch import receiver
+from django.core.urlresolvers import reverse
 from django_countries.fields import CountryField
+from django.db import models
+from django.dispatch import receiver
+
 from allauth.account.signals import user_signed_up
+
 from cms.models.pagemodel import Page
 
 
@@ -69,18 +72,35 @@ class ResourceType(models.Model):
 class News(models.Model):
 
     """Model to represent a News section on Community resource area"""
-    title = models.CharField(max_length=255)
-    community = models.ForeignKey(Community)
-    author = models.ForeignKey(SysterUser)
-    date_created = models.DateField(auto_now=False, auto_now_add=True)
-    date_modified = models.DateField(auto_now=True, auto_now_add=False)
-    is_public = models.BooleanField(default=True)
-    tags = models.ManyToManyField(Tag, blank=True, null=True)
-    content = models.TextField()
-    slug = models.SlugField(max_length=150, unique=True)
+    title = models.CharField(max_length=255, verbose_name='Title')
+    slug = models.SlugField(max_length=150, unique=True, verbose_name='Slug')
+    community = models.ForeignKey(Community, verbose_name='Community')
+    author = models.ForeignKey(SysterUser, verbose_name='Author')
+    date_created = models.DateField(auto_now=False, auto_now_add=True,
+                                    verbose_name='Publish date')
+    date_modified = models.DateField(auto_now=True, auto_now_add=False,
+                                     verbose_name='Last Modified date')
+    is_public = models.BooleanField(default=True, verbose_name='is_public')
+    tags = models.ManyToManyField(Tag, blank=True, null=True,
+                                  verbose_name='Tags')
+    content = models.TextField(verbose_name='Content')
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
+
+    def get_absolute_url(self):
+        """Absoulte URL for News object"""
+        return reverse('view_news',
+                       kwargs={'community_slug': self.community.slug,
+                               'news_slug': self.slug})
+
+    def get_fields(self):
+        """Get model fields of a News object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        return [(field.name, getattr(self, field.name)) for field in
+                News._meta.fields]
 
 
 class CommunityPage(models.Model):

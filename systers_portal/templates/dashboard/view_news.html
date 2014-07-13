@@ -1,0 +1,29 @@
+{% extends "dashboard/base.html" %}
+{% load dashboard_extras %}
+{% block title %}News{% endblock %}
+{% block content %}
+<div>
+  <h3>News</h3>
+  <div>
+    {% for name, value in news.get_fields %}
+      {% with "id slug community is_public tags" as unnecessary_fields %}
+        {% if value and name not in unnecessary_fields %}
+          <p>{% verbose_name news name %}: {{ value|urlize }}</p>
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
+    {% if news.tags.all %}
+      <p>Tags</p>
+      <ul>
+        {% for tag in news.tags.all %}
+          <li>{{ tag.name }} </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {# TODO: check permissions tos edit this news object, if none, don't display the link #}
+    {# TODO: Link to edit page for this news object #}
+    {# TODO: check permissions to delete this news object, if none, don't display the link #}
+    {# TODO: Link to delete page for this news object #}
+  </div>
+</div>
+{% endblock %}
