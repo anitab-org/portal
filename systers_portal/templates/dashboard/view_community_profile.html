@@ -1,0 +1,20 @@
+{% extends "dashboard/base.html" %}
+{% load dashboard_extras %}
+{% block title %}{{ community.name }} Profile{% endblock %}
+{% block content %}
+  <div>
+    <h3>{{ community.name }} Profile</h3>
+    <ul>
+      {# TODO: link to the user profile #}
+      {# TODO: link to the manage users page #}
+      {# TODO: check permissions to view manage users page, if none, don't display the link #}
+      {% for name, value in community.get_fields %}
+        {% with "id slug members" as unnecessary_fields %}
+          {% if value and name not in unnecessary_fields %}
+            <li>{% verbose_name community name %}: {{ value|urlize }}</li>
+          {% endif %}
+        {% endwith %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

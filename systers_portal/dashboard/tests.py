@@ -1,9 +1,9 @@
 import mock
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied
-from django.test import TestCase
-from django.contrib.auth.models import Group
+from django.core.urlresolvers import reverse
+from django.test import TestCase, Client
 from cms.models.pagemodel import Page
 from cms.api import create_page
 from allauth.account import signals
@@ -279,3 +279,37 @@ class DashboardDecoratorsTestCase(TestCase):
                 else:
                     self.assertRaises(PermissionDenied, wrapped, request,
                                       **request_kwargs)
+
+
+class DashboardViewsTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        auth_user = User.objects.create_user(username="foo", password="foobar")
+        self.user = SysterUser(user=auth_user)
+        self.user.save()
+        self.community = Community(name='bar',
+                                   community_admin=self.user,
+                                   slug="bar-1")
+        self.community.save()
+
+    def _test_response_status(self, method, url, status_code, **kwargs):
+        """Helper function to test if a request returns expected status code
+
+        :param method: string name of the method to be called with test client
+                       object, e.g. "get", "post", "put"
+        :param url: string URL used in request
+        :param status_code: int expected status code of the response
+        :returns: HttpResponse object
+        """
+        response = getattr(self.client, method)(url, kwargs)
+        self.assertEqual(response.status_code, status_code)
+        return response
+
+    def test_view_community_profile(self):
+        """Test community profile view """
+        nonexistent_url = reverse('view_community_profile',
+                                  kwargs={'community_slug': "non-existent"})
+        self._test_response_status('get', nonexistent_url, 404)
+        url = reverse('view_community_profile',
+                      kwargs={'community_slug': self.community.slug})
+        self._test_response_status('get', url, 200)
