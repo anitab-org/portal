@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ news.title }}{% endblock %}
+{% block content %}
+<div>
+  <form action="{% url 'edit_news' news.community.slug news.slug %} " method="post">
+    {% csrf_token %}
+    {{ newsform.as_p }}
+    <input type="submit" value="Submit"/>
+    <a href="{% url 'view_news' news.community.slug news.slug %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
