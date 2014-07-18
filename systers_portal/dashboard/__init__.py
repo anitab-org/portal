@@ -1,0 +1,1 @@
+import dashboard.signals  # NOQA

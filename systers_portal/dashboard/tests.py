@@ -1,25 +1,26 @@
 import mock
 
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.test import TestCase
 from django.contrib.auth.models import Group
+from django.http import Http404
+from django.test import TestCase
 from cms.models.pagemodel import Page
 from cms.api import create_page
 from allauth.account import signals
+from guardian.shortcuts import get_perms
+from south.signals import post_migrate
 
 from dashboard.decorators import (membership_required, admin_required,
                                   authorship_required)
-from dashboard.management import (content_contributor_permissions,
-                                  content_manager_permissions,
-                                  user_content_manager_permissions,
-                                  community_admin_permissions)
+from dashboard.management import create_generic_group, permissions
 from dashboard.models import (SysterUser, Community, News, Resource, Tag,
-                              ResourceType, CommunityPage, create_syster_user)
+                              ResourceType, CommunityPage)
+from dashboard.signals import *
 
 
 class DashboardModelsTestCase(TestCase):
-
     def setUp(self):
         self.auth_user = User.objects.create(username='foo', password='foobar')
         self.tag = Tag.objects.create(name='dummy_tag')
@@ -201,9 +202,19 @@ class DashboardModelsTestCase(TestCase):
                          second_dummy_community_about)
 
     def test_signal_registry(self):
-        """Test if the function was registered as a signal receiver"""
-        registered_funcs = [r[1]() for r in signals.user_signed_up.receivers]
-        self.assertIn(create_syster_user, registered_funcs)
+        """Test if functions were registered as signal receivers"""
+        signed_up_registered_funcs = [r[1]() for r in
+                                      signals.user_signed_up.receivers]
+        post_save_registered_funcs = [r[1]() for r in post_save.receivers]
+        post_delete_registered_funcs = [r[1]() for r in post_delete.receivers]
+        post_migrate_registered_funcs = [r[1]() for r in
+                                         post_migrate.receivers]
+        m2m_changed_registered_funcs = [r[1]() for r in m2m_changed.receivers]
+        self.assertIn(create_syster_user, signed_up_registered_funcs)
+        self.assertIn(create_community_groups, post_save_registered_funcs)
+        self.assertIn(remove_community_groups, post_delete_registered_funcs)
+        self.assertIn(create_generic_group, post_migrate_registered_funcs)
+        self.assertIn(give_basic_access, m2m_changed_registered_funcs)
 
     def test_create_syster_user(self):
         """Test the creation of SysterUser object on user signup"""
@@ -216,20 +227,135 @@ class DashboardModelsTestCase(TestCase):
         self.assertEqual(len(users), 1)
         self.assertEqual(systerusers[0].user, users[0])
 
-    def test_group_permissions(self):
-        groups = ["Content Contributor",
-                  "Content Manager",
-                  "User and Content Manager",
-                  "Community Admin", ]
-        permissions = [content_contributor_permissions,
-                       content_manager_permissions,
-                       user_content_manager_permissions,
-                       community_admin_permissions, ]
-        for i, group_name in enumerate(groups):
-            group = Group.objects.get(name=group_name)
+    def test_give_basic_access(self):
+        """Test giving basic access to users"""
+        self.assertEqual(list(self.auth_user.groups.all()), [])
+        self.assertFalse(self.auth_user.is_staff)
+        group = Group.objects.create(name="Foo group")
+        self.auth_user.groups.add(group)
+        self.auth_user.save()
+        self.assertIn(group, self.auth_user.groups.all())
+        self.assertTrue(self.auth_user.is_staff)
+        self.auth_user.groups.remove(group)
+        self.auth_user.save()
+        self.assertEqual(list(self.auth_user.groups.all()), [])
+        self.assertFalse(self.auth_user.is_staff)
+
+    def test_create_community_groups(self):
+        """Test creation of community specific groups"""
+        systeruser = SysterUser.objects.create(user=self.auth_user)
+        name = 'FooBar'
+        for key, group_name in generic_groups.items():
+            self.assertFalse(Group.objects.filter(
+                name=group_name.format(name)).exists())
+        community = Community.objects.create(name=name,
+                                             community_admin=systeruser)
+        for key, group_name in generic_groups.items():
+            self.assertTrue(Group.objects.filter(
+                name=group_name.format(community.name)).exists())
+        self.assertIn(Group.objects.get(
+            name=generic_groups["community_admin"].format(name)),
+            systeruser.user.groups.all())
+        community.name = "BarFoo"
+        systeruser2 = SysterUser.objects.create(
+            user=User.objects.create(username='bar', password='foobar'))
+        community.community_admin = systeruser2
+        community.save()
+        self.assertNotIn(Group.objects.get(
+            name=generic_groups["community_admin"].format(community.name)),
+            systeruser.user.groups.all())
+        self.assertIn(Group.objects.get(
+            name=generic_groups["community_admin"].format(community.name)),
+            systeruser2.user.groups.all())
+        for key, group_name in generic_groups.items():
+            self.assertFalse(Group.objects.filter(
+                name=group_name.format(name)).exists())
+            self.assertTrue(Group.objects.filter(
+                name=group_name.format(community.name)).exists())
+
+    def test_remove_community_groups(self):
+        """Test removal of community specific groups"""
+        systeruser = SysterUser.objects.create(user=self.auth_user)
+        community = Community.objects.create(name="Foo",
+                                             community_admin=systeruser)
+        community.delete()
+        for key, group_name in generic_groups.items():
+            self.assertFalse(Group.objects.filter(
+                name=group_name.format(community.name)).exists())
+
+    def test_create_groups(self):
+        name = "baz"
+        for key, group_name in generic_groups.items():
+            self.assertFalse(Group.objects.filter(
+                name=group_name.format(name)).exists())
+        create_groups(name)
+        for key, group_name in generic_groups.items():
+            self.assertTrue(Group.objects.filter(
+                name=group_name.format(name)).exists())
+
+    def test_delete_groups(self):
+        name = "bar"
+        for key, group_name in generic_groups.items():
+            Group.objects.create(name=group_name.format(name))
+        delede_groups(name)
+        for key, group_name in generic_groups.items():
+            self.assertFalse(Group.objects.filter(
+                name=group_name.format(name)).exists())
+
+    def test_assign_permissions(self):
+        name = "Foo"
+        systeruser = SysterUser.objects.create(user=self.auth_user)
+        community = Community.objects.create(name=name,
+                                             community_admin=systeruser)
+        assign_permissions(community)
+        for key, value in dashboard_group_permissions.items():
+            group = Group.objects.get(name=generic_groups[key].format(name))
             group_permissions = [p.codename for p in
                                  list(group.permissions.all())]
-            self.assertItemsEqual(group_permissions, permissions[i])
+            group_permissions += get_perms(group, community)
+            self.assertItemsEqual(group_permissions, value)
+
+    def test_grant_access_to_parent_community(self):
+        systeruser1 = SysterUser.objects.create(user=self.auth_user)
+        auth_user2 = User.objects.create(username='bar', password='foobar')
+        systeruser2 = SysterUser.objects.create(user=auth_user2)
+        community_a = Community.objects.create(name="A", slug='a',
+                                               community_admin=systeruser1)
+        community_b = Community.objects.create(name="B", slug='b',
+                                               community_admin=systeruser2)
+        group_a = Group.objects.get(name="Community Admin for A")
+        group_a.user_set.add(self.auth_user)
+        community_b.parent_community = community_a
+        community_b.save()
+        group_b = Group.objects.get(name="Community Admin for B")
+        user_groups = self.auth_user.groups.all()
+        self.assertIn(group_a, user_groups)
+        self.assertIn(group_b, user_groups)
+
+    def test_create_generic_group(self):
+        self.assertTrue(Group.objects.filter(
+            name="Generic permissions").exists())
+        group = Group.objects.get(name="Generic permissions")
+        group_permissions = [p.codename for p in
+                             list(group.permissions.all())]
+        self.assertItemsEqual(group_permissions, permissions)
+
+    def test_join_leave_group(self):
+        systeruser = SysterUser.objects.create(user=self.auth_user)
+        community = Community.objects.create(name="Foo",
+                                             community_admin=systeruser)
+        self.assertRaises(Http404, join_group, systeruser, "No such group")
+        self.assertRaises(Http404, leave_group, systeruser, "No such group")
+        join_group(systeruser,
+                   generic_groups["content_manager"].format(community.name))
+        self.assertIn(Group.objects.get(
+            name=generic_groups["content_manager"].format(community.name)),
+            systeruser.user.groups.all())
+        leave_group(systeruser,
+                    generic_groups["content_manager"].format(community.name))
+        self.assertNotIn(Group.objects.get(
+            name=generic_groups["content_manager"].format(community.name)),
+            systeruser.user.groups.all())
 
 
 class DashboardDecoratorsTestCase(TestCase):

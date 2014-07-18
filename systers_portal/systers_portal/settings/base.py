@@ -35,6 +35,8 @@ INSTALLED_APPS = (
     'django_nose',
     'django.contrib.sites',
     'djangocms_text_ckeditor',
+    'djangocms_picture',
+    'djangocms_video',
     'cms',
     'mptt',
     'menus',
@@ -48,6 +50,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    'guardian',
     'dashboard',
 )
 
@@ -82,6 +85,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 ROOT_URLCONF = 'systers_portal.urls'
@@ -126,3 +130,6 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Django-allauth settings
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
+
+# Django-guardian configuration
+ANONYMOUS_USER_ID = None

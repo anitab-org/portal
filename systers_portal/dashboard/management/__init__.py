@@ -1,63 +1,46 @@
-from django.db.models.signals import post_syncdb
 from django.contrib.auth.models import Group, Permission
-from dashboard import models
+from south.signals import post_migrate
 
 
-content_contributor_permissions = [
-    "add_resource",
-    "change_resource",
-    "change_communitypage",
-    "add_news",
-    "change_news",
+permissions = [
     "add_tag",
     "change_tag",
     "add_resourcetype",
     "change_resourcetype",
+    # djangocms_text_ckeditor permissions
+    "add_text",
+    "change_text",
+    "delete_text",
+    # djangocms_picture permissions
+    "add_picture",
+    "change_picture",
+    "delete_picture",
+    # djangocms_video permissions
+    "add_video",
+    "change_video",
+    "delete_video",
 ]
 
-content_manager_permissions = content_contributor_permissions + [
-    "delete_resource",
-    "add_communitypage",
-    "delete_communitypage",
-    "delete_news",
-    "delete_tag",
-    "delete_resourcetype",
-]
 
-user_content_manager_permissions = content_manager_permissions + [
-    "add_systeruser",
-    "change_systeruser",
-    "delete_systeruser",
-]
+def create_generic_group(app, **kwargs):
+    """Create a user group with generic permissions. Every user that is member
+    of any other custom group, should become a member of this group too.
 
-community_admin_permissions = user_content_manager_permissions + [
-    "change_community",
-]
-
-dashboard_group_permissions = {
-    "Content Contributor": content_contributor_permissions,
-    "Content Manager": content_manager_permissions,
-    "User and Content Manager": user_content_manager_permissions,
-    "Community Admin": community_admin_permissions
-}
-
-
-def create_user_groups(sender, **kwargs):
-    """Create user groups and assign permissions to each group
-
-    :param sender: models module that was just installed
+    :param app: string app's label
     """
-    verbosity = kwargs.get("verbosity")
-    if verbosity > 0:
-        print "Initializing data post_syncdb"
-    for group in dashboard_group_permissions:
-        role, created = Group.objects.get_or_create(name=group)
+    if app == "cms":
+        verbosity = kwargs.get("verbosity")
+        if verbosity > 0:
+            print "Initializing data post_migrate"
+        name = "Generic permissions"
+        role, created = Group.objects.get_or_create(name=name)
         if verbosity > 1 and created:
-            print "Creating group {0}".format(group)
-        for perm in dashboard_group_permissions[group]:
+            print "Creating group {0}".format(name)
+        for perm in permissions:
             role.permissions.add(Permission.objects.get(codename=perm))
             if verbosity > 1:
-                print "Permitting {0} to {1}".format(group, perm)
+                print "Permitting {0} to {1}".format(name, perm)
         role.save()
 
-post_syncdb.connect(create_user_groups, sender=models)
+
+post_migrate.connect(create_generic_group)

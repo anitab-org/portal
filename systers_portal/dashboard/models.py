@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.dispatch import receiver
 from django_countries.fields import CountryField
-from allauth.account.signals import user_signed_up
+
 from cms.models.pagemodel import Page
 
 
@@ -30,7 +29,8 @@ class SysterUser(models.Model):
 class Community(models.Model):
 
     """Model to represent a Syster Community"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=150, unique=True)
     email = models.EmailField(max_length=255, blank=True)
     mailing_list = models.EmailField(max_length=255, blank=True)
     resource_area = models.URLField(max_length=255, blank=True)
@@ -42,10 +42,46 @@ class Community(models.Model):
     facebook = models.URLField(max_length=255, blank=True)
     googleplus = models.URLField(max_length=255, blank=True)
     twitter = models.URLField(max_length=255, blank=True)
-    slug = models.SlugField(max_length=150, unique=True)
+    __original_name = None
+    __original_community_admin = None
+
+    class Meta:
+        permissions = (
+            ('add_community_systeruser', 'Add community Systeruser'),
+            ('change_community_systeruser', 'Change community Systeruser'),
+            ('delete_community_systeruser', 'Delete community Systeruser'),
+            ('add_community_news', 'Add community news'),
+            ('change_community_news', 'Change community news'),
+            ('delete_community_news', 'Delete community news'),
+            ('add_community_resource', 'Add community resource'),
+            ('change_community_resource', 'Change community resource'),
+            ('delete_community_resource', 'Delete community resource'),
+            ('add_community_page', 'Add community page'),
+            ('change_community_page', 'Change community page'),
+            ('delete_community_page', 'Delete community page'),
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(Community, self).__init__(*args, **kwargs)
+        self.__original_name = self.name
+        if self.community_admin_id is not None:
+            self.__original_community_admin = self.community_admin
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        super(Community, self).save(*args, **kwargs)
+        self.__original_name = self.name
+        self.__original_community_admin = self.community_admin
+
+    @property
+    def original_name(self):
+        return self.__original_name
+
+    @property
+    def original_community_admin(self):
+        return self.__original_community_admin
 
 
 class Tag(models.Model):
@@ -110,14 +146,3 @@ class Resource(models.Model):
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
-
-
-@receiver(user_signed_up)
-def create_syster_user(sender, **kwargs):
-    """Keep User and SysterUser synchronized. Create a SystersUser instance on
-    receiving a signal about new user signup.
-    """
-    user = kwargs.get('user')
-    if user is not None:
-        syster_user = SysterUser(user=user)
-        syster_user.save()
