@@ -3,11 +3,11 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 from allauth.account.signals import user_signed_up
-from cms.models.pagemodel import Page
+from cms.models.fields import PlaceholderField
+from django.core.urlresolvers import reverse
 
 
 class SysterUser(models.Model):
-
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User)
     country = CountryField(blank=True, null=True)
@@ -28,7 +28,6 @@ class SysterUser(models.Model):
 
 
 class Community(models.Model):
-
     """Model to represent a Syster Community"""
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, blank=True)
@@ -49,7 +48,6 @@ class Community(models.Model):
 
 
 class Tag(models.Model):
-
     """Model to represent the tags a resource can have"""
     name = models.CharField(max_length=255)
 
@@ -58,7 +56,6 @@ class Tag(models.Model):
 
 
 class ResourceType(models.Model):
-
     """Model to represent the types a resource can have"""
     name = models.CharField(max_length=255)
 
@@ -67,7 +64,6 @@ class ResourceType(models.Model):
 
 
 class News(models.Model):
-
     """Model to represent a News section on Community resource area"""
     title = models.CharField(max_length=255)
     community = models.ForeignKey(Community)
@@ -84,18 +80,20 @@ class News(models.Model):
 
 
 class CommunityPage(models.Model):
-
     """Model to represent community pages"""
     title = models.CharField(max_length=255)
-    page = models.OneToOneField(Page)
+    editable_content = PlaceholderField('editable_content')
     community = models.ForeignKey(Community)
+    slug = models.SlugField(max_length=150, unique=True)
 
     def __unicode__(self):
-        return "{0} of {1} Community".format(self.page, self.community.name)
+        return "{0} of {1} Community".format(self.title, self.community.name)
+
+    def get_absolute_url(self):
+        return reverse('edit_page', args=[self.community.slug, self.slug])
 
 
 class Resource(models.Model):
-
     """Model to represent a Resources section on Community resource area"""
     title = models.CharField(max_length=255)
     community = models.ForeignKey(Community)

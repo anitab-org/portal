@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
 from django.contrib.auth.models import Group
-from cms.models.pagemodel import Page
-from cms.api import create_page
 from allauth.account import signals
 
 from dashboard.decorators import (membership_required, admin_required,
@@ -148,57 +146,18 @@ class DashboardModelsTestCase(TestCase):
         systeruser = SysterUser.objects.create(user=self.auth_user)
         community = Community.objects.create(name='dummy_community',
                                              community_admin=systeruser)
-        about_dummy_community = create_page('About',
-                                            'page_template.html',
-                                            'en-us')
-        about_page_for_dummy_community = CommunityPage.objects.create(
+        about_dummy_community = CommunityPage.objects.create(
             title='About',
-            page=about_dummy_community,
-            community=community)
+            community=community,
+            slug='about')
         self.assertEqual(len(Community.objects.all()), 1)
-        self.assertEqual(len(Page.objects.all()), 1)
+        self.assertEqual(len(SysterUser.objects.all()), 1)
         self.assertEqual(len(CommunityPage.objects.all()), 1)
-        self.assertEqual(len(Page.objects.all()), 1)
-        self.assertEqual(unicode(about_page_for_dummy_community),
+        self.assertEqual(unicode(about_dummy_community),
                          'About of dummy_community Community')
-        self.assertEqual(about_page_for_dummy_community.page,
-                         about_dummy_community)
-        self.assertEqual(about_page_for_dummy_community.community, community)
-        faq_dummy_community = create_page('faq', 'page_template.html', 'en-us')
-        self.assertEqual(len(Page.objects.all()), 2)
-        faq_page_for_dummy_community = CommunityPage.objects.create(
-            title='FAQ',
-            page=faq_dummy_community,
-            community=community)
-        self.assertEqual(faq_page_for_dummy_community.page,
-                         faq_dummy_community)
-        self.assertEqual(faq_page_for_dummy_community.community, community)
-        second_community = Community.objects.create(
-            name='second_dummy_community',
-            community_admin=systeruser,
-            slug='second_community',)
-        about_second_dummy_community = create_page('About',
-                                                   'page_template.html',
-                                                   'en-us')
-        about_page_for_second_dummy_community = CommunityPage.objects.create(
-            title='About',
-            page=about_second_dummy_community,
-            community=second_community)
-        self.assertEqual(len(Community.objects.all()), 2)
-        self.assertEqual(len(Page.objects.all()), 3)
-        self.assertEqual(len(CommunityPage.objects.all()), 3)
-        self.assertEqual(about_page_for_second_dummy_community.page,
-                         about_second_dummy_community)
-        self.assertEqual(about_page_for_second_dummy_community.community,
-                         second_community)
-        second_dummy_community_about = Page.objects.get(
-            communitypage=about_page_for_second_dummy_community)
-        self.assertEqual(about_page_for_second_dummy_community,
-                         second_dummy_community_about.communitypage)
-        second_dummy_community_about = Page.objects.get(
-            communitypage=about_page_for_second_dummy_community)
-        self.assertEqual(about_second_dummy_community,
-                         second_dummy_community_about)
+        self.assertEqual(about_dummy_community.community, community)
+        about_dummy_community.delete()
+        self.assertEqual(len(CommunityPage.objects.all()), 0)
 
     def test_signal_registry(self):
         """Test if the function was registered as a signal receiver"""

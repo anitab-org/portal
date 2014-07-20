@@ -84,6 +84,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+
 ROOT_URLCONF = 'systers_portal.urls'
 
 WSGI_APPLICATION = 'systers_portal.wsgi.application'
@@ -97,6 +98,10 @@ CMS_TEMPLATES = (
 
 LANGUAGES = [
     ('en-us', 'English'),
+]
+CMS_TOOLBARS = [
+    'cms.cms_toolbar.PlaceholderToolbar',
+    'cms.cms_toolbar.PageToolbar',
 ]
 
 
