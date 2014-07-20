@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+{% load url from future %}
+<html>
+  <head>
+    <link rel="shortcut icon" href="{% static 'img/index.ico' %}" />
+    <title>Anita Borg Institute - {% block head_title %}Welcome to Systers Portal!{% endblock %}</title>
+    {% block extra_head %}
+    {% endblock %}
+  </head>
+  <body>
+    <div>
+      <a href="{% url 'index' %}">Systers</a>
+      <div>
+        <ul>
+          {% if user.is_authenticated and user.is_active %}
+          <li>Welcome</li>
+          <li><a href="{{ user.systeruser.get_absolute_url }}">{{ user.username }}</a></li>
+          <li><a href="{% url 'account_logout' %}">Logout</a></li>
+          {% else %}
+          <li><a href="{% url 'account_signup' %}">Register</a></li>
+          <li><a href="{% url 'account_login' %}">Login</a></li>
+          {% endif %}
+        </ul>
+        <ul class="nav">
+          <li><a href="http://anitaborg.org/">About</a></li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div>
+        <div>
+          {% block body %}
+          {% if messages %}
+          <div>
+            <strong>Messages:</strong>
+            <ul>
+              {% for message in messages %}
+              <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          {% block content %}
+          {% endblock %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    <hr>
+    <footer>
+      <div>
+        <p>&copy; Systers , An Anitaborg Institute</p>
+      </div>
+    </footer>
+    <hr/>
+  </body>
+</html>

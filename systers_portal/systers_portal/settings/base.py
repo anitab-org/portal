@@ -20,6 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 ALLOWED_HOSTS = []
+AUTH_PROFILE_MODULE = 'dashboard.SysterUser'
+ACCOUNT_ADAPTER = 'dashboard.adapter.AccountAdapter'
 
 
 # Application definition
@@ -114,6 +116,7 @@ USE_L10N = True
 USE_TZ = True
 
 SITE_ID = 1
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
