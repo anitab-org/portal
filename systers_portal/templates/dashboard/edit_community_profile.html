@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Edit {{ community.name }} Profile{% endblock %}
+{% block content %}
+  <form action="{% url 'edit_community_profile' community.slug %} " method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Submit"/>
+    <a href="{% url 'view_community_profile' community.slug %}">Cancel</a>
+  </form>
+{% endblock %}
