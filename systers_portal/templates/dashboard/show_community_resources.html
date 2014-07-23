@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Resources{% endblock %}
+{% block content %}
+<div>
+  <h3>Resources</h3>
+  <div>
+    {% if Resources %}
+      <ul>
+        {% for resource in Resources %}
+          <li><a href="{{ resource.get_absolute_url }}">{{ resource.title }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Currently there are  no resources for this community</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
