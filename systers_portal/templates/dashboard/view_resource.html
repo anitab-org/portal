@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+{% load dashboard_extras %}
+{% block title %}Resource{% endblock %}
+{% block content %}
+<div>
+  <h3>Resource</h3>
+  <div>
+    {% for name, value in resource.get_fields %}
+      {% with "id slug community is_public tags" as unnecessary_fields %}
+        {% if value and name not in unnecessary_fields %}
+          <p>{% verbose_name resource name %}: {{ value|urlize }}</p>
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
+    {% if resource.tags.all %}
+      <p>Tags</p>
+      <ul>
+        {% for tag in resource.tags.all %}
+          <li>{{ tag.name }} </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {# TODO: check permissions to edit this resource object, if none, don't display the link #}
+    {# TODO: Link to edit page for this resource object #}
+    {# TODO: check permissions to delete this resource object, if none, don't display the link #}
+    {# TODO: Link to delete page for this resource object #}
+  </div>
+</div>
+{% endblock %}
+
+

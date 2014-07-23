@@ -1,7 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.dispatch import receiver
+from django.core.urlresolvers import reverse
 from django_countries.fields import CountryField
+from django.db import models
+from django.dispatch import receiver
+
 from allauth.account.signals import user_signed_up
 from cms.models.pagemodel import Page
 
@@ -97,19 +99,37 @@ class CommunityPage(models.Model):
 class Resource(models.Model):
 
     """Model to represent a Resources section on Community resource area"""
-    title = models.CharField(max_length=255)
-    community = models.ForeignKey(Community)
-    author = models.ForeignKey(SysterUser)
-    date_created = models.DateField(auto_now=False, auto_now_add=True)
-    date_modified = models.DateField(auto_now=True, auto_now_add=False)
-    is_public = models.BooleanField(default=True)
-    tags = models.ManyToManyField(Tag, blank=True, null=True)
-    resource_type = models.ForeignKey(ResourceType, blank=True, null=True)
-    content = models.TextField()
-    slug = models.SlugField(max_length=150, unique=True)
+    title = models.CharField(max_length=255, verbose_name='Title')
+    slug = models.SlugField(max_length=150, unique=True, verbose_name='Slug')
+    community = models.ForeignKey(Community, verbose_name='Community')
+    author = models.ForeignKey(SysterUser, verbose_name='Author')
+    date_created = models.DateField(auto_now=False, auto_now_add=True,
+                                    verbose_name='Publish Date')
+    date_modified = models.DateField(auto_now=True, auto_now_add=False,
+                                     verbose_name='Last Modified date')
+    is_public = models.BooleanField(default=True, verbose_name='is_public')
+    tags = models.ManyToManyField(Tag, blank=True, null=True,
+                                  verbose_name='Tags')
+    resource_type = models.ForeignKey(ResourceType, blank=True, null=True,
+                                      verbose_name='Resource Type')
+    content = models.TextField(verbose_name='Content')
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
+
+    def get_absolute_url(self):
+        """Absoulte URL for Resource object"""
+        return reverse('view_resource',
+                       kwargs={'community_slug': self.community.slug,
+                               'resource_slug': self.slug})
+
+    def get_fields(self):
+        """Get model fields of a Resource object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        return [(field.name, getattr(self, field.name)) for field in
+                Resource._meta.fields]
 
 
 @receiver(user_signed_up)
