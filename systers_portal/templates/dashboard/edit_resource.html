@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ resource.title }}{% endblock %}
+{% block content %}
+<div>
+  <form action="{% url 'edit_resource' resource.community.slug resource.slug %} " method="post">
+    {% csrf_token %}
+    {{ resourceform.as_p }}
+    <input type="submit" value="Submit"/>
+    <a href="{% url 'view_resource' resource.community.slug resource.slug %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
