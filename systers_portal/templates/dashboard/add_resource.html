@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Add Resource{% endblock %}
+{% block content %}
+<div>
+  <h3>Add Resource</h3>
+  <div>
+    <form id="resource_add_form" method="post" action="{% url 'add_resource' community.slug %}" >
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" name="submit" value="Add Resource" />
+    </form>
+  </div>
+</div>
+{% endblock %}
