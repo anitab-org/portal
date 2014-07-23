@@ -1,7 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.dispatch import receiver
 from django_countries.fields import CountryField
+from django.db import models
+from django.dispatch import receiver
 from allauth.account.signals import user_signed_up
 from cms.models.pagemodel import Page
 

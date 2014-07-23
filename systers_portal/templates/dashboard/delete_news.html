@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Delete News{% endblock %}
+{% block content %}
+<div>
+  <h3>Delete News</h3>
+  <div>
+    <strong> Are you sure you want to delete it </strong>
+    <a href="{% url 'confirm_delete_news' news.community.slug news.slug %}">Yes I am sure</a><br>
+  </div>
+</div>
+{% endblock %}

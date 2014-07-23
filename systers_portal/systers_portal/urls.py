@@ -10,5 +10,11 @@ urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^(?P<community_slug>[a-zA-Z0-9_-]+)/news/'
+        r'(?P<news_slug>[a-zA-Z0-9_-]+)/delete/$',
+        'dashboard.views.delete_news', name='delete_news'),
+    url(r'^(?P<community_slug>[a-zA-Z0-9_-]+)/news/'
+        r'(?P<news_slug>[a-zA-Z0-9_-]+)/confirm_delete/$',
+        'dashboard.views.confirm_delete_news', name='confirm_delete_news'),
     url(r'^', include('cms.urls')),
 )
