@@ -1,13 +1,15 @@
 import mock
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
-from django.contrib.auth.models import Group
-from cms.models.pagemodel import Page
-from cms.api import create_page
+
 from allauth.account import signals
 
+from cms.api import create_page
+from cms.models.pagemodel import Page
+
+from dashboard.forms import ResourceForm
 from dashboard.decorators import (membership_required, admin_required,
                                   authorship_required)
 from dashboard.management import (content_contributor_permissions,
@@ -279,3 +281,52 @@ class DashboardDecoratorsTestCase(TestCase):
                 else:
                     self.assertRaises(PermissionDenied, wrapped, request,
                                       **request_kwargs)
+
+
+class DashboardFormsTestCase(TestCase):
+
+    def setUp(self):
+        auth_user = User.objects.create_user(username="foo", password="foobar")
+        self.user = SysterUser(user=auth_user)
+        self.user.save()
+        self.community = Community(name='bar', community_admin=self.user)
+        self.community.save()
+        self.tag = Tag.objects.create(name='foo_tag')
+        self.tag.save()
+        self.resource_type = ResourceType.objects.create(
+            name='foo_resourcetype')
+        self.resource_type.save()
+
+    def test_Resource_form(self):
+        form_data = [
+            {},
+            {'title': 'resource'},
+            {'slug': 'foo'},
+            {'content': 'This is dummy resource'},
+            {'title': 'foo', 'slug': 'foo'},
+            {'title': 'foo',
+             'slug': 'foo',
+             'tags': [self.tag.id]},
+            {'title': 'foo',
+             'slug': 'foo',
+             'resource_type': self.resource_type.id},
+            {'title': 'foo',
+             'slug': 'foo',
+             'is_public': True,
+             'tags': [self.tag.id],
+             'content': 'This is dummy resource'},
+            {'title': 'foo',
+             'slug': 'foo',
+             'is_public': True,
+             'tags': [self.tag.id],
+             'resource_type': self.resource_type.id,
+             'content': 'This is dummy resource'},
+            {'title': 'foo',
+             'slug': 'foo',
+             'is_public': True,
+             'content': 'This is dummy resource'},
+        ]
+        result = [False] * 7 + [True] * 3
+        for i, data in enumerate(form_data):
+            form = ResourceForm(data=data)
+            self.assertEqual(form.is_valid(), result[i])
