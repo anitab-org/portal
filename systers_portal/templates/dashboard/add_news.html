@@ -1,0 +1,14 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Add News{% endblock %}
+{% block content %}
+<div>
+  <h3>Add News</h3>
+  <div>
+    <form id="news_add_form" method="post" action="{% url 'add_news' community.slug %}" >
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" name="submit" value="Add News" />
+    </form>
+  </div>
+</div>
+{% endblock %}
