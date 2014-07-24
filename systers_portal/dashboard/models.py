@@ -1,8 +1,10 @@
-from django.db import models
 from django.contrib.auth.models import User
-from django.dispatch import receiver
 from django_countries.fields import CountryField
+from django.db import models
+from django.dispatch import receiver
+
 from allauth.account.signals import user_signed_up
+
 from cms.models.pagemodel import Page
 
 
@@ -70,6 +72,7 @@ class News(models.Model):
 
     """Model to represent a News section on Community resource area"""
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=150, unique=True)
     community = models.ForeignKey(Community)
     author = models.ForeignKey(SysterUser)
     date_created = models.DateField(auto_now=False, auto_now_add=True)
@@ -77,7 +80,6 @@ class News(models.Model):
     is_public = models.BooleanField(default=True)
     tags = models.ManyToManyField(Tag, blank=True, null=True)
     content = models.TextField()
-    slug = models.SlugField(max_length=150, unique=True)
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)

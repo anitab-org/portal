@@ -1,0 +1,18 @@
+{% extends "dashboard/base.html" %}
+{% block title %}News{% endblock %}
+{% block content %}
+<div>
+  <h3>News</h3>
+  <div>
+    {% if News %}
+      <ul>
+        {% for news in News %}
+          <li><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Currently there is no news for this community</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -10,5 +10,7 @@ urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^(?P<community_slug>[a-zA-Z0-9_-]+)/news/$',
+        'dashboard.views.show_community_news', name='show_community_news'),
     url(r'^', include('cms.urls')),
 )
