@@ -1,15 +1,17 @@
 import mock
 
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import User, Group
 from django.test import TestCase
-from django.contrib.auth.models import Group
-from cms.models.pagemodel import Page
-from cms.api import create_page
+
 from allauth.account import signals
+
+from cms.api import create_page
+from cms.models.pagemodel import Page
 
 from dashboard.decorators import (membership_required, admin_required,
                                   authorship_required)
+from dashboard.forms import UserForm
 from dashboard.management import (content_contributor_permissions,
                                   content_manager_permissions,
                                   user_content_manager_permissions,
@@ -279,3 +281,45 @@ class DashboardDecoratorsTestCase(TestCase):
                 else:
                     self.assertRaises(PermissionDenied, wrapped, request,
                                       **request_kwargs)
+
+
+class DashboardFormsTestCase(TestCase):
+
+    def test_userform(self):
+        """Test userform"""
+        user = User.objects.create_user(
+            'john',
+            'lennon@thebeatles.com',
+            'johnpassword')
+        systeruser = SysterUser.objects.create(user=user)
+        form_data = {
+            'first_name': 'FOO',
+            'last_name': 'BAR',
+            'country': 'FO',
+            "blog_url": "http://anitaborg.org/",
+            "homepage_url": "http://anitaborg.org/",
+        }
+        form = UserForm(data=form_data, instance=user)
+        self.assert_(form.is_valid())
+        self.assertEqual(form.instance.first_name, 'FOO')
+        form.save()
+        self.assertEqual(systeruser.blog_url, "http://anitaborg.org/")
+        self.assertEqual(systeruser.homepage_url, "http://anitaborg.org/")
+        self.assertEqual(
+            User.objects.get(id=form.instance.id).first_name,
+            'FOO'
+        )
+        form_data = [
+            {},
+            {'first_name': 'foo'},
+            {'last_name': 'bar'},
+            {'country': 'FO'},
+            {"blog_url": "http://anitaborg.org/"},
+            {"homepage_url": "http://anitaborg.org/"},
+            {"blog_url": "anitaborg"},
+            {"homepage_url": "foorbaranitaborg"},
+        ]
+        result = [True] * 6 + [False] * 2
+        for i, data in enumerate(form_data):
+            form = UserForm(data=data, instance=user)
+            self.assertEqual(form.is_valid(), result[i])
