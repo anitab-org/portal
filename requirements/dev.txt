@@ -1,0 +1,5 @@
+-r prod.txt
+Sphinx==1.2.3
+django-nose==1.2
+flake8==2.2.3
+mock==1.0.1

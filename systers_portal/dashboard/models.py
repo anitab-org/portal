@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 from allauth.account.signals import user_signed_up
-from cms.models.pagemodel import Page
+# TODO: remove cms depencency for creating CommunityPage(s)
+# from cms.models.pagemodel import Page
 
 
 class SysterUser(models.Model):
@@ -87,7 +88,7 @@ class CommunityPage(models.Model):
 
     """Model to represent community pages"""
     title = models.CharField(max_length=255)
-    page = models.OneToOneField(Page)
+    # page = models.OneToOneField(Page)
     community = models.ForeignKey(Community)
 
     def __unicode__(self):
