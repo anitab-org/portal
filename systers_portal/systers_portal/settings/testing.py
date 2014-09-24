@@ -21,6 +21,6 @@ ROOT_URLCONF = 'systers_portal.systers_portal.urls'
 NOSE_ARGS = [
     '--nocapture',
     '--nologcapture',
-    '--with-doctest',
-    '--doctest-options=+ELLIPSIS',
+    # '--with-doctest',
+    # '--doctest-options=+ELLIPSIS',
 ]
