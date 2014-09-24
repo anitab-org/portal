@@ -84,6 +84,7 @@ WSGI_APPLICATION = 'systers_portal.wsgi.application'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
+
 CMS_TEMPLATES = (
     ('page_template.html', 'Page Template'),
 )
