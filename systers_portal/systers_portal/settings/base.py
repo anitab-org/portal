@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     'dashboard',
+    'users',
 )
 
 MIDDLEWARE_CLASSES = (
