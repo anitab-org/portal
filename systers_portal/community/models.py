@@ -1,5 +1,6 @@
 from django.db import models
 
+from common.models import Post
 from users.models import SystersUser
 
 
@@ -32,3 +33,9 @@ class Community(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class CommunityPage(Post):
+    """Model to represent an arbitrary community page"""
+    order = models.IntegerField(unique=True, verbose_name="Order")
+    community = models.ForeignKey(Community, verbose_name="Community")
