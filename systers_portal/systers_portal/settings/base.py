@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
     'dashboard',
     'users',
+    'community',
 )
 
 MIDDLEWARE_CLASSES = (
