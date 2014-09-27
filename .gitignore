@@ -43,3 +43,6 @@ venv
 
 # Documentation build
 _build
+
+# Media files
+media
