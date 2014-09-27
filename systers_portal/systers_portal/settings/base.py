@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.github',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+    'ckeditor',
     'users',
     'community',
     'blog',
@@ -105,8 +106,37 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATIC_URL = "/static/"
 
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+MEDIA_URL = "/media/"
+
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 # Django-allauth settings
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
+
+# Ckeditor configuration
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'  # NOQA
+CKEDITOR_RESTRICT_BY_USER = True
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': [
+            ['Styles', 'Format', 'Font', 'FontSize', 'Bold', 'Italic',
+             'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'Undo',
+             'Redo'],
+            ['Maximize', 'ShowBlocks'],
+            ['Source'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
+             'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter',
+             'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley',
+             'SpecialChar'],
+            ['TextColor', 'BGColor'],
+        ],
+    },
+}

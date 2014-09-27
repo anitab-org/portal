@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor.fields import RichTextField
 
 from users.models import SystersUser
 
@@ -14,7 +15,7 @@ class Post(models.Model):
     date_modified = models.DateField(auto_now=True, auto_now_add=False,
                                      verbose_name="Date last modified")
     author = models.ForeignKey(SystersUser, verbose_name="Author")
-    content = models.TextField(verbose_name="Content")
+    content = RichTextField(verbose_name="Content")
 
     class Meta:
         abstract = True
