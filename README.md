@@ -39,7 +39,18 @@ Setup for developers
 Documentation
 -------------
 
-Documentation for Systers Portal is generated using [Sphinx](http://sphinx-doc.org/).
+Documentation for Systers Portal is generated using [Sphinx](http://sphinx-doc.org/)
+and available online at http://systers-portal.readthedocs.org/
+
+To build the documentation locally run:
+```bash
+$ cd docs/
+$ make html
+```
+
+To view the documentation open the generated `index.html` file in browser - 
+`docs/_build/html/index.html`.
+
 For more information on semantics and builds, please refer to the Sphinx
 [official documentation](http://sphinx-doc.org/contents.html).
 
