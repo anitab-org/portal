@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from ckeditor.fields import RichTextField
 
 from users.models import SystersUser
@@ -19,3 +21,19 @@ class Post(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Comment(models.Model):
+    """Model to represent a comment to a generic model.
+    Intended to be used for News and Resource models."""
+    date_created = models.DateField(auto_now=False, auto_now_add=True,
+                                    verbose_name="Date created")
+    author = models.ForeignKey(SystersUser, verbose_name="Author")
+    is_approved = models.BooleanField(default=True, verbose_name='Is approved')
+    body = models.TextField(verbose_name="Body")
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
+
+    def __unicode__(self):
+        return "Comment by {0} to {1}".format(self.author, self.content_object)
