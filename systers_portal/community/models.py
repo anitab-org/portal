@@ -39,3 +39,18 @@ class CommunityPage(Post):
     """Model to represent an arbitrary community page"""
     order = models.IntegerField(unique=True, verbose_name="Order")
     community = models.ForeignKey(Community, verbose_name="Community")
+
+
+class JoinRequest(models.Model):
+    """Model to represent a request to join a community by a user"""
+    user = models.ForeignKey(SystersUser, related_name='created_by')
+    approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
+                                    related_name='approved_by')
+    community = models.ForeignKey(Community)
+    date_created = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        if self.is_approved:
+            return "Join Request by {0} - approved".format(self.user)
+        return "Join Request by {0} - not approved".format(self.user)
