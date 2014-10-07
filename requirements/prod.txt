@@ -3,5 +3,6 @@ Pillow==2.5.3
 django-allauth==0.18.0
 django-ckeditor==4.4.6
 django-countries==2.1.2
+django-guardian==1.2.4
 djangocms-admin-style==0.2.2
 psycopg2==2.5.4

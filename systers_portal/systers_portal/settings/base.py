@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     'ckeditor',
+    'guardian',
     'common',
     'users',
     'community',
@@ -72,6 +73,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 ROOT_URLCONF = 'systers_portal.urls'
@@ -141,3 +143,6 @@ CKEDITOR_CONFIGS = {
         ],
     },
 }
+
+# Django-guardian configuration
+ANONYMOUS_USER_ID = None
