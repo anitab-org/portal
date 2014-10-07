@@ -25,6 +25,20 @@ class SystersUser(models.Model):
         else:
             return self.user.username
 
+    def join_group(self, group):
+        """Make user member of a group
+
+        :param group: Group object
+        """
+        group.user_set.add(self.user)
+
+    def leave_group(self, group):
+        """Remove user from group members
+
+        :param group: Group object
+        """
+        group.user_set.remove(self.user)
+
 
 @receiver(post_save, sender=User)
 def create_systers_user(sender, instance, created, **kwargs):
