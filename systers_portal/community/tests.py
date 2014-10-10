@@ -66,3 +66,25 @@ class CommunityTestCase(TestCase):
         remove_groups(name)
         community_groups = Group.objects.filter(name__startswith=name)
         self.assertEqual(list(community_groups), [])
+
+    def test_has_changed_name(self):
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = Community.objects.create(name="Foo", slug="foo", order=1,
+                                             community_admin=systers_user)
+        self.assertFalse(community.has_changed_name())
+        community.name = "Bar"
+        community.save()
+        self.assertTrue(community.has_changed_name())
+
+    def test_has_changed_community_admin(self):
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = Community.objects.create(name="Foo", slug="foo", order=1,
+                                             community_admin=systers_user)
+        self.assertFalse(community.has_changed_community_admin())
+        user = User.objects.create(username="bar", password="barfoo")
+        systers_user2 = SystersUser.objects.get(user=user)
+        community.community_admin = systers_user2
+        community.save()
+        self.assertTrue(community.has_changed_community_admin())

@@ -67,6 +67,20 @@ class Community(models.Model):
     def original_community_admin(self):
         return self.__original_community_admin
 
+    def has_changed_name(self):
+        """Check if community has a new name
+
+        :return: True if community changed name, False otherwise
+        """
+        return self.name != self.original_name
+
+    def has_changed_community_admin(self):
+        """Check if community has a new admin
+
+        :return: True if community changed admin, False otherwise
+        """
+        return self.community_admin != self.original_community_admin
+
 
 class CommunityPage(Post):
     """Model to represent an arbitrary community page"""
