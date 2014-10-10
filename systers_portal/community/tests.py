@@ -5,12 +5,15 @@ from guardian.shortcuts import get_perms
 
 from community.models import Community
 from community.permissions import groups_templates, group_permissions
-from community.signals import create_community_groups
+from community.signals import manage_community_groups
 from community.utils import create_groups, assign_permissions
 from users.models import SystersUser
 
 
 class CommunityTestCase(TestCase):
+    def setUp(self):
+        post_save.disconnect(manage_community_groups, sender=Community,
+                             dispatch_uid="create_groups")
     def test_create_groups(self):
         name = "Foo"
         groups = create_groups(name)
@@ -28,8 +31,6 @@ class CommunityTestCase(TestCase):
     def test_assign_permissions(self):
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
-        post_save.disconnect(create_community_groups, sender=Community,
-                             dispatch_uid="create_groups")
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              community_admin=systers_user)
         name = community.name
