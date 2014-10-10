@@ -27,6 +27,8 @@ class Community(models.Model):
                                  verbose_name="Google+")
     twitter = models.URLField(max_length=255, blank=True,
                               verbose_name="Twitter")
+    __original_name = None
+    __original_community_admin = None
 
     class Meta:
         verbose_name_plural = "Communities"
@@ -51,6 +53,19 @@ class Community(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def __init__(self, *args, **kwargs):
+        super(Community, self).__init__(*args, **kwargs)
+        self.__original_name = self.name
+        self.__original_community_admin = self.community_admin
+
+    @property
+    def original_name(self):
+        return self.__original_name
+
+    @property
+    def original_community_admin(self):
+        return self.__original_community_admin
 
 
 class CommunityPage(Post):

@@ -14,6 +14,7 @@ class CommunityTestCase(TestCase):
     def setUp(self):
         post_save.disconnect(manage_community_groups, sender=Community,
                              dispatch_uid="create_groups")
+
     def test_create_groups(self):
         name = "Foo"
         groups = create_groups(name)
@@ -42,3 +43,19 @@ class CommunityTestCase(TestCase):
                            list(group.permissions.all())]
             group_perms += get_perms(group, community)
             self.assertItemsEqual(group_perms, value)
+
+    def test_original_values(self):
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        name = "Foo"
+        community = Community.objects.create(name=name, slug="foo", order=1,
+                                             community_admin=systers_user)
+        self.assertEqual(community.original_name, name)
+        self.assertEqual(community.community_admin, systers_user)
+        community.name = "Bar"
+        user = User.objects.create(username="bar", password="barfoo")
+        systers_user2 = SystersUser.objects.get(user=user)
+        community.community_admin = systers_user2
+        community.save()
+        self.assertEqual(community.original_name, name)
+        self.assertEqual(community.original_community_admin, systers_user)
