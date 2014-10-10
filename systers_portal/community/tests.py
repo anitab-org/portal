@@ -6,7 +6,7 @@ from guardian.shortcuts import get_perms
 from community.models import Community
 from community.permissions import groups_templates, group_permissions
 from community.signals import manage_community_groups
-from community.utils import create_groups, assign_permissions
+from community.utils import create_groups, assign_permissions, remove_groups
 from users.models import SystersUser
 
 
@@ -59,3 +59,10 @@ class CommunityTestCase(TestCase):
         community.save()
         self.assertEqual(community.original_name, name)
         self.assertEqual(community.original_community_admin, systers_user)
+
+    def test_remove_groups(self):
+        name = "Foo"
+        create_groups(name)
+        remove_groups(name)
+        community_groups = Group.objects.filter(name__startswith=name)
+        self.assertEqual(list(community_groups), [])

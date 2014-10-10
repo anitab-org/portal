@@ -18,6 +18,15 @@ def create_groups(community_name):
     return community_groups
 
 
+def remove_groups(community_name):
+    """Remove groups for a particular Community instance using its name
+
+    :param community_name: string name of community
+    """
+    name = "{0}:".format(community_name)
+    Group.objects.filter(name__startswith=name).delete()
+
+
 def assign_permissions(community, groups):
     """Assign row-level permissions to community groups and community object
 
