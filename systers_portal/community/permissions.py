@@ -1,7 +1,10 @@
-groups_templates = {"content_contributor": "{0}: Content Contributor",
-                    "content_manager": "{0}: Content Manager",
-                    "user_content_manager": "{0}: User and Content Manager",
-                    "community_admin": "{0}: Community Admin"}
+from community.constants import *
+
+
+groups_templates = {"content_contributor": CONTENT_CONTRIBUTOR,
+                    "content_manager": CONTENT_MANAGER,
+                    "user_content_manager": USER_CONTENT_MANAGER,
+                    "community_admin": COMMUNITY_ADMIN}
 
 content_contributor_permissions = [
     "add_tag",
