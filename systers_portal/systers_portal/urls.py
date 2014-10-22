@@ -2,6 +2,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 
+from common.views import IndexView
+
 try:
     admin.autodiscover()
 except admin.sites.AlreadyRegistered:
@@ -9,6 +11,7 @@ except admin.sites.AlreadyRegistered:
 
 urlpatterns = patterns(
     '',
+    url(r'^$', IndexView.as_view(), name="index"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),

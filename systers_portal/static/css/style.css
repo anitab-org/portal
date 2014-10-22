@@ -1,3 +1,13 @@
+/* Reusable CSS
+-------------------------------------------------- */
+.mt40 {
+  margin-top: 40px;
+}
+
+.mb15 {
+  margin-bottom: 15px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -25,4 +35,53 @@ body {
 -------------------------------------------------- */
 body > .container {
   padding: 60px 15px 0;
+}
+
+/* Index page styles
+-------------------------------------------------- */
+.jumbotron-custom {
+  background-color: #fff;
+  text-align: center;
+  border: 0;
+  box-shadow: none;
+}
+
+.featurette-divider {
+  margin: 4em 0;
+}
+
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-top: 0;
+  font-size: 3.5em;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+@media (max-width: 768px) {
+  .featurette-divider {
+    margin: 2em 0;
+  }
+
+  .featurette {
+    text-align: center;
+  }
+
+  .featurette-heading {
+    font-size: 2.5em;
+  }
+
+  .featurette .lead {
+    font-size: 1.4em;
+  }
+
+  .featurette .margin-responsive {
+    margin-top: 15px;
+  }
+
+  .featurette .img-responsive {
+    margin: 0 auto;
+  }
 }
