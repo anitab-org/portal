@@ -7,7 +7,7 @@ env:
 before_script:
   - psql -c "CREATE DATABASE systersdb;" -U postgres
 script: 
-  - python systers_portal/manage.py test
+  - python systers_portal/manage.py test --settings=systers_portal.settings.testing
   - flake8 systers_portal
 notifications:
   irc:
