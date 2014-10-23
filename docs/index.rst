@@ -19,6 +19,13 @@ Administration of Systers Portal
 
    config/social_login
 
+Development of Systers Portal
+-----------------------------
+
+.. toctree::
+   :maxdepth: 1
+
+   develop/prerequisites
 
 
 Indices and tables
