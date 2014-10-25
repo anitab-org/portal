@@ -21,7 +21,7 @@ Unix System
 
 Unix systems are so far the most developer-friendly environments. If you don't
 have a Unix system installed on your machine, try out
-[Ubuntu](http://www.ubuntu.com/download/desktop). It is a free operating system
+`Ubuntu <http://www.ubuntu.com/download/desktop>`_. It is a free operating system
 with constant updates, friendly X Window System and comes with Python pre-installed.
 From the developer's perspective you should be comfortable using a terminal.
 Theoretically is it possible to stick with Windows OS, though none or very little
@@ -31,7 +31,7 @@ Git
 ---
 
 If you have never heard of git, go ahead and read the
-[first 3 chapters of Pro Git book](http://git-scm.com/doc). On the same page you
+`first 3 chapters of Pro Git book <http://git-scm.com/doc>`_. On the same page you
 can find cheatsheets, video lessons and a reference manual.
 
 Python
@@ -48,7 +48,7 @@ Django
 ------
 
 Django is one of the most popular Python web framework. Django official website
-contains pretty detailed [documentation](https://docs.djangoproject.com/en/). At
+contains pretty detailed `documentation <https://docs.djangoproject.com/en/>`_. At
 first try out the tutorial and build a small app. After you feel confident about
 Django, scroll through Systers Portal codebase to check your understanding. If
 some parts seem complicated, go back to the documentation to focus on a specific 
@@ -68,7 +68,7 @@ Unittesting
 new functionality. Testing helps us validate the functionality we already have
 and check whether the new code is implemented correctly. For that we use the
 Django unittest module. There are plenty of good resource on unittesting, but you
-can start with [Django testing](https://docs.djangoproject.com/en/1.7/topics/testing/).
+can start with `Django testing <https://docs.djangoproject.com/en/1.7/topics/testing/>`_.
 
 PEP8
 ----
