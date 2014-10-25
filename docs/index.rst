@@ -26,6 +26,7 @@ Development of Systers Portal
    :maxdepth: 1
 
    develop/prerequisites
+   develop/contributing
 
 
 Indices and tables
