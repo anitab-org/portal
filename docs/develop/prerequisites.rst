@@ -11,6 +11,7 @@ following:
 * Django framework
 * HTML, CSS, JavaScript for front-end coding
 * Unittesting
+* PEP8
 
 If you don't know yet any of these, please take some time to read about,
 understand and practise the tools.
@@ -68,3 +69,10 @@ new functionality. Testing helps us validate the functionality we already have
 and check whether the new code is implemented correctly. For that we use the
 Django unittest module. There are plenty of good resource on unittesting, but you
 can start with [Django testing](https://docs.djangoproject.com/en/1.7/topics/testing/).
+
+PEP8
+----
+
+PEP8 is the style guide for Python code. We are following the guide throughout
+the whole codebase and check everything againt a PEP8 linter. So please take
+some time to read through this document - https://www.python.org/dev/peps/pep-0008.
