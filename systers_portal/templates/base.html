@@ -53,13 +53,13 @@
             <a href="#" class="dropdown-toggle"
                data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Profile</a></li>
-              <li><a href="#">Change password</a></li>
-              <li><a href="#">Logout</a></li>
+              <li><a href="">Profile</a></li>
+              <li><a href="{% url 'account_change_password' %}">Change password</a></li>
+              <li><a href="{% url 'account_logout' %}">Logout</a></li>
             </ul>
           </li>
         {% else %}
-          <li><a href="#">Sign up</a></li>
+          <li><a href="{% url 'account_signup' %}">Sign up</a></li>
           <li><a href="{% url 'account_login' %}">Login</a></li>
         {% endif %}
       </ul>
