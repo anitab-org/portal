@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
     'ckeditor',
     'guardian',
+    'crispy_forms',
     'common',
     'users',
     'community',
@@ -148,3 +149,6 @@ CKEDITOR_CONFIGS = {
 
 # Django-guardian configuration
 ANONYMOUS_USER_ID = None
+
+# Django Crispy Forms configuration
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
