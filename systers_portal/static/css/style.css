@@ -58,6 +58,28 @@ body > .container {
   font-size: 3.5em;
 }
 
+/* Sign in, Sign up
+------------------------- */
+.form-signin,
+.form-signup {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.social-buttons {
+  padding-top: 0;
+}
+
+.social-buttons a {
+  margin-bottom: 10px;
+}
+
+.or-delimiter {
+  text-align: center;
+  margin: 10px 0;
+}
+
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 @media (max-width: 768px) {
