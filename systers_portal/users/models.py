@@ -18,12 +18,7 @@ class SystersUser(models.Model):
                                         verbose_name="Profile picture")
 
     def __unicode__(self):
-        firstname = self.user.first_name
-        lastname = self.user.last_name
-        if firstname and lastname:
-            return "{0} {1}".format(firstname, lastname)
-        else:
-            return self.user.username
+        return unicode(self.user)
 
     def join_group(self, group):
         """Make user member of a group
@@ -38,6 +33,23 @@ class SystersUser(models.Model):
         :param group: Group object
         """
         group.user_set.remove(self.user)
+
+
+def user_unicode(self):
+    """Unicode representation of Django User model
+
+    :return: string User name
+    """
+    firstname = self.first_name
+    lastname = self.last_name
+    if firstname and lastname:
+        return "{0} {1}".format(firstname, lastname)
+    else:
+        return self.username
+
+
+# Overriding the unicode representation of Django User model
+User.__unicode__ = user_unicode
 
 
 @receiver(post_save, sender=User)
