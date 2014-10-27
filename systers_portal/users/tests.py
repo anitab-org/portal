@@ -1,12 +1,13 @@
-from django.test import TestCase
 from django.contrib.auth.models import User, Group
+from django.core.urlresolvers import reverse
+from django.test import TestCase, Client
 
 from users.models import SystersUser
 
 
 class SystersUserTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
+        User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
 
     def test_create_systers_user(self):
@@ -35,9 +36,38 @@ class SystersUserTestCase(TestCase):
         self.assertListEqual(list(self.systers_user.user.groups.all()), [])
 
 
+class SystersUserViewsTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.client = Client()
+
+    def test_user_profile_view(self):
+        """Test UserProfileView as a logged-in user"""
+        self.client.login(username='foo', password='foobar')
+        profile_url = reverse('user_profile', kwargs={
+            'username': self.systers_user.user.username})
+        response = self.client.get(profile_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Edit profile')
+        self.assertTemplateUsed(response, 'users/view_profile.html')
+        self.assertTemplateUsed(response, 'users/snippets/profile.html')
+        nonexisten_profile_url = reverse('user_profile', kwargs={
+            'username': 'bar'})
+        response = self.client.get(nonexisten_profile_url)
+        self.assertEqual(response.status_code, 404)
+
+        new_user = User.objects.create_user(username='bar', password='foobar')
+        new_user_profile_url = reverse('user_profile', kwargs={
+            'username': new_user.username})
+        response = self.client.get(new_user_profile_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Edit profile')
+
+
 class UserTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create(username='foo', password='foobar')
+        self.user = User.objects.create_user(username='foo', password='foobar')
 
     def test_unicode(self):
         """Test unicode representation of Django User model"""
