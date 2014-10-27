@@ -53,7 +53,7 @@
             <a href="#" class="dropdown-toggle"
                data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="">Profile</a></li>
+              <li><a href="{% url 'user_profile' user.username %}">Profile</a></li>
               <li><a href="{% url 'account_change_password' %}">Change password</a></li>
               <li><a href="{% url 'account_logout' %}">Logout</a></li>
             </ul>

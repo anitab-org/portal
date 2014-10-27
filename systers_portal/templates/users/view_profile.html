@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %} - Profile of {{ systersuser }}{% endblock %}
+
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{ systersuser }}</h1>
+      <hr/>
+    </div>
+    <div class="col-md-4">
+      {% include "users/snippets/profile.html" %}
+    </div>
+  </div>
+{% endblock %}

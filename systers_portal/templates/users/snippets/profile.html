@@ -1,0 +1,36 @@
+{% load verbose_names %}
+<div class="panel panel-default">
+  <div class="panel-heading">Profile</div>
+  <div class="panel-body">
+    {% if systersuser.profile_picture.name and systersuser.profile_picture.name != "False" %}
+      <a class="pull-right profile-pic"
+         href="{{ systersuser.profile_picture.url }}"><img
+          src="{{ systersuser.profile_picture.url }}"
+          alt="{{ systersuser }} profile picture"/></a>
+      <div class="clearfix"></div>
+    {% endif %}
+    <p class="profile-row">
+      <span class="glyphicon glyphicon-envelope"></span>
+      <span class="profile-element">{{ systersuser.user.email|urlize }}</span>
+    </p>
+    {% if systersuser.country %}
+      <p class="profile-row">
+        <span class="glyphicon glyphicon-globe"></span>
+        <span class="profile-element">{{ systersuser.country.name }}</span>
+      </p>
+    {% endif %}
+    {% for name, value in systersuser.get_fields %}
+      {% with "blog_url homepage_url" as profile_fields %}
+        {% if name in profile_fields and value %}
+          <p class="profile-row">{% verbose_name systersuser name %}: {{ value|urlize }}</p>
+        {% endif %}
+      {% endwith %}
+    {% endfor %}
+    {% if user == systersuser.user %}
+      <div class="pull-right">
+        <a href="#" role="button" class="btn btn-primary">Edit profile</a>
+      </div>
+    {% endif %}
+    <div class="clearfix"></div>
+  </div>
+</div>

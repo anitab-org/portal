@@ -59,7 +59,7 @@ body > .container {
 }
 
 /* Sign in, Sign up
-------------------------- */
+-------------------------------------------------- */
 .form-signin,
 .form-signup {
   max-width: 350px;
@@ -78,6 +78,34 @@ body > .container {
 .or-delimiter {
   text-align: center;
   margin: 10px 0;
+}
+
+/* User Profile
+-------------------------------------------------- */
+.profile-row {
+  font-size: 16px;
+}
+
+.profile-element {
+  display: inline-block;
+  margin-left: 15px;
+}
+
+.condensed {
+  margin-top: 0;
+}
+
+.profile-pic {
+  margin-bottom: 10px;
+}
+
+.profile-pic img {
+  width: 50%;
+}
+
+table a.table-anchor,
+table.decoration-none  tr a {
+  text-decoration: none !important;
 }
 
 /* RESPONSIVE CSS

@@ -1,6 +1,7 @@
 Django==1.7
 Pillow==2.5.3
 django-allauth==0.18.0
+django-braces==1.4.0
 django-ckeditor==4.4.6
 django-countries==2.1.2
 django-crispy-forms==1.4.0

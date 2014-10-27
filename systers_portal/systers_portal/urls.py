@@ -12,6 +12,7 @@ except admin.sites.AlreadyRegistered:
 urlpatterns = patterns(
     '',
     url(r'^$', IndexView.as_view(), name="index"),
+    url(r'^users/', include('users.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),

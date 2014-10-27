@@ -34,6 +34,14 @@ class SystersUser(models.Model):
         """
         group.user_set.remove(self.user)
 
+    def get_fields(self):
+        """Get model fields of a SystersUser object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        return [(field.name, getattr(self, field.name)) for field in
+                SystersUser._meta.fields]
+
 
 def user_unicode(self):
     """Unicode representation of Django User model
