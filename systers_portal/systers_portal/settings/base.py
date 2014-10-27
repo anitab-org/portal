@@ -121,6 +121,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Django-allauth settings
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
 
 # Ckeditor configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
