@@ -82,6 +82,23 @@ class Community(models.Model):
         """
         return self.community_admin != self.original_community_admin
 
+    def add_member(self, systers_user):
+        """Add community member
+
+        :param systers_user: SystersUser objects
+        """
+        self.members.add(systers_user)
+        self.save()
+
+    def remove_member(self, systers_user):
+        """Remove community member
+
+        :param systers_user: SystersUser object
+        :return:
+        """
+        self.members.remove(systers_user)
+        self.save()
+
 
 class CommunityPage(Post):
     """Model to represent an arbitrary community page"""

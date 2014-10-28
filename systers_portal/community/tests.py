@@ -117,3 +117,14 @@ class CommunityTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Bar"))
         self.assertEqual(user2.groups.get(), community_admin_group)
         self.assertNotEqual(list(user1.groups.all()), [community_admin_group])
+
+    def test_add_remove_member(self):
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = Community.objects.create(name="Foo", slug="foo", order=1,
+                                             community_admin=systers_user)
+        self.assertQuerysetEqual(community.members.all(), [])
+        community.add_member(systers_user)
+        self.assertEqual(list(community.members.all()), [systers_user])
+        community.remove_member(systers_user)
+        self.assertQuerysetEqual(community.members.all(), [])
