@@ -57,7 +57,8 @@ class Community(models.Model):
     def __init__(self, *args, **kwargs):
         super(Community, self).__init__(*args, **kwargs)
         self.__original_name = self.name
-        self.__original_community_admin = self.community_admin
+        if self.community_admin_id is not None:
+            self.__original_community_admin = self.community_admin
 
     @property
     def original_name(self):
