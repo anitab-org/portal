@@ -142,6 +142,8 @@ class CommunityTestCase(TestCase):
                                              community_admin=systers_user)
         self.assertQuerysetEqual(community.members.all(), [])
         community.add_member(systers_user)
+        community.save()
         self.assertEqual(list(community.members.all()), [systers_user])
         community.remove_member(systers_user)
+        community.save()
         self.assertQuerysetEqual(community.members.all(), [])

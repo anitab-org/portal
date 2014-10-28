@@ -88,7 +88,6 @@ class Community(models.Model):
         :param systers_user: SystersUser objects
         """
         self.members.add(systers_user)
-        self.save()
 
     def remove_member(self, systers_user):
         """Remove community member
@@ -97,7 +96,6 @@ class Community(models.Model):
         :return:
         """
         self.members.remove(systers_user)
-        self.save()
 
 
 class CommunityPage(Post):
