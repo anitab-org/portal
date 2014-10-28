@@ -1,12 +1,12 @@
 from django.test import TestCase
 from django.contrib.auth.models import Group, User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from guardian.shortcuts import get_perms
 
 from community.constants import COMMUNITY_ADMIN
 from community.models import Community
 from community.permissions import groups_templates, group_permissions
-from community.signals import manage_community_groups
+from community.signals import manage_community_groups, remove_community_groups
 from community.utils import create_groups, assign_permissions, remove_groups
 from users.models import SystersUser
 
@@ -14,7 +14,9 @@ from users.models import SystersUser
 class CommunityTestCase(TestCase):
     def setUp(self):
         post_save.disconnect(manage_community_groups, sender=Community,
-                             dispatch_uid="create_groups")
+                             dispatch_uid="manage_groups")
+        post_delete.disconnect(remove_community_groups, sender=Community,
+                               dispatch_uid="remove_groups")
 
     def test_create_groups(self):
         name = "Foo"
@@ -92,7 +94,7 @@ class CommunityTestCase(TestCase):
 
     def test_manage_community_groups(self):
         post_save.connect(manage_community_groups, sender=Community,
-                          dispatch_uid="create_groups")
+                          dispatch_uid="manage_groups")
         user1 = User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
@@ -117,6 +119,21 @@ class CommunityTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Bar"))
         self.assertEqual(user2.groups.get(), community_admin_group)
         self.assertNotEqual(list(user1.groups.all()), [community_admin_group])
+
+    def test_remove_community_groups(self):
+        post_save.connect(manage_community_groups, sender=Community,
+                          dispatch_uid="manage_groups")
+        post_delete.connect(remove_community_groups, sender=Community,
+                            dispatch_uid="remove_groups")
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = Community.objects.create(name="Foo", slug="foo", order=1,
+                                             community_admin=systers_user)
+        groups_count = Group.objects.count()
+        self.assertEqual(groups_count, 4)
+        community.delete()
+        groups_count = Group.objects.count()
+        self.assertEqual(groups_count, 0)
 
     def test_add_remove_member(self):
         User.objects.create(username='foo', password='foobar')

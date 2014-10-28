@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 
@@ -8,7 +8,7 @@ from community.models import Community
 from community.utils import (create_groups, assign_permissions, remove_groups)
 
 
-@receiver(post_save, sender=Community, dispatch_uid="create_groups")
+@receiver(post_save, sender=Community, dispatch_uid="manage_groups")
 def manage_community_groups(sender, instance, created, **kwargs):
     """Manage user groups and user permissions for a particular Community"""
     name = instance.name
@@ -29,3 +29,9 @@ def manage_community_groups(sender, instance, created, **kwargs):
             instance.original_community_admin.leave_group(
                 community_admin_group)
             instance.community_admin.join_group(community_admin_group)
+
+
+@receiver(post_delete, sender=Community, dispatch_uid="remove_groups")
+def remove_community_groups(sender, instance, **kwargs):
+    """Remove user groups for a particular Community"""
+    remove_groups(instance.name)
