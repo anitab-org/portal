@@ -114,6 +114,5 @@ class JoinRequest(models.Model):
     is_approved = models.BooleanField(default=False)
 
     def __unicode__(self):
-        if self.is_approved:
-            return "Join Request by {0} - approved".format(self.user)
-        return "Join Request by {0} - not approved".format(self.user)
+        approval_status = "approved" if self.is_approved else "not approved"
+        return "Join Request by {0} - {1}".format(self.user, approval_status)
