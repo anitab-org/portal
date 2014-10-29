@@ -18,36 +18,8 @@ class CommunityTestCase(TestCase):
         post_delete.disconnect(remove_community_groups, sender=Community,
                                dispatch_uid="remove_groups")
 
-    def test_create_groups(self):
-        name = "Foo"
-        groups = create_groups(name)
-        expected_group_names = []
-        for key, group_name in groups_templates.items():
-            expected_group_names.append(group_name.format(name))
-        group_names = []
-        for group in groups:
-            group_names.append(group.name)
-        self.assertListEqual(expected_group_names, group_names)
-
-        community_groups = Group.objects.filter(name__startswith=name)
-        self.assertListEqual(list(community_groups), groups)
-
-    def test_assign_permissions(self):
-        User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=systers_user)
-        name = community.name
-        groups = create_groups(name)
-        assign_permissions(community, groups)
-        for key, value in group_permissions.items():
-            group = Group.objects.get(name=groups_templates[key].format(name))
-            group_perms = [p.codename for p in
-                           list(group.permissions.all())]
-            group_perms += get_perms(group, community)
-            self.assertItemsEqual(group_perms, value)
-
     def test_original_values(self):
+        """Test original community name and admin functioning"""
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         name = "Foo"
@@ -63,14 +35,8 @@ class CommunityTestCase(TestCase):
         self.assertEqual(community.original_name, name)
         self.assertEqual(community.original_community_admin, systers_user)
 
-    def test_remove_groups(self):
-        name = "Foo"
-        create_groups(name)
-        remove_groups(name)
-        community_groups = Group.objects.filter(name__startswith=name)
-        self.assertEqual(list(community_groups), [])
-
     def test_has_changed_name(self):
+        """Test has_changed_name method of Community"""
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
@@ -81,6 +47,7 @@ class CommunityTestCase(TestCase):
         self.assertTrue(community.has_changed_name())
 
     def test_has_changed_community_admin(self):
+        """Test has_changed_community_admin method of Community"""
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
@@ -93,6 +60,8 @@ class CommunityTestCase(TestCase):
         self.assertTrue(community.has_changed_community_admin())
 
     def test_manage_community_groups(self):
+        """Test handling of operations required when saving a Community
+        object"""
         post_save.connect(manage_community_groups, sender=Community,
                           dispatch_uid="manage_groups")
         user1 = User.objects.create(username='foo', password='foobar')
@@ -125,6 +94,7 @@ class CommunityTestCase(TestCase):
                              [systers_user, systers_user2])
 
     def test_remove_community_groups(self):
+        """Test the removal of groups when a community is deleted"""
         post_save.connect(manage_community_groups, sender=Community,
                           dispatch_uid="manage_groups")
         post_delete.connect(remove_community_groups, sender=Community,
@@ -140,6 +110,7 @@ class CommunityTestCase(TestCase):
         self.assertEqual(groups_count, 0)
 
     def test_add_remove_member(self):
+        """Test adding and removing Community members"""
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
@@ -151,3 +122,44 @@ class CommunityTestCase(TestCase):
         community.remove_member(systers_user)
         community.save()
         self.assertQuerysetEqual(community.members.all(), [])
+
+
+class UtilsTestCase(TestCase):
+    def test_create_groups(self):
+        """Test the creation of groups according to a name"""
+        name = "Foo"
+        groups = create_groups(name)
+        expected_group_names = []
+        for key, group_name in groups_templates.items():
+            expected_group_names.append(group_name.format(name))
+        group_names = []
+        for group in groups:
+            group_names.append(group.name)
+        self.assertListEqual(expected_group_names, group_names)
+
+        community_groups = Group.objects.filter(name__startswith=name)
+        self.assertListEqual(list(community_groups), groups)
+
+    def test_remove_groups(self):
+        """Test the removal of groups according to a name"""
+        name = "Foo"
+        create_groups(name)
+        remove_groups(name)
+        community_groups = Group.objects.filter(name__startswith=name)
+        self.assertEqual(list(community_groups), [])
+
+    def test_assign_permissions(self):
+        """Test assignment of permissions to community groups"""
+        User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = Community.objects.create(name="Foo", slug="foo", order=1,
+                                             community_admin=systers_user)
+        name = community.name
+        groups = create_groups(name)
+        assign_permissions(community, groups)
+        for key, value in group_permissions.items():
+            group = Group.objects.get(name=groups_templates[key].format(name))
+            group_perms = [p.codename for p in
+                           list(group.permissions.all())]
+            group_perms += get_perms(group, community)
+            self.assertItemsEqual(group_perms, value)
