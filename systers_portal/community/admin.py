@@ -1,7 +1,7 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 
-from community.models import Community, CommunityPage
+from community.models import Community, CommunityPage, JoinRequest
 
 
 class CommunityAdmin(GuardedModelAdmin):
@@ -16,3 +16,4 @@ class CommunityAdmin(GuardedModelAdmin):
 
 admin.site.register(Community, CommunityAdmin)
 admin.site.register(CommunityPage)
+admin.site.register(JoinRequest)
