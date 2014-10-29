@@ -1,0 +1,18 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Permissions</div>
+  <div class="panel-body">
+    {% if permission_groups %}
+      <table class="table table-hover">
+        <tbody>
+        {% for group in permission_groups %}
+          <tr class="profile-row">
+            <td>{{ group }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Looks like you have no permissions.</p>
+    {% endif %}
+  </div>
+</div>

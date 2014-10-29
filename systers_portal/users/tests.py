@@ -72,7 +72,7 @@ class SystersUserViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Edit profile')
 
-    def test_user_panel_membership_view(self):
+    def test_user_panel_membership(self):
         """Test membership panel from UserView"""
         self.client.login(username='foo', password='foobar')
         user_url = reverse('user', kwargs={
@@ -107,6 +107,20 @@ class SystersUserViewsTestCase(TestCase):
         new_user_url = reverse('user', kwargs={'username': new_user.username})
         response = self.client.get(new_user_url)
         self.assertNotContains(response, 'Transfer ownership')
+
+    def test_user_panel_permissions(self):
+        """Test permissions panel from UserView"""
+        self.client.login(username='foo', password='foobar')
+        user_url = reverse('user', kwargs={
+            'username': self.systers_user.user.username})
+        response = self.client.get(user_url)
+        self.assertContains(response, "Looks like you have no permissions.")
+        self.assertTemplateUsed(response, 'users/view_profile.html')
+        self.assertTemplateUsed(response, 'users/snippets/permissions.html')
+        group = Group.objects.create(name="Bar")
+        self.systers_user.user.groups.add(group)
+        response = self.client.get(user_url)
+        self.assertContains(response, "Bar")
 
 
 class UserTestCase(TestCase):

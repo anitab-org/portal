@@ -17,9 +17,11 @@ class UserView(LoginRequiredMixin, TemplateView):
         communities = systersuser.communities.all()
         join_requests = JoinRequest.objects.filter(user=systersuser,
                                                    is_approved=False)
+        permission_groups = systersuser.user.groups.all()
         context_dict = {'systersuser': systersuser,
                         'communities': communities,
-                        'join_requests': join_requests}
+                        'join_requests': join_requests,
+                        'permission_groups': permission_groups}
         for key, value in context_dict.iteritems():
             context[key] = value
         return context
