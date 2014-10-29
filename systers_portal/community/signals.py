@@ -18,17 +18,23 @@ def manage_community_groups(sender, instance, created, **kwargs):
         community_admin_group = next(
             g for g in groups if g.name == COMMUNITY_ADMIN.format(name))
         instance.community_admin.join_group(community_admin_group)
+        instance.add_member(instance.community_admin)
+        instance.save()
     else:
-        if name != instance.original_name:
+        if name != instance.original_name and instance.original_name:
             remove_groups(instance.original_name)
             groups = create_groups(name)
             assign_permissions(instance, groups)
-        if instance.community_admin != instance.original_community_admin:
+        if instance.community_admin != instance.original_community_admin and \
+           instance.original_community_admin is not None:
             community_admin_group = \
                 get_object_or_404(Group, name=COMMUNITY_ADMIN.format(name))
             instance.original_community_admin.leave_group(
                 community_admin_group)
             instance.community_admin.join_group(community_admin_group)
+            if instance.community_admin not in instance.members.all():
+                instance.add_member(instance.community_admin)
+                instance.save()
 
 
 @receiver(post_delete, sender=Community, dispatch_uid="remove_groups")
