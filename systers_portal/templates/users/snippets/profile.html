@@ -26,7 +26,7 @@
         {% endif %}
       {% endwith %}
     {% endfor %}
-    {% if user == systersuser.user %}
+    {% if user == systersuser.user or user.is_superuser %}
       <div class="pull-right">
         <a href="#" role="button" class="btn btn-primary">Edit profile</a>
       </div>

@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Membership</div>
+  <div class="panel-body">
+    {% if communities or join_requests %}
+      <table class="table table-hover">
+        <tbody>
+        {% for community in communities %}
+          <tr class="profile-row">
+            <td><a href="#" class="table-anchor">{{ community }}</a></td>
+            <td>
+              {% if user == systersuser.user or user.is_superuser %}
+                {% if systersuser == community.community_admin %}
+                  <a href="#" role="button"
+                     class="btn btn-primary btn-xs btn-warning pull-right">Transfer ownership</a>
+                {% else %}
+                  <a href="#" role="button"
+                     class="btn btn-primary btn-xs btn-warning pull-right">Leave</a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        {% for join_request in join_requests %}
+          <tr class="profile-row">
+            <td><a href="#" class="table-anchor">{{ join_request.community }}</a></td>
+            <td>
+              {% if user == systersuser.user or user.is_superuser %}
+                <a href="#" role="button"
+                   class="btn btn-primary btn-xs btn-warning pull-right">Cancel request</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Looks like you are member of no community.</p>
+    {% endif %}
+  </div>
+</div>
