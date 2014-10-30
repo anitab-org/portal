@@ -27,6 +27,7 @@ Development of Systers Portal
 
    develop/prerequisites
    develop/contributing
+   develop/communities
 
 
 Indices and tables
