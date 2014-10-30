@@ -1,9 +1,11 @@
 from django.contrib.auth.models import Group, Permission
+from django.db import transaction
 from guardian.shortcuts import assign_perm
 
 from community.permissions import groups_templates, group_permissions
 
 
+@transaction.atomic
 def create_groups(community_name):
     """Create groups for a particular Community instance using its name
 
@@ -18,6 +20,7 @@ def create_groups(community_name):
     return community_groups
 
 
+@transaction.atomic
 def remove_groups(community_name):
     """Remove groups for a particular Community instance using its name
 
@@ -27,6 +30,7 @@ def remove_groups(community_name):
     Group.objects.filter(name__startswith=name).delete()
 
 
+@transaction.atomic
 def rename_groups(old_community_name, new_community_name):
     """Rename groups bound to a Community instance
 
