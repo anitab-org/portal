@@ -5,7 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from community.constants import COMMUNITY_ADMIN
 from community.models import Community
-from community.utils import (create_groups, assign_permissions, remove_groups)
+from community.utils import (create_groups, assign_permissions, remove_groups,
+                             rename_groups)
 
 
 @receiver(post_save, sender=Community, dispatch_uid="manage_groups")
@@ -22,9 +23,7 @@ def manage_community_groups(sender, instance, created, **kwargs):
         instance.save()
     else:
         if name != instance.original_name and instance.original_name:
-            remove_groups(instance.original_name)
-            groups = create_groups(name)
-            assign_permissions(instance, groups)
+            rename_groups(instance.original_name, instance.name)
         if instance.community_admin != instance.original_community_admin and \
            instance.original_community_admin is not None:
             community_admin_group = \
