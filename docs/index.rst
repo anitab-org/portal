@@ -28,6 +28,7 @@ Development of Systers Portal
    develop/prerequisites
    develop/contributing
    develop/communities
+   develop/groups_and_permissions
 
 
 Indices and tables
