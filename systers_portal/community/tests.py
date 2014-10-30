@@ -75,7 +75,7 @@ class CommunityTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Foo"))
         self.assertEqual(user1.groups.get(), community_admin_group)
 
-        self.assertEqual(list(community.members.all()), [systers_user])
+        self.assertSequenceEqual(community.members.all(), [systers_user])
 
         user2 = User.objects.create(username='bar', password='foobar')
         systers_user2 = SystersUser.objects.get(user=user2)
@@ -91,8 +91,8 @@ class CommunityTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Bar"))
         self.assertEqual(user2.groups.get(), community_admin_group)
         self.assertNotEqual(list(user1.groups.all()), [community_admin_group])
-        self.assertListEqual(list(Community.objects.get().members.all()),
-                             [systers_user, systers_user2])
+        self.assertSequenceEqual(Community.objects.get().members.all(),
+                                 [systers_user, systers_user2])
 
     def test_remove_community_groups(self):
         """Test the removal of groups when a community is deleted"""
@@ -119,7 +119,7 @@ class CommunityTestCase(TestCase):
         self.assertQuerysetEqual(community.members.all(), [])
         community.add_member(systers_user)
         community.save()
-        self.assertEqual(list(community.members.all()), [systers_user])
+        self.assertSequenceEqual(community.members.all(), [systers_user])
         community.remove_member(systers_user)
         community.save()
         self.assertQuerysetEqual(community.members.all(), [])

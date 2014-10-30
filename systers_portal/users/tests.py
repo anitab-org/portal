@@ -23,7 +23,7 @@ class SystersUserTestCase(TestCase):
     def test_join_group(self):
         """Test SystersUser joining an auth Group"""
         group = Group.objects.create(name="Baz")
-        self.assertListEqual(list(self.systers_user.user.groups.all()), [])
+        self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
         self.systers_user.join_group(group)
         self.assertEqual(self.systers_user.user.groups.get(), group)
 
@@ -34,7 +34,7 @@ class SystersUserTestCase(TestCase):
         self.systers_user.join_group(group)
         self.assertEqual(self.systers_user.user.groups.get(), group)
         self.systers_user.leave_group(group)
-        self.assertListEqual(list(self.systers_user.user.groups.all()), [])
+        self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
 
 
 class SystersUserViewsTestCase(TestCase):
