@@ -27,6 +27,24 @@ def remove_groups(community_name):
     Group.objects.filter(name__startswith=name).delete()
 
 
+def rename_groups(old_community_name, new_community_name):
+    """Rename groups bound to a Community instance
+
+    :param old_community_name: string old name of the community
+    :param new_community_name: string new name of the community
+    :return: list of community new Group objects
+    """
+    name = "{0}:".format(old_community_name)
+    groups = Group.objects.filter(name__startswith=name)
+    new_community_groups = []
+    for group in groups:
+        old_name, group_name = group.name.rsplit(":", 1)
+        group.name = "{0}:{1}".format(new_community_name, group_name)
+        group.save()
+        new_community_groups.append(group)
+    return new_community_groups
+
+
 def assign_permissions(community, groups):
     """Assign row-level permissions to community groups and community object
 

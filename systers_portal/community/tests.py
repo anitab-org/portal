@@ -7,7 +7,8 @@ from community.constants import COMMUNITY_ADMIN
 from community.models import Community
 from community.permissions import groups_templates, group_permissions
 from community.signals import manage_community_groups, remove_community_groups
-from community.utils import create_groups, assign_permissions, remove_groups
+from community.utils import (create_groups, assign_permissions, remove_groups,
+                             rename_groups)
 from users.models import SystersUser
 
 
@@ -147,6 +148,25 @@ class UtilsTestCase(TestCase):
         remove_groups(name)
         community_groups = Group.objects.filter(name__startswith=name)
         self.assertEqual(list(community_groups), [])
+
+    def test_rename_groups(self):
+        """Test the renaming of groups according to a new name"""
+        old_name = "Foo"
+        new_name = "Bar"
+        create_groups(old_name)
+        groups = rename_groups(old_name, new_name)
+        expected_group_names = []
+        for key, group_name in groups_templates.items():
+            expected_group_names.append(group_name.format(new_name))
+        group_names = []
+        for group in groups:
+            group_names.append(group.name)
+        self.assertListEqual(expected_group_names, group_names)
+
+        community_groups = Group.objects.filter(name__startswith=new_name)
+        self.assertItemsEqual(community_groups, groups)
+        old_community_groups = Group.objects.filter(name__startswith=old_name)
+        self.assertSequenceEqual(old_community_groups, [])
 
     def test_assign_permissions(self):
         """Test assignment of permissions to community groups"""
