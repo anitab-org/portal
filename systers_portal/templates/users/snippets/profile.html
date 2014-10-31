@@ -3,9 +3,9 @@
   <div class="panel-heading">Profile</div>
   <div class="panel-body">
     {% if systersuser.profile_picture.name and systersuser.profile_picture.name != "False" %}
-      <a class="pull-right profile-pic"
+      <a class=""
          href="{{ systersuser.profile_picture.url }}"><img
-          src="{{ systersuser.profile_picture.url }}"
+          src="{{ systersuser.profile_picture.url }}" class="pull-left profile-pic"
           alt="{{ systersuser }} profile picture"/></a>
       <div class="clearfix"></div>
     {% endif %}
