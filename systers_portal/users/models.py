@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
-from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 
@@ -19,6 +20,10 @@ class SystersUser(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
+
+    def get_absolute_url(self):
+        """Absolute URL to a SystersUser object"""
+        return reverse('user', kwargs={'username': self.user.username})
 
     def join_group(self, group):
         """Make user member of a group
