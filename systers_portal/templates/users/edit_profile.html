@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if user == systersuser.user %}
+    - Edit my profile
+  {% else %}
+    - Edit profile of {{ systersuser }}
+  {% endif %}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        {% if user == systersuser.user %}
+          Edit my profile
+        {% else %}
+          Edit profile of {{ systersuser }}
+        {% endif %}
+      </h1>
+      <hr/>
+    </div>
+    <div class="col-md-6">
+      <div class="well">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
