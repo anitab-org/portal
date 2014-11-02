@@ -38,7 +38,7 @@ class SystersUserTestCase(TestCase):
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
 
 
-class SystersUserViewsTestCase(TestCase):
+class UserViewTestCase(TestCase):
     def setUp(self):
         User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
