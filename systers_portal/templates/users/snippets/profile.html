@@ -28,7 +28,8 @@
     {% endfor %}
     {% if user == systersuser.user or user.is_superuser %}
       <div class="pull-right">
-        <a href="#" role="button" class="btn btn-primary">Edit profile</a>
+        <a href="{% url 'user_profile' systersuser.user.username %}"
+           role="button" class="btn btn-primary">Edit profile</a>
       </div>
     {% endif %}
     <div class="clearfix"></div>
