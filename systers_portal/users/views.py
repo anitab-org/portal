@@ -11,6 +11,13 @@ class UserView(LoginRequiredMixin, TemplateView):
     template_name = "users/view_profile.html"
 
     def get_context_data(self, **kwargs):
+        """Supply additional context data for the template, such as:
+
+        * SystersUser object
+        * Community objects SystersUser is member of
+        * SystersUser JoinRequest objects not (yet) approved
+        * Group objects SystersUser is member of
+        """
         context = super(UserView, self).get_context_data(**kwargs)
         username = context['username']
         systersuser = get_object_or_404(SystersUser, user__username=username)
