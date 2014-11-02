@@ -150,10 +150,11 @@ class UserFormsTestCase(TestCase):
         self.assertEqual(type(form.systers_user_form), SystersUserForm)
         data = {'first_name': 'Foo',
                 'last_name': 'Bar',
-                'blog_url': 'http://example.com'}
+                'blog_url': 'http://example.com/'}
         form = UserForm(data=data, instance=self.user)
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(self.user.first_name, 'Foo')
         self.assertEqual(self.user.last_name, 'Bar')
-        self.assertEqual(self.systers_user.blog_url, 'http://example.com')
+        systers_user = SystersUser.objects.get()
+        self.assertEqual(systers_user.blog_url, 'http://example.com/')
