@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Div, HTML
 
+from common.forms.bootstrap import SubmitCancelFormActions
 from users.models import SystersUser
 
 
@@ -26,20 +26,10 @@ class UserForm(forms.ModelForm):
 
         # crispy FormHelper customization
         self.helper = FormHelper(self)
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-9'
         self.helper.layout.append(
-            Div(
-                Div(
-                    HTML("""<a role="button" class="btn btn-default mr4"
-                            href="{{ systersuser.get_absolute_url }}">
-                            Cancel</a>"""),
-                    Submit('save', 'submit', css_class='btn btn-primary'),
-                    css_class='col-lg-9 col-lg-offset-3',
-                ),
-                css_class='form-group',
-            ))
+            SubmitCancelFormActions(
+                cancel_href="{{ systersuser.get_absolute_url }}")
+        )
 
     def save(self, *args, **kwargs):
         self.systers_user_form.save(*args, **kwargs)
