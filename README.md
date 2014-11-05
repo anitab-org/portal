@@ -1,4 +1,4 @@
-Systers Portal Project [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal)
+Systers Portal Project [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal) [![Coverage Status](https://coveralls.io/repos/systers/portal/badge.png?branch=master)](https://coveralls.io/r/systers/portal?branch=master)
 ======================
 
 Systers Portal is for Systers communities to post and share information within and with other communities.
