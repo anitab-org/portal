@@ -1,0 +1,2 @@
+[report]
+omit = */migrations/*,*/settings/*,systers_portal/manage.py,systers_portal/systers_portal/wsgi.py
