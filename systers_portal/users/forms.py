@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 
-from common.forms.bootstrap import SubmitCancelFormActions
+from common.crispy_forms.bootstrap import SubmitCancelFormActions
 from users.models import SystersUser
 
 
