@@ -23,7 +23,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = [
     '--nocapture',
     '--nologcapture',
-    '--cover-package=systers_portal',
+    '--cover-package=blog,common,community,users',
     '--with-coverage',
     # '--with-doctest',
     # '--doctest-options=+ELLIPSIS',
