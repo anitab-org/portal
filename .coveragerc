@@ -5,3 +5,4 @@ omit =
     systers_portal/manage.py
     systers_portal/systers_portal/*
     */admin.py
+    */site-packages/*
