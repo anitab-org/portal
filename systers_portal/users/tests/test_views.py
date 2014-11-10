@@ -117,7 +117,7 @@ class UserProfileViewTestCase(TestCase):
         systersuser = SystersUser.objects.get(user=user)
         response = self.client.get(bar_profile_url)
         self.assertEqual(response.status_code, 403)
-        # Get view profile as superusers
+        # Get view profile as superuser
         self.user.is_superuser = True
         self.user.save()
         response = self.client.get(bar_profile_url)

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
-from django.shortcuts import get_object_or_404
 from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 
 from community.models import JoinRequest
