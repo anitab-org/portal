@@ -109,6 +109,10 @@ table.decoration-none  tr a {
   text-decoration: none !important;
 }
 
+.table-custom {
+  margin-bottom: 0px;
+}
+
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 @media (max-width: 768px) {
