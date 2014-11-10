@@ -64,6 +64,12 @@ class CommunityModelTestCase(TestCase):
         self.community.save()
         self.assertQuerysetEqual(self.community.members.all(), [])
 
+    def test_get_fields(self):
+        """Test getting Community fields"""
+        fields = self.community.get_fields()
+        self.assertTrue(len(fields), 12)
+        self.assertTrue(fields[1], ('name', 'Foo'))
+
 
 class JoinRequestModelTestCase(TestCase):
     def setUp(self):

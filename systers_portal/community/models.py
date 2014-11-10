@@ -97,6 +97,14 @@ class Community(models.Model):
         """
         self.members.remove(systers_user)
 
+    def get_fields(self):
+        """Get model fields of a Community object
+
+        :return: list of tuples (fieldname, fieldvalue)
+        """
+        return [(field.name, getattr(self, field.name)) for field in
+                Community._meta.fields]
+
 
 class CommunityPage(Post):
     """Model to represent an arbitrary community page"""
