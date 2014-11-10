@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+  - Edit {{ community }} profile
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Edit {{ community }} profile</h1>
+      <hr/>
+    </div>
+    <div class="col-md-6">
+      <div class="well">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block community_footer %}
+  {% include 'community/snippets/community_footer.html' %}
+{% endblock %}
