@@ -55,6 +55,19 @@ class SystersUser(models.Model):
         """
         return self.communities.filter(pk=community.pk).exists()
 
+    def get_last_join_request(self, community):
+        """Get the last join request made by the user to a community
+
+        :param community: Community object
+        :return: JoinRequest object or None in case user has made no requests
+        """
+        from community.models import JoinRequest
+        join_requests = JoinRequest.objects.filter(user=self,
+                                                   community=community).\
+            order_by('-date_created')
+        if join_requests:
+            return join_requests[0]
+
 
 def user_unicode(self):
     """Unicode representation of Django User model
