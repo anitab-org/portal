@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
+from community.models import Community
 from users.models import SystersUser
 
 
@@ -33,6 +34,18 @@ class SystersUserTestCase(TestCase):
         self.assertEqual(self.systers_user.user.groups.get(), group)
         self.systers_user.leave_group(group)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
+
+    def test_is_member(self):
+        """Test if SystersUser is a member of a Community"""
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1,
+                                             community_admin=self.systers_user)
+        user = User.objects.create_user(username='bar', password='foobar')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        self.assertFalse(bar_systers_user.is_member(community))
+        community.add_member(bar_systers_user)
+        community.save()
+        self.assertTrue(bar_systers_user.is_member(community))
 
 
 class UserTestCase(TestCase):

@@ -47,6 +47,14 @@ class SystersUser(models.Model):
         return [(field.name, getattr(self, field.name)) for field in
                 SystersUser._meta.fields]
 
+    def is_member(self, community):
+        """Check if the user is a member of the community
+
+        :param community: Community object
+        :return: True if user is member of the community, False otherwise
+        """
+        return self.communities.filter(pk=community.pk).exists()
+
 
 def user_unicode(self):
     """Unicode representation of Django User model
