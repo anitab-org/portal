@@ -23,7 +23,7 @@ class ViewCommunityProfileViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'community/view_profile.html')
-        self.assertTemplateUsed(response,'community/snippets/footer.html')
+        self.assertTemplateUsed(response, 'community/snippets/footer.html')
 
         nonexistent_url = reverse('view_community_profile',
                                   kwargs={'slug': 'bar'})
@@ -54,7 +54,7 @@ class EditCommunityProfileViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'community/edit_profile.html')
-        self.assertTemplateUsed(response,'community/snippets/footer.html')
+        self.assertTemplateUsed(response, 'community/snippets/footer.html')
         self.assertContains(response, "/community/foo/profile/")
         self.assertContains(response, "Foo, an Anita Borg Systers Community")
 
