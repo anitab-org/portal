@@ -1,0 +1,27 @@
+<div>
+  {% if user.is_authenticated and user.is_active %}
+    {# user is the community admin #}
+    {% if user == community.community_admin.user %}
+      <a href="#" role="button" class="btn btn-warning btn-block">Transfer ownership</a>
+    {% else %}
+      {# user is a community member #}
+      {% if is_member %}
+        <a href="#" role="button" class="btn btn-warning btn-block">Leave Community</a>
+      {% else %}
+        {# user requested to join the community #}
+        {% if join_request %}
+          {# user requested to join the community and the request is not yet approved #}
+          {% if not join_request.is_approved %}
+            <a href="#" role="button" class="btn btn-warning btn-block">Cancel request</a>
+          {# user was a community member #}
+          {% elif not is_member and join_request.is_approved %}
+            <a href="#" role="button" class="btn btn-success btn-block">Join Community</a>
+          {% endif %}
+        {% else %}
+          {# user is not a member of the community #}
+          <a href="#" role="button" class="btn btn-success btn-block">Join Community</a>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+</div>

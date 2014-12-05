@@ -111,6 +111,9 @@ class CommunityPage(Post):
     order = models.IntegerField(unique=True, verbose_name="Order")
     community = models.ForeignKey(Community, verbose_name="Community")
 
+    def __unicode__(self):
+        return "Page {0} of {1}".format(self.title, self.community)
+
 
 class JoinRequest(models.Model):
     """Model to represent a request to join a community by a user"""
