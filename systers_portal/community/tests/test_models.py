@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, post_delete
 
-from community.models import Community, JoinRequest
+from community.models import Community, JoinRequest, CommunityPage
 from community.signals import manage_community_groups, remove_community_groups
 from users.models import SystersUser
 
@@ -69,6 +69,22 @@ class CommunityModelTestCase(TestCase):
         fields = self.community.get_fields()
         self.assertTrue(len(fields), 12)
         self.assertTrue(fields[1], ('name', 'Foo'))
+
+
+class CommunityPageModelTestCase(TestCase):
+    def setUp(self):
+        User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_unicode(self):
+        """Test CommunityPage object str/unicode representation"""
+        page = CommunityPage(order=1, community=self.community, slug="bar",
+                             title="Bar", author=self.systers_user)
+        self.assertEqual(unicode(page), "Page Bar of Foo")
 
 
 class JoinRequestModelTestCase(TestCase):
