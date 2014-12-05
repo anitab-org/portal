@@ -23,6 +23,7 @@ content_manager_permissions = content_contributor_permissions + [
     "delete_community_news",
     "delete_community_resource",
     "add_community_page",
+    "change_community_page",
     "delete_community_page",
     "approve_community_comment",
     "delete_community_comment",
