@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load verbose_name %}
+
+{% block title %}
+  - {{ community }}
+{% endblock %}
+
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{ community }}</h1>
+      <hr/>
+    </div>
+    <div class="col-md-9">
+      <ul class="nav nav-pills">
+        {% for page in pages %}
+          <li class="{% if active_page == page.slug %}active{% endif %}">
+            <a href="#">{{ page.title }}</a>
+          </li>
+        {% endfor %}
+        <li class="{% if active_page == 'news' %}active{% endif %}">
+          <a href="#">News</a>
+        </li>
+        <li class="{% if active_page == 'resources' %}active{% endif %}">
+          <a href="#">Resources</a>
+      </ul>
+
+      {% block community_page_content %}
+      {% endblock %}
+
+    </div>
+    <div class="col-md-3">
+      {% include 'community/snippets/actions_sidebar.html' %}
+      {% include 'community/snippets/join_button.html' %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block community_footer %}
+  {% include 'community/snippets/footer.html' %}
+{% endblock %}
