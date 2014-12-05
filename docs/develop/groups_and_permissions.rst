@@ -13,7 +13,7 @@ Each group implies a specific set of permissions:
 
     * delete any tags or resource types
     * delete Community news or resources
-    * add/change a Community page
+    * add/change/delete a Community page
     * approve/delete comments to Community posts (news, resources)
 * *Community: User and Content Manager* -- a user from this group can do 
   everything a user from *Community: Content Manager* can do, plus:
