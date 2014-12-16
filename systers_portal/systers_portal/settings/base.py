@@ -77,6 +77,10 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS += (
+    'community.context_processors.communities_processor',
+)
+
 ROOT_URLCONF = 'systers_portal.urls'
 
 WSGI_APPLICATION = 'systers_portal.wsgi.application'
