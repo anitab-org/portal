@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from common.models import Post
@@ -67,6 +68,10 @@ class Community(models.Model):
     @property
     def original_community_admin(self):
         return self.__original_community_admin
+
+    def get_absolute_url(self):
+        """Absolute url to a Community main page"""
+        return reverse('view_community_main_page', kwargs={'slug': self.slug})
 
     def has_changed_name(self):
         """Check if community has a new name
