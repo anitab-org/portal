@@ -1,12 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.constants import DEFAULT_COMMUNITY_ACTIVE_PAGE
 from community.forms import CommunityForm
 from community.models import Community, CommunityPage
+from blog.models import News
 from users.models import SystersUser
 
 
@@ -40,7 +41,7 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
 
 class CommunityPageView(DetailView):
     """Community page view"""
-    template_name = "community/page.html"
+    template_name = "community/base.html"
     model = Community
 
     def get_context_data(self, **kwargs):

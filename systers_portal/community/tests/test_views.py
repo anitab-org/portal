@@ -175,7 +175,7 @@ class CommunityPageViewTestCase(TestCase):
         url = reverse('view_community_main_page', kwargs={'slug': 'foo'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'community/page.html')
+        self.assertTemplateUsed(response, 'community/base.html')
         self.assertEqual(response.context['active_page'], 'news')
 
         CommunityPage.objects.create(slug="page", title="Page", order=1,
@@ -193,7 +193,7 @@ class CommunityPageViewTestCase(TestCase):
                                                      'page_slug': 'page'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'community/page.html')
+        self.assertTemplateUsed(response, 'community/base.html')
         self.assertEqual(response.context['active_page'], 'page')
 
         CommunityPage.objects.create(slug="page2", title="Page2", order=2,
