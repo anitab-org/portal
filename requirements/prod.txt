@@ -1,10 +1,10 @@
-Django==1.7
-Pillow==2.5.3
+Django==1.7.1
+Pillow==2.6.1
 django-allauth==0.18.0
 django-braces==1.4.0
 django-ckeditor==4.4.6
-django-countries==2.1.2
+django-countries==3.0.1
 django-crispy-forms==1.4.0
 django-guardian==1.2.4
-djangocms-admin-style==0.2.2
+djangocms-admin-style==0.2.4
 psycopg2==2.5.4

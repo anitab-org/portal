@@ -48,22 +48,35 @@ body > .container {
 /* Index page styles
 -------------------------------------------------- */
 .jumbotron-custom {
+  width: 100%;
   background-color: #fff;
   text-align: center;
-  border: 0;
+  border: 0;  
   box-shadow: none;
 }
 
-.featurette-divider {
-  margin: 4em 0;
+.featurette-divider {  
+  margin: 4em 0; 
 }
 
-.featurette-heading {
+.featurette-heading {  
   font-weight: 300;
   line-height: 1;
   letter-spacing: -1px;
   margin-top: 0;
-  font-size: 3.5em;
+  font-size: 3.5em;  
+}
+
+@media screen and (max-width: 991px){
+	img.img-responsive {
+		  display: block;
+		  margin-left: auto;
+		  margin-right: auto 
+	}
+
+	.index {
+		text-align: center;
+	}
 }
 
 /* Sign in, Sign up

@@ -2,6 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
+<div class="index">
   <div class="jumbotron jumbotron-custom">
     <h1>Welcome to Systers Portal!</h1>
 
@@ -12,6 +13,7 @@
       <a class="btn btn-lg btn-success" href="{% url 'account_signup' %}" role="button">Join Systers</a>
     </p>
   </div>
+
   <hr class="featurette-divider">
   <div class="row featurette">
     <div class="col-md-7">
@@ -39,7 +41,7 @@
     <div class="col-md-7 margin-responsive">
       <h2 class="featurette-heading">Systers Initiatives</h2>
 
-      <p class="lead">In order to honor Anita’s desire to create a network of women 
+      <p class="lead" >In order to honor Anita’s desire to create a network of women 
        in computing actively helping each another, members of the Systers community
        created the Anita Borg Systers Pass-It-On Awards program.</p>
       <a href="http://anitaborg.org/get-involved/systers/systers-initiatives/"
@@ -84,4 +86,5 @@
   </div>
 
   <div class="mt40"></div>
+</div>
 {% endblock %}

@@ -1,0 +1,24 @@
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.test import TestCase, Client
+
+from users.models import SystersUser
+from community.models import Community
+
+
+class CommunitiesProcessorTestCase(TestCase):
+    def setUp(self):
+        User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.client = Client()
+
+    def test_communities_processor(self):
+        """Test the rendering of all communities in the templates"""
+        Community.objects.create(name="Foo", slug="foo", order=1,
+                                 community_admin=self.systers_user)
+        Community.objects.create(name="Boo", slug="boo", order=2,
+                                 community_admin=self.systers_user)
+        index_url = reverse('index')
+        response = self.client.get(index_url)
+        self.assertContains(response, '<a href="/community/foo/">Foo</a>')
+        self.assertContains(response, '<a href="/community/boo/">Boo</a>')
