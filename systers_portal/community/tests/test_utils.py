@@ -20,10 +20,10 @@ class UtilsTestCase(TestCase):
         group_names = []
         for group in groups:
             group_names.append(group.name)
-        self.assertListEqual(expected_group_names, group_names)
+        self.assertItemsEqual(expected_group_names, group_names)
 
         community_groups = Group.objects.filter(name__startswith=name)
-        self.assertListEqual(list(community_groups), groups)
+        self.assertItemsEqual(list(community_groups), groups)
 
     def test_remove_groups(self):
         """Test the removal of groups according to a name"""
@@ -45,7 +45,7 @@ class UtilsTestCase(TestCase):
         group_names = []
         for group in groups:
             group_names.append(group.name)
-        self.assertListEqual(expected_group_names, group_names)
+        self.assertItemsEqual(expected_group_names, group_names)
 
         community_groups = Group.objects.filter(name__startswith=new_name)
         self.assertItemsEqual(community_groups, groups)
