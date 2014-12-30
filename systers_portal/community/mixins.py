@@ -12,7 +12,7 @@ class CommunityMenuMixin(object):
     * Current active page slug
     """
     community = None
-    page = None
+    page_slug = None
 
     def get_context_data(self, **kwargs):
         context = super(CommunityMenuMixin, self).get_context_data(**kwargs)
@@ -21,14 +21,15 @@ class CommunityMenuMixin(object):
             order_by('order')
         context['pages'] = pages
 
-        page = self.get_page()
-        if page:
-            context['active_page'] = page.slug
+        page_slug = self.get_page_slug()
+        if page_slug:
+            active_page = page_slug
         else:
             if pages:
-                context['active_page'] = pages[0].slug
+                active_page = pages[0].slug
             else:
-                context['active_page'] = DEFAULT_COMMUNITY_ACTIVE_PAGE
+                active_page = DEFAULT_COMMUNITY_ACTIVE_PAGE
+        context['active_page'] = active_page
         return context
 
     def get_community(self):
@@ -45,9 +46,9 @@ class CommunityMenuMixin(object):
             )
         return self.community
 
-    def get_page(self):
+    def get_page_slug(self):
         """Get a community page.
 
         :return: CommunityPage object
         """
-        return self.page
+        return self.page_slug

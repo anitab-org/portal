@@ -62,10 +62,19 @@ class CommunityMenuMixinText(TestCase):
             def get_community(self):
                 return Community.objects.get()
 
-            def get_page(self):
-                return CommunityPage.objects.get()
+            def get_page_slug(self):
+                return 'page1'
 
         view = DummyView()
         context = view.get_context_data()
         self.assertEqual(list(context['pages']), [page1])
         self.assertEqual(context['active_page'], 'page1')
+
+    def test_get_context_data_news(self):
+        class DummyView(CommunityMenuMixin, TemplateView):
+            community = Community.objects.get()
+            page_slug = 'news'
+
+        view = DummyView()
+        context = view.get_context_data()
+        self.assertEqual(context['active_page'], 'news')
