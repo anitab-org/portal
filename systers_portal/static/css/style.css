@@ -67,8 +67,16 @@ body > .container {
   font-size: 3.5em;
 }
 
-.col-md-7 {
-  text-align: center;
+@media screen and (max-width: 991px) {
+	img.img-responsive {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	 
+	.index {
+		  text-align: center;
+	}	
 }
 
 /* Sign in, Sign up
