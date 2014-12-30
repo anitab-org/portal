@@ -67,18 +67,12 @@ class CommunityPageView(CommunityMenuMixin, DetailView):
 
         :return: Community object
         """
-        community_slug = self.kwargs['slug']
-        return get_object_or_404(Community, slug=community_slug)
+        return self.object
 
-    def get_page(self):
+    def get_page_slug(self):
         """Overrides the method from CommunityMenuMixin to extract the current
-        page or the lack of it.
+        page slug or the lack of it.
 
-        :return: CommunityPage object if provided, otherwise None
+        :return: string CommunityPage slug
         """
-        page_slug = self.kwargs.get('page_slug')
-        if page_slug:
-            return get_object_or_404(CommunityPage, slug=page_slug)
-        return None
-
-        return context
+        return self.kwargs.get('page_slug')
