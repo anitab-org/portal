@@ -8,7 +8,7 @@ from community.models import Community, CommunityPage
 from users.models import SystersUser
 
 
-class CommunityMenuMixinText(TestCase):
+class CommunityMenuMixinTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
@@ -18,6 +18,7 @@ class CommunityMenuMixinText(TestCase):
                                                   systers_user)
 
     def test_get_context_data_no_community(self):
+        """Test mixin with no community and no page_slug set"""
         class DummyView(CommunityMenuMixin, TemplateView):
             pass
 
@@ -25,6 +26,8 @@ class CommunityMenuMixinText(TestCase):
         self.assertRaises(ImproperlyConfigured, view.get_context_data)
 
     def test_get_context_data_no_pages(self):
+        """Test mixin with a community set, but no page_slug set.
+        Additionally Community has no pages."""
         class DummyView(CommunityMenuMixin, TemplateView):
             community = Community.objects.get()
 
@@ -34,6 +37,8 @@ class CommunityMenuMixinText(TestCase):
         self.assertEqual(context['active_page'], 'news')
 
     def test_get_context_data_pages(self):
+        """Test mixin with a community set, but no page_slug set.
+        Community has 2 pages."""
         page1 = CommunityPage.objects.create(slug="page1", title="Page",
                                              order=1,
                                              author=self.systers_user,
@@ -53,6 +58,8 @@ class CommunityMenuMixinText(TestCase):
         self.assertEqual(context['active_page'], 'page1')
 
     def test_get_context_data_with_page(self):
+        """Test mixin with a community and a page_slug set to an existing
+        CommunityPage slug."""
         page1 = CommunityPage.objects.create(slug="page1", title="Page",
                                              order=1,
                                              author=self.systers_user,
@@ -71,6 +78,7 @@ class CommunityMenuMixinText(TestCase):
         self.assertEqual(context['active_page'], 'page1')
 
     def test_get_context_data_news(self):
+        """Test mixin with a community and a page_slug set to news"""
         class DummyView(CommunityMenuMixin, TemplateView):
             community = Community.objects.get()
             page_slug = 'news'
