@@ -1,14 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.forms import CommunityForm
 from community.mixins import CommunityMenuMixin
-from community.models import Community, CommunityPage
-from blog.models import News
-from users.models import SystersUser
+from community.models import Community
+from common.mixins import UserDetailsMixin
 
 
 class ViewCommunityProfileView(DetailView):
@@ -39,27 +38,10 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
         return request.user.has_perm("change_community", community)
 
 
-class CommunityPageView(CommunityMenuMixin, DetailView):
+class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     """Community page view"""
     template_name = "community/base.html"
     model = Community
-
-    def get_context_data(self, **kwargs):
-        """Supply additional context data, such as:
-
-        * SystersUser object
-        * Indicator if user is member of the community
-        * JoinRequest object if exists
-        """
-        context = super(CommunityPageView, self).get_context_data(**kwargs)
-        community = context['community']
-        user = self.request.user
-        if user.username:
-            systers_user = SystersUser.objects.get(user=user)
-            context['is_member'] = systers_user.is_member(community)
-            context['join_request'] = systers_user.get_last_join_request(
-                community)
-        return context
 
     def get_community(self):
         """Overrides the method from CommunityMenuMixin to extract the current
