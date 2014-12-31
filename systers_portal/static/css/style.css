@@ -48,6 +48,7 @@ body > .container {
 /* Index page styles
 -------------------------------------------------- */
 .jumbotron-custom {
+  width: 100%;
   background-color: #fff;
   text-align: center;
   border: 0;
@@ -64,6 +65,10 @@ body > .container {
   letter-spacing: -1px;
   margin-top: 0;
   font-size: 3.5em;
+}
+
+.col-md-7 {
+  text-align: center;
 }
 
 /* Sign in, Sign up
