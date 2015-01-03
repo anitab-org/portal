@@ -66,6 +66,16 @@ body > .container {
   font-size: 3.5em;
 }
 
+@media screen and (max-width: 991px) {
+  .featurette img.img-responsive {
+    margin: 0 auto;
+  }
+
+  .featurette {
+    text-align: center;
+  }
+}
+
 /* Sign in, Sign up
 -------------------------------------------------- */
 .form-signin,
