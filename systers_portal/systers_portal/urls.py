@@ -13,6 +13,7 @@ urlpatterns = patterns(
     '',
     url(r'^$', IndexView.as_view(), name="index"),
     url(r'^community/', include('community.urls')),
+    url(r'^community/', include('blog.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),

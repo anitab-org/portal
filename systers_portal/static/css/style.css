@@ -127,6 +127,32 @@ table.decoration-none  tr a {
   margin-bottom: 0px;
 }
 
+/* Blog
+-------------------------------------------------- */
+
+.blog-container {
+  margin: 30px 0 50px;
+}
+
+.blog-entry {
+  margin: 20px 0;
+}
+
+.blog-entry .title {
+  font-weight: 100;
+  font-size: 2em;
+}
+
+.blog-entry .body {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  line-height: 1.8em;
+}
+
+.blog-entry .tags {
+  font-size: 1.3em;
+}
+
 /* RESPONSIVE CSS
 -------------------------------------------------- */
 @media (max-width: 768px) {
