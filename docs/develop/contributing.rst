@@ -1,10 +1,10 @@
-First contribution
-==================
+Contributing
+============
 
 This guide will show you step by step how to make your first contribution to
 Systers Portal.
 
-#. Go to http://github.com and create a github account, if you don't have one yet.
+#. Go to http://github.com and create a GitHub account, if you don't have one yet.
 #. Fork the `Systers Portal <https://github.com/systers/portal/>`_ repo. In the
    upper left corner there is **Fork** button. A "copy" of the project will appear
    in the list of your repositories.
@@ -46,7 +46,7 @@ Systers Portal.
             $ coverage report
 
          If the total coverage percentage is lower than the number that appears
-         on the coverage badge on github, then write unittests to keep it on the
+         on the coverage badge on GitHub, then write unittests to keep it on the
          same level or improve the test coverage.
 
       #. If you have made any changes to the HTML or have manipulates the DOM
@@ -65,8 +65,11 @@ Systers Portal.
 
       $ git push origin <feature-branch-name>
 
-#. Go to github and make a pull request. Add description and point to the task
-   you have solved.
+#. Go to GitHub and make a pull request. Choose a relevant title, add description
+   if necessary and point to the task you have solved. The source branch of the
+   pull request should be your feature branch and the target branch should be
+   ``develop`` branch. Review your pull request and make sure everything is
+   alright.
 #. Someone from the team will review your code, provide feedback and if
    everything is ok, will merge your changes.
 #. Don't forget to `sync your fork <https://help.github.com/articles/syncing-a-fork/>`_
