@@ -1,0 +1,63 @@
+{% extends "account/base.html" %}
+{% load url from future %}
+{% load i18n %}
+{% block head_title %}{% trans "Signup" %}{% endblock %}
+{% block content %}
+<head>
+<style>
+#abc
+{
+  margin-left:350px;
+  font-family: ""Times New Roman", Times, serif;"
+  display: block;
+ 
+
+}
+input {
+    border: 5px solid white; 
+    -webkit-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 15px rgba(0,0,0,0.1); 
+    -moz-box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 15px rgba(0,0,0,0.1); 
+    box-shadow: 
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 15px rgba(0,0,0,0.1); 
+    padding: 9px;
+    background: rgba(255,255,255,0.5);
+    margin: 0 0 7px 0;
+}
+
+</style>
+</head>
+<div id="abc">
+<h1>{% trans "Sign Up" %}</h1><br>
+<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+{% csrf_token %}
+<!--{{ form.as_p }}-->
+{% for field in form %}
+        <div class="fieldWrapper" style="width:250px">
+            {{ field.errors }}
+            <!--{{ field.label_tag }}<br> {{ field }}-->
+        </div>
+    {% endfor %}
+
+<div id="div_id_username" class="form-group"><label for="id_username" class="control-label  requiredField">
+        Username<span class="asteriskField">*</span></label><div class="controls "><input size="50" autofocus="autofocus" class="input-xlarge" id="id_username" maxlength="30" name="username" placeholder="Username" type="text" /> </div></div><div id="div_id_email" class="form-group"><label for="id_email" class="control-label  requiredField">
+        E-mail<span class="asteriskField">*</span></label><div class="controls "><input size="50" id="id_email" name="email" placeholder="E-mail address" type="text" /> </div></div><div id="div_id_password1" class="form-group"><label for="id_password1" class="control-label  requiredField">
+        Password<span class="asteriskField">*</span></label><div class="controls "><input size="50" id="id_password1" name="password1" placeholder="Password" type="password" /> </div></div><div id="div_id_password2" class="form-group"><label for="id_password2" class="control-label  requiredField">
+        Password (again)<span class="asteriskField">*</span></label><div class="controls "><input size="50" id="id_password2" name="password2" placeholder="Password" type="password" /> </div></div><input id="id_confirmation_key" name="confirmation_key" type="hidden" />
+
+      
+      <button  style="height: 35px; width: 400px" type="submit" class="btn  btn-primary ">Sign
+        Up &raquo;</button>
+      <p>Already have an account? Then please
+        <a href="/accounts/login/">sign in</a>.</p>
+    </form>
+  </div>
+{% if redirect_field_value %}
+<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+{% endif %}
+</div>
+{% endblock %}
