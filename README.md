@@ -28,11 +28,13 @@ Setup for developers
   shell variable every time you activate the virtualenv, edit `venv/bin/activate`
   and add to the bottom the export statement.
 7. Run `python systers_portal/manage.py migrate`.
-8. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
+8. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
+  Fill in the details asked.
+9. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
   or production, feed the respective settings file from the command line, e.g. for  
   testing `python manage.py runserver --settings=systers_portal.settings.testing`
-9. Before commiting run `flake8 systers_portal` and fix PEP8 warnings
-10. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
+10. Before commiting run `flake8 systers_portal` and fix PEP8 warnings
+11. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
   to run all the tests
 
 
