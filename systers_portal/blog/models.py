@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from common.models import Post
@@ -34,6 +35,12 @@ class News(Post):
 
     def __unicode__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
+
+    def get_absolute_url(self):
+        """Absolute URL to a SystersUser object"""
+        return reverse('view_community_news',
+                       kwargs={'slug': self.community.slug,
+                               'news_slug': self.slug})
 
 
 class Resource(Post):
