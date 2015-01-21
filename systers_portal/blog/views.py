@@ -1,4 +1,5 @@
-from django.views.generic import ListView
+from django.shortcuts import get_object_or_404
+from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
 
 from common.mixins import UserDetailsMixin
@@ -28,6 +29,30 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
 
     def get_queryset(self):
         return News.objects.filter(community=self.object)
+
+    def get_community(self):
+        """Overrides the method from CommunityMenuMixin to extract the current
+        community.
+
+        :return: Community object
+        """
+        return self.object
+
+
+class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
+    """Single Community view"""
+    template_name = "blog/news.html"
+    model = Community
+    page_slug = 'news'
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and News object to the context"""
+        context = super(CommunityNewsView, self).get_context_data(**kwargs)
+        context["community"] = self.object
+
+        news_slug = self.kwargs['news_slug']
+        context['news'] = get_object_or_404(News, slug=news_slug)
+        return context
 
     def get_community(self):
         """Overrides the method from CommunityMenuMixin to extract the current
