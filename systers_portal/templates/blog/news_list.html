@@ -8,10 +8,10 @@
   <div class="blog-container">
     {% for news in object_list %}
       <div class="blog-entry">
-        <h3 class="title"><a href="#">{{ news.title }}</a></h3>
+        <h3 class="title"><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></h3>
 
         <p class="meta">{{ news.date_modified }} | <a
-            href="#">{{ news.author }}</a></p>
+            href="{{ news.author.get_absolute_url }}">{{ news.author }}</a></p>
 
         <div class="body">{{ news.content|safe|truncatewords:50 }}</div>
         {% if news.tags %}
