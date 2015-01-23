@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
@@ -72,3 +72,53 @@ class CommunityNewsViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'blog/news.html')
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
+
+
+class CreateCommunityNewsViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.client = Client()
+
+    def test_get_create_community_news(self):
+        """Test GET create new community news"""
+        url = reverse('create_community_news', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/create_news.html')
+
+        new_user = User.objects.create_user(username="bar", password="foobar")
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Manager")
+        new_user.groups.add(group)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_create_community_news(self):
+        """Test POST create new community news"""
+        url = reverse('create_community_news', kwargs={'slug': 'foo'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data={"slug": "baz"})
+        self.assertEqual(response.status_code, 200)
+
+        data = {'slug': 'bar',
+                'title': 'Bar',
+                'content': "Rainbows and ponnies"}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        news = News.objects.get()
+        self.assertEqual(news.title, 'Bar')
+        self.assertEqual(news.author, self.systers_user)
