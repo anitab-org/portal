@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     'ckeditor',
+    'django_wysiwyg',
     'guardian',
     'crispy_forms',
     'common',
@@ -126,6 +127,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
+
+# WYSIWYG configuration
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 
 # Ckeditor configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
