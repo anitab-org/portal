@@ -96,7 +96,7 @@ class CommunityNewsViewTestCase(TestCase):
         self.assertContains(response, "Hi there!")
 
 
-class CreateCommunityNewsViewTestCase(TestCase):
+class AddCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
@@ -106,15 +106,15 @@ class CreateCommunityNewsViewTestCase(TestCase):
                                                   systers_user)
         self.client = Client()
 
-    def test_get_create_community_news(self):
+    def test_get_add_community_news(self):
         """Test GET create new community news"""
-        url = reverse('create_community_news', kwargs={'slug': 'foo'})
+        url = reverse('add_community_news', kwargs={'slug': 'foo'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/create_news.html')
+        self.assertTemplateUsed(response, 'blog/add_news.html')
 
         new_user = User.objects.create_user(username="bar", password="foobar")
         self.client.login(username='bar', password='foobar')
@@ -126,9 +126,9 @@ class CreateCommunityNewsViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_post_create_community_news(self):
+    def test_post_add_community_news(self):
         """Test POST create new community news"""
-        url = reverse('create_community_news', kwargs={'slug': 'foo'})
+        url = reverse('add_community_news', kwargs={'slug': 'foo'})
         response = self.client.post(url, data={})
         self.assertEqual(response.status_code, 403)
 

@@ -65,9 +65,9 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         return self.object
 
 
-class CreateCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
-                              CreateView):
-    template_name = "blog/create_news.html"
+class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
+                           CreateView):
+    template_name = "blog/add_news.html"
     model = News
     form_class = NewsForm
     raise_exception = True
@@ -82,7 +82,7 @@ class CreateCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 
     def get_context_data(self, **kwargs):
         """Add Community object and News object to the context"""
-        context = super(CreateCommunityNewsView, self).get_context_data(
+        context = super(AddCommunityNewsView, self).get_context_data(
             **kwargs)
         context['community'] = self.community
         return context
@@ -91,7 +91,7 @@ class CreateCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
         """Add request user and community object to the form kwargs.
         Used to autofill form fields with author and community without
         explicitly filling them up in the form."""
-        kwargs = super(CreateCommunityNewsView, self).get_form_kwargs()
+        kwargs = super(AddCommunityNewsView, self).get_form_kwargs()
         kwargs.update({'author': self.request.user})
         kwargs.update({'community': self.community})
         return kwargs
