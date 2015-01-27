@@ -39,3 +39,22 @@ class AddNewsForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class EditNewsForm(forms.ModelForm):
+    """Form to edit Community News."""
+    class Meta:
+        model = News
+        fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
+                  'tags']
+
+    def __init__(self, *args, **kwargs):
+        super(EditNewsForm, self).__init__(*args, **kwargs)
+
+        # crispy FormHelper customization
+        self.helper = FormHelper(self)
+        self.helper.layout.append(
+            SubmitCancelFormActions(
+                cancel_href="{% url 'view_community_news' community.slug "
+                            "news.slug %}")
+        )
