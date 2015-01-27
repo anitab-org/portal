@@ -29,7 +29,7 @@ class CommunityNewsListViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'blog/news_list.html')
 
-    def test_community_nest_list_view_with_news(self):
+    def test_community_news_list_view_with_news(self):
         """Test GET request to news list with a single existing community
         news."""
         News.objects.create(slug="bar", title="Bar",
@@ -42,6 +42,28 @@ class CommunityNewsListViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'blog/news_list.html')
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
+
+    def test_community_news_sidebar(self):
+        """Test the presence of the lack of a News Sidebar in the template"""
+        url = reverse('view_community_news_list', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "News Actions")
+        self.assertNotContains(response, "Add news")
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/snippets/news_sidebar.html')
+        self.assertContains(response, "News Actions")
+        self.assertContains(response, "Add news")
+
+        User.objects.create_user(username="baz", password="foobar")
+        self.client.login(username="baz", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "News Actions")
+        self.assertNotContains(response, "Add news")
 
 
 class CommunityNewsViewTestCase(TestCase):
