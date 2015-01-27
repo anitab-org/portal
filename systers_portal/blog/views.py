@@ -27,7 +27,6 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
         names."""
         context = super(CommunityNewsListView, self).get_context_data(**kwargs)
         context["community"] = self.object
-        context["news_list"] = self.object_list
         return context
 
     def get_queryset(self):
