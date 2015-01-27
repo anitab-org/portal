@@ -16,7 +16,7 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
     """List of Community news view"""
     template_name = "blog/news_list.html"
     page_slug = 'news'
-    # TODO: add pagination
+    paginate_by = 5
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object(queryset=Community.objects.all())
