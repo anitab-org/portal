@@ -6,7 +6,13 @@ from blog.models import News
 from users.models import SystersUser
 
 
-class NewsForm(forms.ModelForm):
+class AddNewsForm(forms.ModelForm):
+    """Form to add new Community News. The author and the community of the
+     news should be provided by the view:
+
+     * author - currently logged in user
+     * community - defined by the community slug from the URL
+     """
     class Meta:
         model = News
         fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
@@ -15,7 +21,7 @@ class NewsForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.author = kwargs.pop('author')
         self.community = kwargs.pop('community')
-        super(NewsForm, self).__init__(*args, **kwargs)
+        super(AddNewsForm, self).__init__(*args, **kwargs)
 
         # crispy FormHelper customization
         self.helper = FormHelper(self)
@@ -27,7 +33,7 @@ class NewsForm(forms.ModelForm):
 
     def save(self, commit=True):
         """Override save to add author and community to the instance."""
-        instance = super(NewsForm, self).save(commit=False)
+        instance = super(AddNewsForm, self).save(commit=False)
         instance.author = SystersUser.objects.get(user=self.author)
         instance.community = self.community
         if commit:

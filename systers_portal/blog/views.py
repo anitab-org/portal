@@ -7,7 +7,7 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
-from blog.forms import NewsForm
+from blog.forms import AddNewsForm, EditNewsForm
 from blog.models import News
 
 
@@ -69,7 +69,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                            CreateView):
     template_name = "blog/add_news.html"
     model = News
-    form_class = NewsForm
+    form_class = AddNewsForm
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
