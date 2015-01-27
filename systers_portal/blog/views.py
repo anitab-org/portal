@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -101,3 +101,32 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
         news. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("add_community_news", self.community)
+
+
+class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
+                            UpdateView):
+    template_name = "blog/edit_news.html"
+    model = News
+    slug_url_kwarg = "news_slug"
+    form_class = EditNewsForm
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_news",
+                       kwargs={"slug": self.community.slug,
+                               "news_slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and News object to the context"""
+        context = super(EditCommunityNewsView, self).get_context_data(**kwargs)
+        context['community'] = self.community
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to edit community
+        news. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("change_community_news", self.community)

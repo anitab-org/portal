@@ -144,3 +144,53 @@ class AddCommunityNewsViewTestCase(TestCase):
         news = News.objects.get()
         self.assertEqual(news.title, 'Bar')
         self.assertEqual(news.author, self.systers_user)
+
+
+class EditCommunityNewsViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.news = News.objects.create(slug="bar", title="Bar",
+                                        author=self.systers_user,
+                                        content="Hi there!",
+                                        community=self.community)
+        self.client = Client()
+
+    def test_get_edit_community_news_view(self):
+        """Test GET to edit community news"""
+        url = reverse('edit_community_news', kwargs={'slug': 'foo',
+                                                     'news_slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('edit_community_news', kwargs={'slug': 'foo',
+                                                     'news_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_edit_community_news_view(self):
+        """Test POST to edit community news"""
+        url = reverse('edit_community_news', kwargs={'slug': 'foo',
+                                                     'news_slug': 'foo'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('edit_community_news', kwargs={'slug': 'foo',
+                                                     'news_slug': 'bar'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        data = {'slug': 'another',
+                'title': 'Baz',
+                'content': "Rainbows and ponies"}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
