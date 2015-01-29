@@ -67,6 +67,7 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 
 class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                            CreateView):
+    """Add News to a Community view"""
     template_name = "blog/add_news.html"
     model = News
     form_class = AddNewsForm
@@ -81,7 +82,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                                "news_slug": self.object.slug})
 
     def get_context_data(self, **kwargs):
-        """Add Community object and News object to the context"""
+        """Add Community object to the context"""
         context = super(AddCommunityNewsView, self).get_context_data(
             **kwargs)
         context['community'] = self.community
@@ -105,6 +106,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 
 class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                             UpdateView):
+    """Edit existing Community News view"""
     template_name = "blog/edit_news.html"
     model = News
     slug_url_kwarg = "news_slug"
@@ -120,7 +122,7 @@ class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                                "news_slug": self.object.slug})
 
     def get_context_data(self, **kwargs):
-        """Add Community object and News object to the context"""
+        """Add Community object to the context"""
         context = super(EditCommunityNewsView, self).get_context_data(**kwargs)
         context['community'] = self.community
         return context
