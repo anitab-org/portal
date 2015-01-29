@@ -7,6 +7,12 @@
       <h4>News Actions</h4>
       <ol class="list-unstyled">
         <li><a href="{% url 'add_community_news' community.slug %}">Add news</a></li>
+        {% if "change_community_news" in community_perms and news %}
+          <li><a href="{% url 'edit_community_news' community.slug news.slug %}">Edit current news</a></li>
+        {% endif %}
+        {% if "delete_community_news" in community_perms and news %}
+          <li><a href="#">Delete current news</a></li>
+        {% endif %}
       </ol>
     </div>
   {% endif %}
