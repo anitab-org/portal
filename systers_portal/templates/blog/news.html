@@ -10,7 +10,7 @@
       <h3 class="title"><a href="#">{{ news.title }}</a></h3>
 
       <p class="meta">{{ news.date_modified }} | <a
-          href="#">{{ news.author }}</a></p>
+          href="{{ news.author.get_absolute_url }}">{{ news.author }}</a></p>
 
       <div class="body">{{ news.content|safe }}</div>
       {% if news.tags %}
