@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from blog.forms import AddNewsForm, EditNewsForm, AddResourceForm
+from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
+                        EditResourceForm)
 from blog.models import News, Resource
 from community.models import Community
 from users.models import SystersUser
@@ -98,3 +99,36 @@ class AddResourceFormTestCase(TestCase):
         resource = Resource.objects.get()
         self.assertEqual(resource.title, 'Bar')
         self.assertEqual(resource.author, self.systers_user)
+
+
+class EditResourceFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_edit_news_form(self):
+        """Test edit resource form"""
+        incomplete_data = {'title': 'hello'}
+        form = EditResourceForm(data=incomplete_data)
+        self.assertFalse(form.is_valid())
+
+        data = {'slug': 'bar',
+                'title': 'Bar',
+                'content': "Rainbows and ponies",
+                'is_public': 1,
+                'is_monitored': 0}
+        resource = Resource.objects.create(slug="baz", title="Foo Bar",
+                                           author=self.systers_user,
+                                           content="Hi there!",
+                                           community=self.community)
+        form = EditNewsForm(instance=resource, data=data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        resource = Resource.objects.get()
+        self.assertEqual(resource.slug, 'bar')
+        self.assertEqual(resource.title, 'Bar')
+        self.assertEqual(resource.content, 'Rainbows and ponies')

@@ -62,7 +62,7 @@ class EditNewsForm(forms.ModelForm):
 
 class AddResourceForm(forms.ModelForm):
     """Form to add new Community Resource. The author and the community of the
-     rseource should be provided by the view:
+     resource should be provided by the view:
 
      * author - currently logged in user
      * community - defined by the community slug from the URL
@@ -93,3 +93,22 @@ class AddResourceForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class EditResourceForm(forms.ModelForm):
+    """Form to edit Community Resource."""
+    class Meta:
+        model = Resource
+        fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
+                  'tags', 'resource_type']
+
+    def __init__(self, *args, **kwargs):
+        super(EditResourceForm, self).__init__(*args, **kwargs)
+
+        # crispy FormHelper customization
+        self.helper = FormHelper(self)
+        self.helper.layout.append(
+            SubmitCancelFormActions(
+                cancel_href="{% url 'view_community_resource' community.slug "
+                            "object.slug %}")
+        )
