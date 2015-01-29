@@ -27,7 +27,7 @@ class CommunityNewsListViewTestCase(TestCase):
         url = reverse('view_community_news_list', kwargs={'slug': 'foo'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/news_list.html')
+        self.assertTemplateUsed(response, 'blog/post_list.html')
 
     def test_community_news_list_view_with_news(self):
         """Test GET request to news list with a single existing community
@@ -39,7 +39,7 @@ class CommunityNewsListViewTestCase(TestCase):
         url = reverse('view_community_news_list', kwargs={'slug': 'foo'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/news_list.html')
+        self.assertTemplateUsed(response, 'blog/post_list.html')
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
 
@@ -93,7 +93,7 @@ class CommunityNewsViewTestCase(TestCase):
                                                      'news_slug': 'bar'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/news.html')
+        self.assertTemplateUsed(response, 'blog/post.html')
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
 

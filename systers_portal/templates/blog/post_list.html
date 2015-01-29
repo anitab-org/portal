@@ -1,22 +1,22 @@
 {% extends "community/base.html" %}
 
 {% block title %}
-  - {{ community }} News
+  - {{ community }} {% if post_type == "news" %}News{% else %}Resources{% endif %}
 {% endblock %}
 
 {% block community_page_content %}
   <div class="blog-container">
-    {% for news in object_list %}
+    {% for post in object_list %}
       <div class="blog-entry">
-        <h3 class="title"><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></h3>
+        <h3 class="title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
 
-        <p class="meta">{{ news.date_modified }} | <a
-            href="{{ news.author.get_absolute_url }}">{{ news.author }}</a></p>
+        <p class="meta">{{ post.date_modified }} | <a
+            href="{{ post.author.get_absolute_url }}">{{ post.author }}</a></p>
 
-        <div class="body">{{ news.content|safe|truncatewords:50 }}</div>
-        {% if news.tags %}
+        <div class="body">{{ post.content|safe|truncatewords:50 }}</div>
+        {% if post.tags %}
           <ul class="list-inline tags">
-            {% for tag in news.tags.all %}
+            {% for tag in post.tags.all %}
               <li><span class="label label-info">{{ tag }}</span></li>
             {% endfor %}
           </ul>

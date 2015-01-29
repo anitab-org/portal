@@ -1,0 +1,31 @@
+{% extends "community/base.html" %}
+
+{% block title %}
+  - {{ community }} - {{ post.title }}
+{% endblock %}
+
+{% block community_page_content %}
+  <div class="blog-container">
+    <div class="blog-entry">
+      <h3 class="title">{{ post.title }}</h3>
+
+      <p class="meta">{{ post.date_modified }} | <a
+          href="{{ post.author.get_absolute_url }}">{{ post.author }}</a></p>
+
+      <div class="body">{{ post.content|safe }}</div>
+      {% if post.tags %}
+        <ul class="list-inline tags">
+          {% for tag in post.tags.all %}
+            <li><a href="#" class="label label-info">{{ tag }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_sidebar %}
+  {% if post_type == "news" %}
+    {% include 'blog/snippets/news_sidebar.html' with news=post %}
+  {% endif %}
+{% endblock %}

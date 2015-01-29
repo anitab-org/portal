@@ -15,7 +15,7 @@ from blog.models import News
 class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
                             SingleObjectMixin, ListView):
     """List of Community news view"""
-    template_name = "blog/news_list.html"
+    template_name = "blog/post_list.html"
     page_slug = 'news'
     paginate_by = 5
 
@@ -28,6 +28,7 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
         names."""
         context = super(CommunityNewsListView, self).get_context_data(**kwargs)
         context["community"] = self.object
+        context["post_type"] = "news"
         return context
 
     def get_queryset(self):
@@ -44,7 +45,7 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
 
 class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     """Single Community view"""
-    template_name = "blog/news.html"
+    template_name = "blog/post.html"
     model = Community
     page_slug = 'news'
 
@@ -54,7 +55,8 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context["community"] = self.object
 
         news_slug = self.kwargs['news_slug']
-        context['news'] = get_object_or_404(News, slug=news_slug)
+        context['post'] = get_object_or_404(News, slug=news_slug)
+        context["post_type"] = "news"
         return context
 
     def get_community(self):
@@ -108,7 +110,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                             UpdateView):
     """Edit existing Community News view"""
-    template_name = "blog/edit_news.html"
+    template_name = "blog/edit_post.html"
     model = News
     slug_url_kwarg = "news_slug"
     form_class = EditNewsForm
@@ -138,7 +140,7 @@ class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                               DeleteView):
     """Delete existing Community News view"""
-    template_name = "blog/news_confirm_delete.html"
+    template_name = "blog/post_confirm_delete.html"
     model = News
     slug_url_kwarg = "news_slug"
     raise_exception = True
@@ -155,6 +157,7 @@ class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
         context = super(DeleteCommunityNewsView, self).get_context_data(
             **kwargs)
         context['community'] = self.community
+        context['post_type'] = 'news'
         return context
 
     def check_permissions(self, request):
