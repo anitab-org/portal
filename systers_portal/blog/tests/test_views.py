@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from blog.models import News, Resource
+from blog.models import News, Resource, ResourceType
 from community.models import Community
 from users.models import SystersUser
 
@@ -283,13 +283,35 @@ class CommunityResourceListViewTestCase(TestCase):
         Resource.objects.create(slug="bar", title="Bar",
                                 author=self.systers_user,
                                 content="Hi there!",
-                                community=self.community, )
+                                community=self.community)
         url = reverse('view_community_resource_list', kwargs={'slug': 'foo'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'blog/post_list.html')
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
+
+        resource_type = ResourceType.objects.create(name="abc")
+        Resource.objects.create(slug="new", title="New",
+                                author=self.systers_user,
+                                content="New content!",
+                                community=self.community,
+                                resource_type=resource_type)
+        missing_param_url = url + "?type=cba"
+        response = self.client.get(missing_param_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Types")
+        self.assertContains(response, "abc")
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "New")
+
+        existing_param_url = url + "?type=abc"
+        response = self.client.get(existing_param_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Types")
+        self.assertContains(response, "abc")
+        self.assertNotContains(response, "Bar")
+        self.assertContains(response, "New")
 
     def test_community_resource_sidebar(self):
         """Test the presence or the lack of a resource sidebar in the

@@ -1,0 +1,12 @@
+{% if resource_types %}
+  <div class="sidebar-module mb40">
+    <h4>Types</h4>
+    <ol class="list-unstyled">
+      {% for type in resource_types %}
+        <li>
+          <a href="{% url 'view_community_resource_list' community.slug %}?type={{ type }}">{{ type }}</a>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+{% endif %}

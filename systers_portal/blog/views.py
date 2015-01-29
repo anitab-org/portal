@@ -10,7 +10,8 @@ from community.mixins import CommunityMenuMixin
 from community.models import Community
 from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
                         EditResourceForm)
-from blog.models import News, Resource
+from blog.mixins import ResourceTypesMixin
+from blog.models import News, Resource, ResourceType
 
 
 class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
@@ -169,7 +170,8 @@ class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 
 
 class CommunityResourceListView(UserDetailsMixin, CommunityMenuMixin,
-                                SingleObjectMixin, ListView):
+                                ResourceTypesMixin, SingleObjectMixin,
+                                ListView):
     """List of Community resources view"""
     template_name = "blog/post_list.html"
     page_slug = 'resources'
@@ -189,6 +191,14 @@ class CommunityResourceListView(UserDetailsMixin, CommunityMenuMixin,
         return context
 
     def get_queryset(self):
+        """Get the list of Resource objects filtered or not by their resource
+        type"""
+        type_query = self.request.GET.get("type", "")
+        if type_query:
+            resource_type = ResourceType.objects.filter(name=type_query)
+            if resource_type:
+                return Resource.objects.filter(community=self.object,
+                                               resource_type=resource_type[0])
         return Resource.objects.filter(community=self.object)
 
     def get_community(self):
