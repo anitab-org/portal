@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import (ListView, DetailView, CreateView, UpdateView,
+                                  DeleteView)
 from django.views.generic.detail import SingleObjectMixin
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -132,3 +133,32 @@ class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
         news. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_news", self.community)
+
+
+class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
+                              DeleteView):
+    """Delete existing Community News view"""
+    template_name = "blog/news_confirm_delete.html"
+    model = News
+    slug_url_kwarg = "news_slug"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful deletion"""
+        return reverse("view_community_news_list",
+                       kwargs={"slug": self.community.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(DeleteCommunityNewsView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to delete community
+        news. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("delete_community_news", self.community)

@@ -11,7 +11,7 @@
           <li><a href="{% url 'edit_community_news' community.slug news.slug %}">Edit current news</a></li>
         {% endif %}
         {% if "delete_community_news" in community_perms and news %}
-          <li><a href="#">Delete current news</a></li>
+          <li><a href="{% url 'delete_community_news' community.slug news.slug %}">Delete current news</a></li>
         {% endif %}
       </ol>
     </div>

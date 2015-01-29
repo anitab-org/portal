@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+  - {{ community }} - Delete {{ news.title }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="mt40"></div>
+<div class="row">
+  <div class="col-md-12">
+    <h1>Confirm to delete "{{ news.title }}"</h1>
+    <hr/>
+  </div>
+  <div class="col-md-12">
+    <form action="{% url 'delete_community_news' community.slug news.slug %}" method="post">
+      {% csrf_token %}
+      <p>Are you sure you want to delete "{{ news.title }}"?</p>
+      <input type="submit" value="Confirm" class="btn btn-danger" />
+  </form>
+  </div>
+</div>
+{% endblock %}

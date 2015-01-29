@@ -213,3 +213,43 @@ class EditCommunityNewsViewTestCase(TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
+
+
+class DeleteCommunityNewsViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.news = News.objects.create(slug="bar", title="Bar",
+                                        author=self.systers_user,
+                                        content="Hi there!",
+                                        community=self.community)
+        self.client = Client()
+
+    def test_get_delete_community_news_view(self):
+        """Test GET to confirm deletion of news"""
+        url = reverse("delete_community_news", kwargs={'slug': 'foo',
+                                                       'news_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Confirm to delete")
+
+    def test_post_delete_community_news_view(self):
+        """Test POST to delete a community news"""
+        url = reverse("delete_community_news", kwargs={'slug': 'foo',
+                                                       'news_slug': 'bar'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertSequenceEqual(News.objects.all(), [])
