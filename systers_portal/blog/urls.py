@@ -2,7 +2,8 @@ from django.conf.urls import url
 
 from blog.views import (CommunityNewsListView, CommunityNewsView,
                         AddCommunityNewsView, EditCommunityNewsView,
-                        DeleteCommunityNewsView)
+                        DeleteCommunityNewsView, CommunityResourceListView,
+                        CommunityResourceView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/news/$', CommunityNewsListView.as_view(),
@@ -15,4 +16,8 @@ urlpatterns = [
         DeleteCommunityNewsView.as_view(), name="delete_community_news"),
     url(r'^(?P<slug>\w+)/news/(?P<news_slug>\w+)/$',
         CommunityNewsView.as_view(), name="view_community_news"),
+    url(r'^(?P<slug>\w+)/resources/$', CommunityResourceListView.as_view(),
+        name="view_community_resource_list"),
+    url(r'^(?P<slug>\w+)/resources/(?P<resource_slug>\w+)/$',
+        CommunityResourceView.as_view(), name="view_community_resource"),
 ]

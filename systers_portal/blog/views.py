@@ -9,7 +9,7 @@ from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
 from blog.forms import AddNewsForm, EditNewsForm
-from blog.models import News
+from blog.models import News, Resource
 
 
 class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
@@ -24,8 +24,7 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
         return super(CommunityNewsListView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        """Add Community object and News list to the context under different
-        names."""
+        """Add Community object under different name and type of post."""
         context = super(CommunityNewsListView, self).get_context_data(**kwargs)
         context["community"] = self.object
         context["post_type"] = "news"
@@ -44,13 +43,13 @@ class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
 
 
 class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
-    """Single Community view"""
+    """Single News Community view"""
     template_name = "blog/post.html"
     model = Community
     page_slug = 'news'
 
     def get_context_data(self, **kwargs):
-        """Add Community object and News object to the context"""
+        """Add Community object, News object and post type to the context"""
         context = super(CommunityNewsView, self).get_context_data(**kwargs)
         context["community"] = self.object
 
@@ -165,3 +164,61 @@ class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
         news. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_news", self.community)
+
+
+class CommunityResourceListView(UserDetailsMixin, CommunityMenuMixin,
+                                SingleObjectMixin, ListView):
+    """List of Community resources view"""
+    template_name = "blog/post_list.html"
+    page_slug = 'resources'
+    paginate_by = 5
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Community.objects.all())
+        return super(CommunityResourceListView, self).get(request, *args,
+                                                          **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """Add Community object under different name and type of post."""
+        context = super(CommunityResourceListView, self).get_context_data(
+            **kwargs)
+        context["community"] = self.object
+        context["post_type"] = "resource"
+        return context
+
+    def get_queryset(self):
+        return Resource.objects.filter(community=self.object)
+
+    def get_community(self):
+        """Overrides the method from CommunityMenuMixin to extract the current
+        community.
+
+        :return: Community object
+        """
+        return self.object
+
+
+class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
+    """Resource Community view"""
+    template_name = "blog/post.html"
+    model = Community
+    page_slug = 'resources'
+
+    def get_context_data(self, **kwargs):
+        """Add Community object, Resource object and post type to the
+        context"""
+        context = super(CommunityResourceView, self).get_context_data(**kwargs)
+        context["community"] = self.object
+
+        resource_slug = self.kwargs['resource_slug']
+        context["post"] = get_object_or_404(Resource, slug=resource_slug)
+        context["post_type"] = "resource"
+        return context
+
+    def get_community(self):
+        """Overrides the method from CommunityMenuMixin to extract the current
+        community.
+
+        :return: Community object
+        """
+        return self.object

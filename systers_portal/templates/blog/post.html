@@ -27,5 +27,7 @@
 {% block extra_sidebar %}
   {% if post_type == "news" %}
     {% include 'blog/snippets/news_sidebar.html' with news=post %}
+  {% else %}
+    {% include 'blog/snippets/resources_sidebar.html' with resource=post %}
   {% endif %}
 {% endblock %}

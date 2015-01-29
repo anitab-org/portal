@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from blog.models import News
+from blog.models import News, Resource
 from community.models import Community
 from users.models import SystersUser
 
@@ -253,3 +253,115 @@ class DeleteCommunityNewsViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertSequenceEqual(News.objects.all(), [])
+
+
+class CommunityResourceListViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.client = Client()
+
+    def test_community_news_list_view_no_resources(self):
+        """Test GET request to resources list with an invalid community slug
+        and with a valid community slug, but no resources"""
+        url = reverse('view_community_resource_list', kwargs={'slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        url = reverse('view_community_resource_list', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/post_list.html')
+
+    def test_community_resource_list_view_with_resources(self):
+        """Test GET request to resource list with a single existing community
+        resource."""
+        Resource.objects.create(slug="bar", title="Bar",
+                                author=self.systers_user,
+                                content="Hi there!",
+                                community=self.community, )
+        url = reverse('view_community_resource_list', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/post_list.html')
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "Hi there!")
+
+    def test_community_resource_sidebar(self):
+        """Test the presence or the lack of a resource sidebar in the
+        template"""
+        url = reverse('view_community_resource_list', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Resource Actions")
+        self.assertNotContains(response, "Add resource")
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'blog/snippets/resources_sidebar.html')
+        self.assertContains(response, "Resource Actions")
+        self.assertContains(response, "Add resource")
+        self.assertNotContains(response, "Edit current resource")
+        self.assertNotContains(response, "Delete current resource")
+
+        User.objects.create_user(username="baz", password="foobar")
+        self.client.login(username="baz", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Resource Actions")
+        self.assertNotContains(response, "Add resource")
+
+
+class CommunityResourceViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.client = Client()
+
+    def test_community_resource_view(self):
+        """Test GET request to view a community resource"""
+        url = reverse('view_community_resource',
+                      kwargs={'slug': 'foo', 'resource_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        Resource.objects.create(slug="bar", title="Bar",
+                                author=self.systers_user,
+                                content="Hi there!",
+                                community=self.community)
+        url = reverse('view_community_resource',
+                      kwargs={'slug': 'foo', 'resource_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/post.html')
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "Hi there!")
+
+    def test_community_resources_sidebar(self):
+        """Test the presence or the lack of the resource sidebar in the
+        template"""
+        self.client.login(username="foo", password="foobar")
+        Resource.objects.create(slug="bar", title="Bar",
+                                author=self.systers_user,
+                                content="Hi there!",
+                                community=self.community)
+        url = reverse('view_community_resource',
+                      kwargs={'slug': 'foo', 'resource_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,
+                                'blog/snippets/resources_sidebar.html')
+        self.assertContains(response, "Resource Actions")
+        self.assertContains(response, "Add resource")
+        self.assertContains(response, "Edit current resource")
+        self.assertContains(response, "Delete current resource")

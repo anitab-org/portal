@@ -11,7 +11,11 @@
         <h3 class="title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
 
         <p class="meta">{{ post.date_modified }} | <a
-            href="{{ post.author.get_absolute_url }}">{{ post.author }}</a></p>
+            href="{{ post.author.get_absolute_url }}">{{ post.author }}</a>
+          {% if post.resource_type %}
+            | <a href="#">{{ post.resource_type }}</a>
+          {% endif %}
+        </p>
 
         <div class="body">{{ post.content|safe|truncatewords:50 }}</div>
         {% if post.tags %}
@@ -29,5 +33,9 @@
 {% endblock %}
 
 {% block extra_sidebar %}
-  {% include 'blog/snippets/news_sidebar.html' %}
+  {% if post_type == "news" %}
+    {% include 'blog/snippets/news_sidebar.html' %}
+  {% else %}
+    {% include 'blog/snippets/resources_sidebar.html' %}
+  {% endif %}
 {% endblock %}
