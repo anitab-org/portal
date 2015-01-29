@@ -56,7 +56,7 @@ class EditNewsForm(forms.ModelForm):
         self.helper.layout.append(
             SubmitCancelFormActions(
                 cancel_href="{% url 'view_community_news' community.slug "
-                            "news.slug %}")
+                            "object.slug %}")
         )
 
 
