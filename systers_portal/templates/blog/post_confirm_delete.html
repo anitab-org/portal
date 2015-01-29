@@ -15,6 +15,8 @@
   <div class="col-md-12">
     {% if post_type == 'news' %}
       <form action="{% url 'delete_community_news' community.slug object.slug %}" method="post">
+    {% else %}
+      <form action="{% url 'delete_community_resource' community.slug object.slug %}" method="post">
     {% endif %}
       {% csrf_token %}
       <p>Are you sure you want to delete "{{ object.title }}"?</p>

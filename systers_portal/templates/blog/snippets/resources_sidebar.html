@@ -11,7 +11,7 @@
           <li><a href="{% url 'edit_community_resource' community.slug resource.slug %}">Edit current resource</a></li>
         {% endif %}
         {% if "delete_community_resource" in community_perms and resource %}
-          <li><a href="#">Delete current resource</a></li>
+          <li><a href="{% url 'delete_community_resource' community.slug resource.slug %}">Delete current resource</a></li>
         {% endif %}
       </ol>
     </div>

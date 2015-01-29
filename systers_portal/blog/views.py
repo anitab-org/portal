@@ -154,7 +154,7 @@ class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                        kwargs={"slug": self.community.slug})
 
     def get_context_data(self, **kwargs):
-        """Add Community object to the context"""
+        """Add Community object and post type to the context"""
         context = super(DeleteCommunityNewsView, self).get_context_data(
             **kwargs)
         context['community'] = self.community
@@ -295,4 +295,35 @@ class EditCommunityResourcesView(LoginRequiredMixin, PermissionRequiredMixin,
         news. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_resource",
+                                     self.community)
+
+
+class DeleteCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
+                                  DeleteView):
+    """Delete existing Community Resource view"""
+    template_name = "blog/post_confirm_delete.html"
+    model = Resource
+    slug_url_kwarg = "resource_slug"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful deletion"""
+        return reverse("view_community_resource_list",
+                       kwargs={"slug": self.community.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and post type to the context"""
+        context = super(DeleteCommunityResourceView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        context['post_type'] = 'resource'
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to delete community
+        resource. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("delete_community_resource",
                                      self.community)
