@@ -8,7 +8,7 @@ from community.models import Community
 from users.models import SystersUser
 
 
-class UserDetailsMixinTest(TestCase):
+class UserDetailsMixinTestCase(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='foo', password='foobar')
@@ -21,7 +21,7 @@ class UserDetailsMixinTest(TestCase):
     def test_get_context_data_no_community(self):
         """Test mixin with no community set"""
         class DummyView(UserDetailsMixin, TemplateView):
-            pass
+            template_name = "dummy"
 
         request = self.factory.get("/dummy/")
         request.user = self.user

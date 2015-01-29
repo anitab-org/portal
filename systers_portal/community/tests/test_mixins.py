@@ -8,7 +8,7 @@ from community.models import Community, CommunityPage
 from users.models import SystersUser
 
 
-class CommunityMenuMixinTest(TestCase):
+class CommunityMenuMixinTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
