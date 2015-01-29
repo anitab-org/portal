@@ -133,7 +133,7 @@ class AddCommunityNewsViewTestCase(TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/add_news.html')
+        self.assertTemplateUsed(response, 'blog/add_post.html')
 
         new_user = User.objects.create_user(username="bar", password="foobar")
         self.client.login(username='bar', password='foobar')
@@ -365,3 +365,53 @@ class CommunityResourceViewTestCase(TestCase):
         self.assertContains(response, "Add resource")
         self.assertContains(response, "Edit current resource")
         self.assertContains(response, "Delete current resource")
+
+
+class AddCommunityResourceViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.client = Client()
+
+    def test_get_add_community_resource(self):
+        """Test GET create new community resource"""
+        url = reverse('add_community_resource', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blog/add_post.html')
+
+        new_user = User.objects.create_user(username="bar", password="foobar")
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Manager")
+        new_user.groups.add(group)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_add_community_resource(self):
+        """Test POST create new community resource"""
+        url = reverse('add_community_resource', kwargs={'slug': 'foo'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data={"slug": "baz"})
+        self.assertEqual(response.status_code, 200)
+
+        data = {'slug': 'bar',
+                'title': 'Bar',
+                'content': "Rainbows and ponies"}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        resource = Resource.objects.get()
+        self.assertEqual(resource.title, 'Bar')
+        self.assertEqual(resource.author, self.systers_user)

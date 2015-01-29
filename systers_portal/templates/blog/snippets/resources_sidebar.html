@@ -6,7 +6,7 @@
     <div class="sidebar-module mb40">
       <h4>Resource Actions</h4>
       <ol class="list-unstyled">
-        <li><a href="#">Add resource</a></li>
+        <li><a href="{% url 'add_community_resource' community.slug %}">Add resource</a></li>
         {% if "change_community_resource" in community_perms and resource %}
           <li><a href="#">Edit current resource</a></li>
         {% endif %}

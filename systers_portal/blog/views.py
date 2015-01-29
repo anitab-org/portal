@@ -8,7 +8,7 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
-from blog.forms import AddNewsForm, EditNewsForm
+from blog.forms import AddNewsForm, EditNewsForm, AddResourceForm
 from blog.models import News, Resource
 
 
@@ -70,7 +70,7 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                            CreateView):
     """Add News to a Community view"""
-    template_name = "blog/add_news.html"
+    template_name = "blog/add_post.html"
     model = News
     form_class = AddNewsForm
     raise_exception = True
@@ -84,10 +84,11 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                                "news_slug": self.object.slug})
 
     def get_context_data(self, **kwargs):
-        """Add Community object to the context"""
+        """Add Community object and post type to the context"""
         context = super(AddCommunityNewsView, self).get_context_data(
             **kwargs)
         context['community'] = self.community
+        context['post_type'] = 'news'
         return context
 
     def get_form_kwargs(self):
@@ -222,3 +223,43 @@ class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         :return: Community object
         """
         return self.object
+
+
+class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
+                               CreateView):
+    """Add News to a Community view"""
+    template_name = "blog/add_post.html"
+    model = Resource
+    form_class = AddResourceForm
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_resource",
+                       kwargs={"slug": self.community.slug,
+                               "resource_slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and post type to the context"""
+        context = super(AddCommunityResourceView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        context['post_type'] = 'resource'
+        return context
+
+    def get_form_kwargs(self):
+        """Add request user and community object to the form kwargs.
+        Used to autofill form fields with author and community without
+        explicitly filling them up in the form."""
+        kwargs = super(AddCommunityResourceView, self).get_form_kwargs()
+        kwargs.update({'author': self.request.user})
+        kwargs.update({'community': self.community})
+        return kwargs
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to add new community
+        news. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("add_community_resource", self.community)
