@@ -8,7 +8,8 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
-from blog.forms import AddNewsForm, EditNewsForm, AddResourceForm
+from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
+                        EditResourceForm)
 from blog.models import News, Resource
 
 
@@ -263,3 +264,35 @@ class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
         news. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("add_community_resource", self.community)
+
+
+class EditCommunityResourcesView(LoginRequiredMixin, PermissionRequiredMixin,
+                                 UpdateView):
+    """Edit existing Community Resource view"""
+    template_name = "blog/edit_post.html"
+    model = Resource
+    slug_url_kwarg = "resource_slug"
+    form_class = EditResourceForm
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_resource",
+                       kwargs={"slug": self.community.slug,
+                               "resource_slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(EditCommunityResourcesView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to edit community
+        news. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("change_community_resource",
+                                     self.community)
