@@ -45,7 +45,7 @@ class AddCommunityPageForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.layout.append(
             SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_main_page' "
+                cancel_href="{% url 'view_community_landing' "
                             "community.slug %}")
         )
 
