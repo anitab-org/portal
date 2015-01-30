@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, RedirectView
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.forms import (CommunityForm, AddCommunityPageForm,
@@ -162,3 +162,33 @@ class EditCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_page",
                                      self.community)
+
+
+class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
+                              DeleteView):
+    """Delete existing Community page view"""
+    template_name = "common/post_confirm_delete.html"
+    model = CommunityPage
+    slug_url_kwarg = "page_slug"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful deletion"""
+        return reverse("view_community_landing",
+                       kwargs={"slug": self.community.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and post type to the context"""
+        context = super(DeleteCommunityPageView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        context['post_type'] = 'page'
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to delete community
+        page. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("delete_community_page", self.community)

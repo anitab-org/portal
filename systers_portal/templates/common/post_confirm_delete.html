@@ -6,6 +6,15 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
+
+{% if post_type == "news" %}
+  {% url 'delete_community_news' community.slug object.slug as delete_url %}
+{% elif post_type == "resource" %}
+  {% url 'delete_community_resource' community.slug object.slug as delete_url %}
+{% else %}
+  {% url 'delete_community_page' community.slug object.slug as delete_url %}
+{% endif %}
+
 <div class="mt40"></div>
 <div class="row">
   <div class="col-md-12">
@@ -13,14 +22,10 @@
     <hr/>
   </div>
   <div class="col-md-12">
-    {% if post_type == 'news' %}
-      <form action="{% url 'delete_community_news' community.slug object.slug %}" method="post">
-    {% else %}
-      <form action="{% url 'delete_community_resource' community.slug object.slug %}" method="post">
-    {% endif %}
-      {% csrf_token %}
-      <p>Are you sure you want to delete "{{ object.title }}"?</p>
-      <input type="submit" value="Confirm" class="btn btn-danger" />
+    <form action="{{ delete_url }}" method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object.title }}"?</p>
+    <input type="submit" value="Confirm" class="btn btn-danger" />
   </form>
   </div>
 </div>
