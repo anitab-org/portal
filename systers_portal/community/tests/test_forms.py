@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from community.forms import CommunityForm, AddCommunityPageForm
+from community.forms import (CommunityForm, AddCommunityPageForm,
+                             EditCommunityPageForm)
 from community.models import Community, CommunityPage
 from users.models import SystersUser
 
@@ -55,3 +56,36 @@ class AddCommunityPageFormTestCase(TestCase):
         resource = CommunityPage.objects.get()
         self.assertEqual(resource.title, 'Foo')
         self.assertEqual(resource.author, self.systers_user)
+
+
+class EditCommunityPageFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_edit_community_page_form(self):
+        """Test edit community page"""
+        incomplete_data = {'slug': 'slug'}
+        form = EditCommunityPageForm(data=incomplete_data)
+        self.assertFalse(form.is_valid())
+
+        page = CommunityPage.objects.create(slug="foo", title="Foo page",
+                                            order=1,
+                                            author=self.systers_user,
+                                            content="Content",
+                                            community=self.community)
+        data = {'slug': 'bar',
+                'title': 'Bar page',
+                'order': 2,
+                'content': "New content"}
+        form = EditCommunityPageForm(instance=page, data=data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        page = CommunityPage.objects.get()
+        self.assertEqual(page.slug, 'bar')
+        self.assertEqual(page.order, 2)
+        self.assertEqual(page.title, "Bar page")

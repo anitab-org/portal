@@ -57,3 +57,21 @@ class AddCommunityPageForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class EditCommunityPageForm(forms.ModelForm):
+    """For to edit a CommunityPage."""
+    class Meta:
+        model = CommunityPage
+        fields = ('slug', 'title', 'order', 'content')
+
+    def __init__(self, *args, **kwargs):
+        super(EditCommunityPageForm, self).__init__(*args, **kwargs)
+
+        # crispy FormHelper customization
+        self.helper = FormHelper(self)
+        self.helper.layout.append(
+            SubmitCancelFormActions(
+                cancel_href="{% url 'view_community_page' community.slug "
+                            "object.slug %}")
+        )
