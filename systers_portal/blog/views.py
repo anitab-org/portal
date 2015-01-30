@@ -112,7 +112,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                             UpdateView):
     """Edit existing Community News view"""
-    template_name = "blog/edit_post.html"
+    template_name = "common/edit_post.html"
     model = News
     slug_url_kwarg = "news_slug"
     form_class = EditNewsForm
@@ -279,7 +279,7 @@ class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
 class EditCommunityResourcesView(LoginRequiredMixin, PermissionRequiredMixin,
                                  UpdateView):
     """Edit existing Community Resource view"""
-    template_name = "blog/edit_post.html"
+    template_name = "common/edit_post.html"
     model = Resource
     slug_url_kwarg = "resource_slug"
     form_class = EditResourceForm
