@@ -109,10 +109,31 @@ class CommunityPageViewTestCase(TestCase):
                                                   order=1,
                                                   community_admin=self.
                                                   systers_user)
+        CommunityPage.objects.create(slug="page", title="Page", order=1,
+                                     author=self.systers_user,
+                                     community=self.community)
+
+    def test_get_community_page_view(self):
+        """Test GET request to view a community page"""
+        url = reverse('view_community_page', kwargs={'slug': 'foo',
+                                                     'page_slug': 'page'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'community/page.html')
+        self.assertEqual(response.context['active_page'], 'page')
+
+        CommunityPage.objects.create(slug="page2", title="Page2", order=2,
+                                     author=self.systers_user,
+                                     community=self.community)
+        url = reverse('view_community_page', kwargs={'slug': 'foo',
+                                                     'page_slug': 'page2'})
+        response = self.client.get(url)
+        self.assertEqual(response.context['active_page'], 'page2')
 
     def test_join_button_snippet(self):
         """Test the rendering of join button snippet"""
-        url = reverse('view_community_main_page', kwargs={'slug': 'foo'})
+        url = reverse('view_community_page', kwargs={'slug': 'foo',
+                                                     'page_slug': 'page'})
         response = self.client.get(url)
         self.assertNotContains(response, "Join Community")
 
@@ -143,20 +164,19 @@ class CommunityPageViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertContains(response, "Join Community")
 
-    def test_actions_sidebar_snippet(self):
-        """Test the rendering of actions sidebar snippet"""
-        url = reverse('view_community_main_page', kwargs={'slug': 'foo'})
+    def test_community_sidebar_snippet(self):
+        """Test the rendering of community sidebar snippet"""
+        url = reverse('view_community_page', kwargs={'slug': 'foo',
+                                                     'page_slug': 'page'})
         response = self.client.get(url)
         self.assertNotContains(response, "Community Actions")
 
         User.objects.create_user(username='bar', password='foobar')
-        # systers_user_bar = SystersUser.objects.get(user=user)
         self.client.login(username='bar', password='foobar')
         response = self.client.get(url)
         self.assertContains(response, "Community Actions")
         self.assertContains(response, "View Community Profile")
         self.assertNotContains(response, "Edit Community Profile")
-        self.assertNotContains(response, "Manage Community Pages")
         self.assertNotContains(response, "Manage Community Users")
         self.assertNotContains(response, "Show Join Requests")
 
@@ -165,41 +185,26 @@ class CommunityPageViewTestCase(TestCase):
         self.assertContains(response, "Community Actions")
         self.assertContains(response, "View Community Profile")
         self.assertContains(response, "Edit Community Profile")
-        self.assertContains(response, "Manage Community Pages")
         self.assertContains(response, "Manage Community Users")
         self.assertContains(response, "Show Join Requests")
 
-    def test_get_view_community_main_page(self):
-        """Test GET request to land on community main page, which is in fact
-        a community page view"""
-        url = reverse('view_community_main_page', kwargs={'slug': 'foo'})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'community/base.html')
-        self.assertEqual(response.context['active_page'], 'news')
-
-        CommunityPage.objects.create(slug="page", title="Page", order=1,
-                                     author=self.systers_user,
-                                     community=self.community)
-        response = self.client.get(url)
-        self.assertEqual(response.context['active_page'], 'page')
-
-    def test_get_community_page(self):
-        """Test GET request to view a community page"""
-        CommunityPage.objects.create(slug="page", title="Page", order=1,
-                                     author=self.systers_user,
-                                     community=self.community)
+    def test_page_sidebar_snippet(self):
+        """Test the rendering of page actions snippet"""
         url = reverse('view_community_page', kwargs={'slug': 'foo',
                                                      'page_slug': 'page'})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'community/base.html')
-        self.assertEqual(response.context['active_page'], 'page')
-
-        CommunityPage.objects.create(slug="page2", title="Page2", order=2,
-                                     author=self.systers_user,
-                                     community=self.community)
-        url = reverse('view_community_page', kwargs={'slug': 'foo',
-                                                     'page_slug': 'page2'})
+        self.assertNotContains(response, "Page Actions")
+        User.objects.create_user(username='bar', password='foobar')
+        self.client.login(username='bar', password='foobar')
         response = self.client.get(url)
-        self.assertEqual(response.context['active_page'], 'page2')
+        self.assertNotContains(response, "Page Actions")
+        self.assertNotContains(response, "Add page")
+        self.assertNotContains(response, "Edit current page")
+        self.assertNotContains(response, "Delete current page")
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertContains(response, "Page Actions")
+        self.assertContains(response, "Add page")
+        self.assertContains(response, "Edit current page")
+        self.assertContains(response, "Delete current page")

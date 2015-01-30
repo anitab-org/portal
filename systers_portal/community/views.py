@@ -40,8 +40,15 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
 
 class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     """Community page view"""
-    template_name = "community/base.html"
+    template_name = "community/page.html"
     model = Community
+
+    def get_context_data(self, **kwargs):
+        """Add to the context CommunityPage object"""
+        context = super(CommunityPageView, self).get_context_data(**kwargs)
+        context['page'] = get_object_or_404(CommunityPage,
+                                            slug=self.kwargs['page_slug'])
+        return context
 
     def get_community(self):
         """Overrides the method from CommunityMenuMixin to extract the current
@@ -57,4 +64,5 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 
         :return: string CommunityPage slug
         """
-        return self.kwargs.get('page_slug')
+        return self.kwargs['page_slug']
+
