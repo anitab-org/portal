@@ -1,13 +1,39 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView
+from django.views.generic import DetailView, RedirectView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.forms import CommunityForm
 from community.mixins import CommunityMenuMixin
+from community.models import Community, CommunityPage
 from community.models import Community
 from common.mixins import UserDetailsMixin
+
+
+class CommunityLandingView(RedirectView):
+    """View Community landing page, which might be a CommunityPage of lowest
+    order or if pages are missing, then community news page."""
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Provide a redirect url based on the following conditions:
+
+        * if a Community has no pages, redirect to the news list views
+        * if a Community has at least one page, redirect to the page with the
+          lowest order (aka first page)
+        """
+        community = get_object_or_404(Community, slug=kwargs['slug'])
+        community_pages = CommunityPage.objects.filter(
+            community=community).order_by('order')
+        if community_pages.exists():
+            community_page_slug = community_pages[0].slug
+            return reverse("view_community_page",
+                           kwargs={"slug": community.slug,
+                                   "page_slug": community_page_slug})
+        else:
+            return reverse("view_community_news_list",
+                           kwargs={'slug': community.slug})
 
 
 class ViewCommunityProfileView(DetailView):

@@ -101,6 +101,30 @@ class EditCommunityProfileViewTestCase(TestCase):
         self.assertTrue(response.url.endswith('/community/bar/profile/'))
 
 
+class CommunityLandingViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_get_community_landing_view(self):
+        """Test GET request to community landing with and without a page"""
+        url = reverse("view_community_landing", kwargs={"slug": "foo"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith("/news/"))
+
+        CommunityPage.objects.create(slug="page", title="Page", order=1,
+                                     author=self.systers_user,
+                                     community=self.community)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith("/p/page/"))
+
+
 class CommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')

@@ -71,7 +71,7 @@ class Community(models.Model):
 
     def get_absolute_url(self):
         """Absolute url to a Community main page"""
-        return reverse('view_community_main_page', kwargs={'slug': self.slug})
+        return reverse('view_community_landing', kwargs={'slug': self.slug})
 
     def has_changed_name(self):
         """Check if community has a new name
