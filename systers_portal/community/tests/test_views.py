@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save, post_delete
 from django.test import TestCase, Client
@@ -232,3 +232,54 @@ class CommunityPageViewTestCase(TestCase):
         self.assertContains(response, "Add page")
         self.assertContains(response, "Edit current page")
         self.assertContains(response, "Delete current page")
+
+
+class AddCommunityPageViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_get_add_community_page_view(self):
+        """Test GET request to add a new community page"""
+        url = reverse("add_community_page", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'common/add_post.html')
+
+        new_user = User.objects.create_user(username="bar", password="foobar")
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Manager")
+        new_user.groups.add(group)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_add_community_page_view(self):
+        """Test POST request to add a new community page"""
+        url = reverse("add_community_page", kwargs={'slug': 'foo'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data={"slug": "baz"})
+        self.assertEqual(response.status_code, 200)
+
+        data = {'slug': 'bar',
+                'title': 'Bar',
+                'order': 1,
+                'content': "Rainbows and ponies"}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        page = CommunityPage.objects.get()
+        self.assertEqual(page.title, 'Bar')
+        self.assertEqual(page.author, self.systers_user)
+        self.assertEqual(page.community, self.community)
