@@ -9,9 +9,6 @@
         {% if "change_community" in community_perms %}
           <li><a href="{% url 'edit_community_profile' community.slug %}">Edit Community Profile</a></li>
         {% endif %}
-        {% if "change_community_page" in community_perms %}
-          <li><a href="#">Manage Community Pages</a></li>
-        {% endif %}
         {% if "change_community_systersuser" in community_perms %}
           <li><a href="#">Manage Community Users</a></li>
         {% endif %}
