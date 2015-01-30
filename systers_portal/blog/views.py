@@ -142,7 +142,7 @@ class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
 class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                               DeleteView):
     """Delete existing Community News view"""
-    template_name = "blog/post_confirm_delete.html"
+    template_name = "common/post_confirm_delete.html"
     model = News
     slug_url_kwarg = "news_slug"
     raise_exception = True
@@ -311,7 +311,7 @@ class EditCommunityResourcesView(LoginRequiredMixin, PermissionRequiredMixin,
 class DeleteCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
                                   DeleteView):
     """Delete existing Community Resource view"""
-    template_name = "blog/post_confirm_delete.html"
+    template_name = "common/post_confirm_delete.html"
     model = Resource
     slug_url_kwarg = "resource_slug"
     raise_exception = True
