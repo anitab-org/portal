@@ -16,14 +16,14 @@
       <ul class="nav nav-pills">
         {% for page in pages %}
           <li class="{% if active_page == page.slug %}active{% endif %}">
-            <a href="#">{{ page.title }}</a>
+            <a href="{% url 'view_community_page' community.slug page.slug %}">{{ page.title }}</a>
           </li>
         {% endfor %}
         <li class="{% if active_page == 'news' %}active{% endif %}">
-          <a href="#">News</a>
+          <a href="{% url 'view_community_news_list' community.slug %}">News</a>
         </li>
         <li class="{% if active_page == 'resources' %}active{% endif %}">
-          <a href="#">Resources</a>
+          <a href="{% url 'view_community_resource_list' community.slug %}">Resources</a>
       </ul>
 
       {% block community_page_content %}
