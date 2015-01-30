@@ -72,7 +72,7 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
                            CreateView):
     """Add News to a Community view"""
-    template_name = "blog/add_post.html"
+    template_name = "common/add_post.html"
     model = News
     form_class = AddNewsForm
     raise_exception = True
@@ -239,7 +239,7 @@ class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
                                CreateView):
     """Add News to a Community view"""
-    template_name = "blog/add_post.html"
+    template_name = "common/add_post.html"
     model = Resource
     form_class = AddResourceForm
     raise_exception = True

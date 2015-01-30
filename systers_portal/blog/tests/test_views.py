@@ -133,7 +133,7 @@ class AddCommunityNewsViewTestCase(TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/add_post.html')
+        self.assertTemplateUsed(response, 'common/add_post.html')
 
         new_user = User.objects.create_user(username="bar", password="foobar")
         self.client.login(username='bar', password='foobar')
@@ -157,7 +157,7 @@ class AddCommunityNewsViewTestCase(TestCase):
 
         data = {'slug': 'bar',
                 'title': 'Bar',
-                'content': "Rainbows and ponnies"}
+                'content': "Rainbows and ponies"}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
         news = News.objects.get()
@@ -407,7 +407,7 @@ class AddCommunityResourceViewTestCase(TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'blog/add_post.html')
+        self.assertTemplateUsed(response, 'common/add_post.html')
 
         new_user = User.objects.create_user(username="bar", password="foobar")
         self.client.login(username='bar', password='foobar')
