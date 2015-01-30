@@ -8,7 +8,7 @@
       <ol class="list-unstyled">
         <li><a href="{% url 'add_community_page' community.slug %}">Add page</a></li>
         {% if "change_community_page" in community_perms %}
-          <li><a href="#">Edit current page</a></li>
+          <li><a href="{% url 'edit_community_page' community.slug page.slug %}">Edit current page</a></li>
         {% endif %}
         {% if "delete_community_page" in community_perms %}
           <li><a href="#">Delete current page</a></li>

@@ -4,7 +4,8 @@ from django.views.generic import DetailView, RedirectView
 from django.views.generic.edit import UpdateView, CreateView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
-from community.forms import CommunityForm, AddCommunityPageForm
+from community.forms import (CommunityForm, AddCommunityPageForm,
+                             EditCommunityPageForm)
 from community.mixins import CommunityMenuMixin
 from community.models import Community, CommunityPage
 from common.mixins import UserDetailsMixin
@@ -130,3 +131,34 @@ class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
         page. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("add_community_page", self.community)
+
+
+class EditCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
+                            UpdateView):
+    """Edit an existing Community page view"""
+    template_name = "common/edit_post.html"
+    model = CommunityPage
+    slug_url_kwarg = "page_slug"
+    form_class = EditCommunityPageForm
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_page",
+                       kwargs={"slug": self.community.slug,
+                               "page_slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(EditCommunityPageView, self).get_context_data(**kwargs)
+        context['community'] = self.community
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to edit community
+        news. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("change_community_page",
+                                     self.community)

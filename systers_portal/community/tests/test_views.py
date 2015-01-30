@@ -283,3 +283,56 @@ class AddCommunityPageViewTestCase(TestCase):
         self.assertEqual(page.title, 'Bar')
         self.assertEqual(page.author, self.systers_user)
         self.assertEqual(page.community, self.community)
+
+
+class EditCommunityPageViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        self.page = CommunityPage.objects.create(slug="bar", title="Bar",
+                                                 order=1,
+                                                 author=self.systers_user,
+                                                 content="Hi there!",
+                                                 community=self.community)
+        self.client = Client()
+
+    def test_get_edit_community_page_view(self):
+        """Test GET to edit community page"""
+        url = reverse('edit_community_page',
+                      kwargs={'slug': 'foo', 'page_slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('edit_community_page',
+                      kwargs={'slug': 'foo', 'page_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_edit_community_resource_view(self):
+        """Test POST to edit community page"""
+        url = reverse('edit_community_page',
+                      kwargs={'slug': 'foo', 'page_slug': 'foo'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('edit_community_page',
+                      kwargs={'slug': 'foo', 'page_slug': 'bar'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        data = {'slug': 'another',
+                'title': 'Baz',
+                'order': 2,
+                'content': "Rainbows and ponies"}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith("/p/another/"))
