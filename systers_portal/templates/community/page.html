@@ -1,0 +1,15 @@
+{% extends "community/base.html" %}
+{% block title %}
+- {{ community }}
+{% endblock %}
+{% block community_page_content %}
+<div class="blog-container">
+<div class="blog-entry">
+<h3 class="title"><a href="#">{{ page.title }}</a></h3>
+<p class="meta">{{ page.date_modified }} | <a
+href="#">{{ page.author }}</a></p>
+<div class="body">{{ page.content|safe|truncatewords:50 }}</div>
+</div>
+<hr>
+</div>
+{% endblock %}
