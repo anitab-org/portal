@@ -1,13 +1,13 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, RedirectView
+from django.views.generic import DetailView, RedirectView, ListView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from community.forms import (CommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm)
 from community.mixins import CommunityMenuMixin
-from community.models import Community, CommunityPage
+from community.models import Community, CommunityPage, JoinRequest
 from common.mixins import UserDetailsMixin
 
 
@@ -192,3 +192,30 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
         page. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_page", self.community)
+
+
+class CommunityJoinRequestListView(LoginRequiredMixin, PermissionRequiredMixin,
+                                   ListView):
+    """List of not yet approved JoinRequest(s) to a Community"""
+    template_name = "community/join_requests.html"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(CommunityJoinRequestListView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        return context
+
+    def get_queryset(self):
+        return JoinRequest.objects.filter(community=self.community,
+                                          is_approved=False)
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to approve join
+        requests. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("approve_community_joinrequest",
+                                     self.community)

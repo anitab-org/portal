@@ -376,3 +376,35 @@ class DeleteCommunityPageViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertSequenceEqual(CommunityPage.objects.all(), [])
+
+
+class CommunityJoinRequestListViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_get_community_join_request_list_view(self):
+        """Test GET to get the list on not yet approved community join
+        requests."""
+        url = reverse("view_community_join_request_list",
+                      kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "<th>1</th>")
+
+        user = User.objects.create_user(username="rainbow", password="foobar")
+        systers_user = SystersUser.objects.get(user=user)
+        JoinRequest.objects.create(user=systers_user,
+                                   community=self.community)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<th>1</th>")
+        self.assertContains(response, 'rainbow')

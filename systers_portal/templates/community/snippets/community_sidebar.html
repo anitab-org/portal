@@ -13,7 +13,7 @@
           <li><a href="#">Manage Community Users</a></li>
         {% endif %}
         {% if "approve_community_joinrequest" in community_perms %}
-          <li><a href="#">Show Join Requests</a></li>
+          <li><a href="{% url 'view_community_join_request_list' community.slug %}">Show Join Requests</a></li>
         {% endif %}
       </ol>
     </div>

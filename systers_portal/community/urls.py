@@ -3,7 +3,8 @@ from django.conf.urls import url
 from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ViewCommunityProfileView, CommunityPageView,
                              AddCommunityPageView, EditCommunityPageView,
-                             DeleteCommunityPageView)
+                             DeleteCommunityPageView,
+                             CommunityJoinRequestListView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/$', CommunityLandingView.as_view(),
@@ -19,5 +20,8 @@ urlpatterns = [
     url(r'^(?P<slug>\w+)/p/(?P<page_slug>\w+)/delete/$',
         DeleteCommunityPageView.as_view(), name="delete_community_page"),
     url(r'^(?P<slug>\w+)/p/(?P<page_slug>\w+)/$',
-        CommunityPageView.as_view(), name="view_community_page")
+        CommunityPageView.as_view(), name="view_community_page"),
+    url(r'^(?P<slug>\w+)/join_requests/$',
+        CommunityJoinRequestListView.as_view(),
+        name="view_community_join_request_list"),
 ]
