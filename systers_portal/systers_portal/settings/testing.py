@@ -26,3 +26,7 @@ NOSE_ARGS = [
     # '--with-doctest',
     # '--doctest-options=+ELLIPSIS',
 ]
+
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+)
