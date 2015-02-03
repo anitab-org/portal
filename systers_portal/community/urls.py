@@ -4,7 +4,8 @@ from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ViewCommunityProfileView, CommunityPageView,
                              AddCommunityPageView, EditCommunityPageView,
                              DeleteCommunityPageView,
-                             CommunityJoinRequestListView)
+                             CommunityJoinRequestListView,
+                             ApproveCommunityJoinRequestView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/$', CommunityLandingView.as_view(),
@@ -24,4 +25,7 @@ urlpatterns = [
     url(r'^(?P<slug>\w+)/join_requests/$',
         CommunityJoinRequestListView.as_view(),
         name="view_community_join_request_list"),
+    url(r'^(?P<slug>\w+)/join_requests/approve/(?P<pk>\d+)$',
+        ApproveCommunityJoinRequestView.as_view(),
+        name="approve_community_join_request"),
 ]

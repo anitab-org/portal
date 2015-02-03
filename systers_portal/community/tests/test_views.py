@@ -408,3 +408,85 @@ class CommunityJoinRequestListViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<th>1</th>")
         self.assertContains(response, 'rainbow')
+
+
+class ApproveCommunityJoinRequestViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_approve_community_join_request_view_redundant(self):
+        """Test GET request to approve a community join request for a user
+        who is already a member."""
+        url = reverse("approve_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': 1})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        join_request = JoinRequest.objects.create(user=self.systers_user,
+                                                  community=self.community)
+        url = reverse("approve_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': join_request.pk})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'community/foo/join_requests/')
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "info")
+            self.assertTrue(
+                'foo is already a member of Foo community' in message.message)
+        self.assertQuerysetEqual(JoinRequest.objects.all(), [])
+
+    def test_approve_community_join_request_view_new_user(self):
+        """Test GET request to approve a community join request and add a new
+        member to the community"""
+        self.client.login(username='foo', password='foobar')
+        user = User.objects.create(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        join_request = JoinRequest.objects.create(user=systers_user,
+                                                  community=self.community)
+        self.assertFalse(systers_user.is_member(self.community))
+        url = reverse("approve_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': join_request.pk})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'community/foo/join_requests/')
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'bar successfully became a member of Foo community'
+                in message.message)
+        self.assertTrue(systers_user.is_member(self.community))
+        self.assertTrue(JoinRequest.objects.get().is_approved)
+
+    def test_approve_community_join_request_view_multiple(self):
+        """Test GET request to approve multiple community join request from a
+        user. This scenario might happen if the join requests are created
+        manually from the admin panel."""
+        self.client.login(username='foo', password='foobar')
+        user = User.objects.create(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        JoinRequest.objects.create(user=systers_user, community=self.community)
+        join_request = JoinRequest.objects.create(user=systers_user,
+                                                  community=self.community)
+        self.assertFalse(systers_user.is_member(self.community))
+        url = reverse("approve_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': join_request.pk})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'community/foo/join_requests/')
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'bar successfully became a member of Foo community'
+                in message.message)
+        self.assertTrue(systers_user.is_member(self.community))
+        join_requests = JoinRequest.objects.all()
+        for join_request in join_requests:
+            self.assertTrue(join_request.is_approved)

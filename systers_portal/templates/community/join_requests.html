@@ -32,7 +32,8 @@
               <td><a href="mailto:{{ join_request.user.user.email }}">{{ join_request.user.user.email }}</a></td>
               <td>{{ join_request.date_created }}</td>
               <td>
-                <a href="#" role="button" class="btn btn-primary btn-sm">Approve</a>
+                <a href="{% url 'approve_community_join_request' community.slug join_request.pk %}"
+                   role="button" class="btn btn-primary btn-sm">Approve</a>
                 <a href="#" role="button" class="btn btn-warning btn-sm">Reject</a>
               </td>
             </tr>
