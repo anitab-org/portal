@@ -45,6 +45,64 @@ body > .container {
   padding: 60px 15px 0;
 }
 
+/* Custom alert messages
+-------------------------------------------------- */
+.messages {
+  margin-top: 54px;
+  margin-bottom: -60px;
+}
+
+.message {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.message a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.message a:hover {
+  text-decoration: underline;
+}
+
+.message-info {
+  color: #31708f;
+  background-color: #d9edf7;
+}
+
+.message-info a {
+  color: #245269;
+}
+
+.message-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+}
+
+.message-success a {
+  color: #2b542c;
+}
+
+.message-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+}
+
+.message-warning a {
+  color: #66512c;
+}
+
+.message-error {
+  color: #a94442;
+  background-color: #f2dede;
+}
+
+.message-error a {
+  color: #843534;
+}
+
 /* Index page styles
 -------------------------------------------------- */
 .jumbotron-custom {
