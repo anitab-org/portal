@@ -132,3 +132,10 @@ class JoinRequest(models.Model):
     def __unicode__(self):
         approval_status = "approved" if self.is_approved else "not approved"
         return "Join Request by {0} - {1}".format(self.user, approval_status)
+
+    def approve(self):
+        """Approve a join request."""
+        if self.is_approved:
+            return
+        self.is_approved = True
+        self.save()

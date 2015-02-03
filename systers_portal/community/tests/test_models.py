@@ -106,3 +106,13 @@ class JoinRequestModelTestCase(TestCase):
         join_request.save()
         self.assertEqual(unicode(join_request),
                          "Join Request by foo - approved")
+
+    def test_approve(self):
+        """Test approving a join request"""
+        join_request = JoinRequest(user=self.systers_user,
+                                   community=self.community)
+        self.assertFalse(join_request.is_approved)
+        join_request.approve()
+        self.assertTrue(join_request.is_approved)
+        join_request.approve()
+        self.assertTrue(join_request.is_approved)
