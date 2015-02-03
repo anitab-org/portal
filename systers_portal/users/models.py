@@ -68,6 +68,18 @@ class SystersUser(models.Model):
         if join_requests:
             return join_requests[0]
 
+    def approve_all_join_requests(self, community):
+        """Approve all join requests of a user towards a community.
+
+        :param community: Community object
+        """
+        from community.models import JoinRequest
+        join_requests = JoinRequest.objects.filter(user=self,
+                                                   community=community,
+                                                   is_approved=False)
+        for join_request in join_requests:
+            join_request.approve()
+
 
 def user_unicode(self):
     """Unicode representation of Django User model

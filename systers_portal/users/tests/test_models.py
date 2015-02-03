@@ -64,6 +64,26 @@ class SystersUserTestCase(TestCase):
         self.assertEqual(bar_systers_user.get_last_join_request(community),
                          join_request2)
 
+    def test_approve_all_join_requests(self):
+        """Test approving all user join requests"""
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1,
+                                             community_admin=self.systers_user)
+        user = User.objects.create_user(username='bar', password='foobar')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        bar_systers_user.approve_all_join_requests(community)
+        join_request1 = JoinRequest.objects.create(user=bar_systers_user,
+                                                   community=community)
+        join_request2 = JoinRequest.objects.create(user=bar_systers_user,
+                                                   community=community)
+        self.assertFalse(join_request1.is_approved)
+        self.assertFalse(join_request2.is_approved)
+
+        bar_systers_user.approve_all_join_requests(community)
+        join_requests = JoinRequest.objects.all()
+        for join_request in join_requests:
+            self.assertTrue(join_request.is_approved)
+
 
 class UserTestCase(TestCase):
     def setUp(self):
