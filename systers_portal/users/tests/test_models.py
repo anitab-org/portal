@@ -84,6 +84,20 @@ class SystersUserTestCase(TestCase):
         for join_request in join_requests:
             self.assertTrue(join_request.is_approved)
 
+    def test_reject_all_join_requests(self):
+        """Test rejecting all user join requests"""
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1,
+                                             community_admin=self.systers_user)
+        user = User.objects.create_user(username='bar', password='foobar')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        bar_systers_user.reject_all_join_requests(community)
+        JoinRequest.objects.create(user=bar_systers_user, community=community)
+        JoinRequest.objects.create(user=bar_systers_user, community=community)
+        bar_systers_user.reject_all_join_requests(community)
+        self.assertFalse(bar_systers_user.is_member(community))
+        self.assertSequenceEqual(JoinRequest.objects.all(), [])
+
 
 class UserTestCase(TestCase):
     def setUp(self):

@@ -80,6 +80,19 @@ class SystersUser(models.Model):
         for join_request in join_requests:
             join_request.approve()
 
+    def reject_all_join_requests(self, community):
+        """Reject all join request of a user towards a community by deleting
+        them.
+
+        :param community: Community object
+        """
+        from community.models import JoinRequest
+        join_requests = JoinRequest.objects.filter(user=self,
+                                                   community=community,
+                                                   is_approved=False)
+        for join_request in join_requests:
+            join_request.delete()
+
 
 def user_unicode(self):
     """Unicode representation of Django User model
