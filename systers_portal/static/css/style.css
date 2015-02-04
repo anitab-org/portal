@@ -137,7 +137,8 @@ body > .container {
 /* Sign in, Sign up
 -------------------------------------------------- */
 .form-signin,
-.form-signup {
+.form-signup,
+.form-logout {
   max-width: 350px;
   padding: 15px;
   margin: 0 auto;
