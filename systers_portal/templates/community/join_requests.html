@@ -34,7 +34,8 @@
               <td>
                 <a href="{% url 'approve_community_join_request' community.slug join_request.pk %}"
                    role="button" class="btn btn-primary btn-sm">Approve</a>
-                <a href="#" role="button" class="btn btn-warning btn-sm">Reject</a>
+                <a href="{% url 'reject_community_join_request' community.slug join_request.pk %}"
+                   role="button" class="btn btn-warning btn-sm">Reject</a>
               </td>
             </tr>
           {% endfor %}

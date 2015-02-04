@@ -490,3 +490,59 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
         join_requests = JoinRequest.objects.all()
         for join_request in join_requests:
             self.assertTrue(join_request.is_approved)
+
+
+class RejectCommunityJoinRequestViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_reject_community_join_request_view_redundant(self):
+        """Test GET request to try to reject a community join request for a
+        user who is already a member. This scenario might happen if the join
+        request is created manually from the admin panel."""
+        url = reverse("reject_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': 1})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        join_request = JoinRequest.objects.create(user=self.systers_user,
+                                                  community=self.community)
+        url = reverse("reject_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': join_request.pk})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'community/foo/join_requests/')
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "info")
+            self.assertTrue(
+                'foo is already a member of Foo community' in message.message)
+        self.assertQuerysetEqual(JoinRequest.objects.all(), [])
+
+    def test_reject_community_join_request_view_multiple(self):
+        """Test GET request to reject all community join requests"""
+        self.client.login(username='foo', password='foobar')
+        user = User.objects.create(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        join_request = JoinRequest.objects.create(user=systers_user,
+                                                  community=self.community)
+        self.assertFalse(systers_user.is_member(self.community))
+        url = reverse("reject_community_join_request",
+                      kwargs={'slug': 'foo', 'pk': join_request.pk})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'community/foo/join_requests/')
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "info")
+            self.assertTrue(
+                'bar was successfully rejected to become a member of Foo'
+                ' community' in message.message)
+        self.assertFalse(systers_user.is_member(self.community))
+        self.assertSequenceEqual(JoinRequest.objects.all(), [])
