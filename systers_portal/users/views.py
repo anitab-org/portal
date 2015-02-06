@@ -29,7 +29,7 @@ class UserView(LoginRequiredMixin, TemplateView):
                                                    is_approved=False)
         permission_groups = systersuser.user.groups.all()
         context_dict = {'systersuser': systersuser,
-                        'communities': communities,
+                        'community_list': communities,
                         'join_requests': join_requests,
                         'permission_groups': permission_groups}
         for key, value in context_dict.iteritems():

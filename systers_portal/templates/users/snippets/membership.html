@@ -4,9 +4,11 @@
     {% if communities or join_requests %}
       <table class="table table-hover table-custom">
         <tbody>
-        {% for community in communities %}
+        {% for community in community_list %}
           <tr class="profile-row">
-            <td><a href="#" class="table-anchor">{{ community }}</a></td>
+            <td>
+              <a href="{% url "view_community_landing" community.slug %}" class="table-anchor">{{ community }}</a>
+            </td>
             <td>
               {% if user == systersuser.user or user.is_superuser %}
                 {% if systersuser == community.community_admin %}
