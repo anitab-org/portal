@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save, post_delete
-from django.test import TestCase, Client
+from django.test import TestCase
 
 from community.models import Community, CommunityPage, JoinRequest
 from community.signals import manage_community_groups, remove_community_groups
@@ -43,7 +43,6 @@ class EditCommunityProfileViewTestCase(TestCase):
                                                   order=1,
                                                   community_admin=self.
                                                   systers_user)
-        self.client = Client()
 
     def test_get_edit_community_profile_view(self):
         """Test GET edit community profile"""
@@ -298,7 +297,6 @@ class EditCommunityPageViewTestCase(TestCase):
                                                  author=self.systers_user,
                                                  content="Hi there!",
                                                  community=self.community)
-        self.client = Client()
 
     def test_get_edit_community_page_view(self):
         """Test GET to edit community page"""
@@ -350,7 +348,6 @@ class DeleteCommunityPageViewTestCase(TestCase):
                                      author=self.systers_user,
                                      content="Hi there!",
                                      community=self.community)
-        self.client = Client()
 
     def test_get_delete_community_page_view(self):
         """Test GET to confirm deletion of a community page"""
