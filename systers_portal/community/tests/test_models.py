@@ -116,3 +116,31 @@ class JoinRequestModelTestCase(TestCase):
         self.assertTrue(join_request.is_approved)
         join_request.approve()
         self.assertTrue(join_request.is_approved)
+
+    def test_create_join_request(self):
+        """Test model manager method to create a join request"""
+        user = User.objects.create(username="bar", password="foobar")
+        systers_user = SystersUser.objects.get(user=user)
+        join_request, status = JoinRequest.objects.create_join_request(
+            systers_user, self.community)
+        self.assertEqual(join_request, JoinRequest.objects.get())
+        self.assertEqual(status, "ok")
+
+        join_request, status = JoinRequest.objects.create_join_request(
+            systers_user, self.community)
+        self.assertIsNone(join_request)
+        self.assertEqual(status, "join_request_exists")
+
+        join_request = JoinRequest.objects.get()
+        join_request.approve()
+        self.community.add_member(systers_user)
+        join_request, status = JoinRequest.objects.create_join_request(
+            systers_user, self.community)
+        self.assertIsNone(join_request)
+        self.assertEqual(status, "already_member")
+
+        self.community.remove_member(systers_user)
+        join_request, status = JoinRequest.objects.create_join_request(
+            systers_user, self.community)
+        self.assertIsInstance(join_request, JoinRequest)
+        self.assertEqual(status, "ok")

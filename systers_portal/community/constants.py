@@ -6,3 +6,8 @@ COMMUNITY_ADMIN = "{0}: Community Admin"
 
 # community
 DEFAULT_COMMUNITY_ACTIVE_PAGE = 'news'
+
+# status
+ALREADY_MEMBER = "already_member"
+JOIN_REQUEST_EXISTS = "join_request_exists"
+OK = "ok"

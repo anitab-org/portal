@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from common.models import Post
+from community.constants import ALREADY_MEMBER, JOIN_REQUEST_EXISTS, OK
 from users.models import SystersUser
 
 
@@ -120,6 +121,25 @@ class CommunityPage(Post):
         return "Page {0} of {1}".format(self.title, self.community)
 
 
+class JoinRequestManager(models.Manager):
+    """Model manager for JoinRequest model"""
+    def create_join_request(self, user, community):
+        """Create a join request by a user to a community.
+
+        :param user: SystersUser object
+        :param community: Community object
+        :return: tuple (JoinRequest object, status), where Join Request can be
+                 None and status is a string that conveys the result or reason
+                 of the operation.
+        """
+        if user.is_member(community):
+            return None, ALREADY_MEMBER
+        if JoinRequest.objects.filter(user=user, community=community,
+                                      is_approved=False).exists():
+            return None, JOIN_REQUEST_EXISTS
+        return JoinRequest.objects.create(user=user, community=community), OK
+
+
 class JoinRequest(models.Model):
     """Model to represent a request to join a community by a user"""
     user = models.ForeignKey(SystersUser, related_name='created_by')
@@ -128,6 +148,8 @@ class JoinRequest(models.Model):
     community = models.ForeignKey(Community)
     date_created = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
+
+    objects = JoinRequestManager()
 
     def __unicode__(self):
         approval_status = "approved" if self.is_approved else "not approved"
