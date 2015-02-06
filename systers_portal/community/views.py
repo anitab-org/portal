@@ -2,14 +2,21 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, RedirectView, ListView
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
+from common.mixins import UserDetailsMixin
+from community.constants import (ALREADY_MEMBER, JOIN_REQUEST_EXISTS, OK,
+                                 USER_ALREADY_MEMBER_MSG,
+                                 USER_MEMBER_SUCCESS_MSG,
+                                 USER_MEMBER_REJECTED_MSG, JOIN_REQUEST_OK_MSG,
+                                 ALREADY_MEMBER_MSG, JOIN_REQUEST_EXISTS_MSG)
 from community.forms import (CommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm)
 from community.mixins import CommunityMenuMixin
 from community.models import Community, CommunityPage, JoinRequest
-from common.mixins import UserDetailsMixin
+from users.models import SystersUser
 
 
 class CommunityLandingView(RedirectView):
@@ -253,12 +260,12 @@ class ApproveCommunityJoinRequestView(LoginRequiredMixin,
         user = join_request.user
         if user.is_member(self.community):
             join_request.delete()
-            return "{0} is already a member of {1} community.".format(
+            return USER_ALREADY_MEMBER_MSG.format(
                 user, self.community), messages.INFO
         user.approve_all_join_requests(self.community)
         self.community.add_member(join_request.user)
-        return "{0} successfully became a member of {1} community."\
-            .format(user, self.community), messages.SUCCESS
+        return USER_MEMBER_SUCCESS_MSG.format(
+            user, self.community), messages.SUCCESS
 
     def check_permissions(self, request):
         """Check if the request user has the permissions to approve join
@@ -299,10 +306,10 @@ class RejectCommunityJoinRequestView(LoginRequiredMixin,
         user = join_request.user
         user.reject_all_join_requests(self.community)
         if user.is_member(self.community):
-            return "{0} is already a member of {1} community.".format(
+            return USER_ALREADY_MEMBER_MSG.format(
                 user, self.community), messages.INFO
-        return "{0} was successfully rejected to become a member of {1}" \
-               " community".format(user, self.community), messages.INFO
+        return USER_MEMBER_REJECTED_MSG.format(
+            user, self.community), messages.INFO
 
     def check_permissions(self, request):
         """Check if the request user has the permissions to approve/reject join
@@ -310,3 +317,36 @@ class RejectCommunityJoinRequestView(LoginRequiredMixin,
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("approve_community_joinrequest",
                                      self.community)
+
+
+class RequestJoinCommunityView(LoginRequiredMixin, SingleObjectMixin,
+                               RedirectView):
+    """Request to join a community view"""
+    model = Community
+    permanent = False
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to user profile page"""
+        return reverse("user", kwargs={'username': self.request.user.username})
+
+    def get(self, request, *args, **kwargs):
+        """Attempt to create a join request and add a message about the result.
+        """
+        systers_user = get_object_or_404(SystersUser, user=self.request.user)
+        community = self.get_object()
+        join_request, status = JoinRequest.objects.create_join_request(
+            systers_user, community)
+        if status == OK:
+            messages.add_message(request, messages.INFO,
+                                 JOIN_REQUEST_OK_MSG.format(community))
+        elif status == ALREADY_MEMBER:
+            messages.add_message(request, messages.WARNING,
+                                 ALREADY_MEMBER_MSG.format(community))
+        elif status == JOIN_REQUEST_EXISTS:
+            messages.add_message(request, messages.WARNING,
+                                 JOIN_REQUEST_EXISTS_MSG.format(community))
+        return super(RequestJoinCommunityView, self).get(request, *args,
+                                                         **kwargs)

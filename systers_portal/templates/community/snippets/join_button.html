@@ -15,11 +15,11 @@
             <a href="#" role="button" class="btn btn-warning btn-block">Cancel request</a>
           {# user was a community member #}
           {% elif not is_member and join_request.is_approved %}
-            <a href="#" role="button" class="btn btn-success btn-block">Join Community</a>
+            <a href="{% url "request_join_community" community.slug %}" role="button" class="btn btn-success btn-block">Join Community</a>
           {% endif %}
         {% else %}
           {# user is not a member of the community #}
-          <a href="#" role="button" class="btn btn-success btn-block">Join Community</a>
+          <a href="{% url "request_join_community" community.slug %}" role="button" class="btn btn-success btn-block">Join Community</a>
         {% endif %}
       {% endif %}
     {% endif %}

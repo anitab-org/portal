@@ -543,3 +543,64 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
                 ' community.' in message.message)
         self.assertFalse(systers_user.is_member(self.community))
         self.assertSequenceEqual(JoinRequest.objects.all(), [])
+
+
+class RequestJoinCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_request_join_community_view(self):
+        """Test GET request to join a community"""
+        url = reverse("request_join_community", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        user = User.objects.create_user(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        self.client.login(username="bar", password="foobar")
+        nonexistent_url = reverse("request_join_community",
+                                  kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(JoinRequest.objects.get())
+        self.assertFalse(JoinRequest.objects.get().is_approved)
+        self.assertFalse(systers_user.is_member(self.community))
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "info")
+            self.assertTrue(
+                'You have successfully requested to join Foo community. '
+                'In a short while someone will review your request.'
+                in message.message)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(JoinRequest.objects.all().count(), 1)
+        self.assertFalse(JoinRequest.objects.get().is_approved)
+        self.assertFalse(systers_user.is_member(self.community))
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                'You have already requested to join Foo community. Be patient '
+                'until someone reviews your request.' in message.message)
+
+        join_request = JoinRequest.objects.get()
+        join_request.approve()
+        self.community.add_member(systers_user)
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(JoinRequest.objects.all().count(), 1)
+        self.assertTrue(JoinRequest.objects.get().is_approved)
+        self.assertTrue(systers_user.is_member(self.community))
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                'You are already a member of Foo community. No need to '
+                'request to join the community.' in message.message)
