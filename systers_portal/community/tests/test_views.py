@@ -520,7 +520,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
         for message in response.context['messages']:
             self.assertEqual(message.tags, "info")
             self.assertTrue(
-                'foo is already a member of Foo community' in message.message)
+                'foo is already a member of Foo community.' in message.message)
         self.assertQuerysetEqual(JoinRequest.objects.all(), [])
 
     def test_reject_community_join_request_view_multiple(self):
@@ -540,6 +540,6 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
             self.assertEqual(message.tags, "info")
             self.assertTrue(
                 'bar was successfully rejected to become a member of Foo'
-                ' community' in message.message)
+                ' community.' in message.message)
         self.assertFalse(systers_user.is_member(self.community))
         self.assertSequenceEqual(JoinRequest.objects.all(), [])
