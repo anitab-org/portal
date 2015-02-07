@@ -24,3 +24,8 @@ ALREADY_MEMBER_MSG = "You are already a member of {0} community. " \
                      "No need to request to join the community."
 JOIN_REQUEST_EXISTS_MSG = "You have already requested to join {0} community. " \
                           "Be patient until someone reviews your request."
+JOIN_REQUEST_CANCELED_MSG = "Your request to join {0} community was canceled."
+ALREADY_MEMBER_CANCEL_MSG = "You are already a member of {0} community. " \
+                            "There are no pending join requests."
+NO_PENDING_JOIN_REQUEST_MSG = "There is no pending request to join {0} " \
+                              "community."

@@ -574,7 +574,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
         self.assertFalse(JoinRequest.objects.get().is_approved)
         self.assertFalse(systers_user.is_member(self.community))
         for message in response.context['messages']:
-            self.assertEqual(message.tags, "info")
+            self.assertEqual(message.tags, "success")
             self.assertTrue(
                 'You have successfully requested to join Foo community. '
                 'In a short while someone will review your request.'
@@ -604,3 +604,56 @@ class RequestJoinCommunityViewTestCase(TestCase):
             self.assertTrue(
                 'You are already a member of Foo community. No need to '
                 'request to join the community.' in message.message)
+
+
+class CancelCommunityJoinRequestView(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_cancel_community_join_request(self):
+        """Test GET request to cancel a join request to a community"""
+        url = reverse("cancel_community_join_request", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        user = User.objects.create_user(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        self.client.login(username="bar", password="foobar")
+        nonexistent_url = reverse("request_join_community",
+                                  kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                'There is no pending request to join Foo community.'
+                in message.message)
+
+        JoinRequest.objects.create(user=systers_user, community=self.community)
+        self.assertEqual(JoinRequest.objects.all().count(), 1)
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(JoinRequest.objects.all().count(), 0)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Your request to join Foo community was canceled.'
+                in message.message)
+
+        self.community.add_member(systers_user)
+        self.community.save()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                'You are already a member of Foo community. There are no '
+                'pending join requests.' in message.message)

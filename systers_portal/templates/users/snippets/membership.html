@@ -24,11 +24,12 @@
         {% endfor %}
         {% for join_request in join_requests %}
           <tr class="profile-row">
-            <td><a href="#" class="table-anchor">{{ join_request.community }}</a></td>
+            <td><a href="{% url "view_community_landing" join_request.community.slug %}"
+                   class="table-anchor">{{ join_request.community }}</a></td>
             <td>
               {% if user == systersuser.user or user.is_superuser %}
-                <a href="#" role="button"
-                   class="btn btn-primary btn-xs btn-warning pull-right">Cancel request</a>
+                <a href="{% url "cancel_community_join_request" join_request.community.slug %}"
+                   role="button" class="btn btn-primary btn-xs btn-warning pull-right">Cancel request</a>
               {% endif %}
             </td>
           </tr>

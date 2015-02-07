@@ -7,11 +7,7 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from common.mixins import UserDetailsMixin
-from community.constants import (ALREADY_MEMBER, JOIN_REQUEST_EXISTS, OK,
-                                 USER_ALREADY_MEMBER_MSG,
-                                 USER_MEMBER_SUCCESS_MSG,
-                                 USER_MEMBER_REJECTED_MSG, JOIN_REQUEST_OK_MSG,
-                                 ALREADY_MEMBER_MSG, JOIN_REQUEST_EXISTS_MSG)
+from community.constants import *  # NOQA
 from community.forms import (CommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm)
 from community.mixins import CommunityMenuMixin
@@ -340,7 +336,7 @@ class RequestJoinCommunityView(LoginRequiredMixin, SingleObjectMixin,
         join_request, status = JoinRequest.objects.create_join_request(
             systers_user, community)
         if status == OK:
-            messages.add_message(request, messages.INFO,
+            messages.add_message(request, messages.SUCCESS,
                                  JOIN_REQUEST_OK_MSG.format(community))
         elif status == ALREADY_MEMBER:
             messages.add_message(request, messages.WARNING,
@@ -348,5 +344,42 @@ class RequestJoinCommunityView(LoginRequiredMixin, SingleObjectMixin,
         elif status == JOIN_REQUEST_EXISTS:
             messages.add_message(request, messages.WARNING,
                                  JOIN_REQUEST_EXISTS_MSG.format(community))
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
         return super(RequestJoinCommunityView, self).get(request, *args,
                                                          **kwargs)
+
+
+class CancelCommunityJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
+                                     RedirectView):
+    """Cancel a join request to a community view"""
+    model = Community
+    permanent = False
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to user profile page"""
+        return reverse("user", kwargs={'username': self.request.user.username})
+
+    def get(self, request, *args, **kwargs):
+        systers_user = get_object_or_404(SystersUser, user=self.request.user)
+        community = self.get_object()
+        status = JoinRequest.objects.cancel_join_request(systers_user,
+                                                         community)
+        if status == OK:
+            messages.add_message(request, messages.SUCCESS,
+                                 JOIN_REQUEST_CANCELED_MSG.format(community))
+        elif status == ALREADY_MEMBER:
+            messages.add_message(request, messages.WARNING,
+                                 ALREADY_MEMBER_CANCEL_MSG.format(community))
+        elif status == NO_PENDING_JOIN_REQUEST:
+            messages.add_message(request, messages.WARNING,
+                                 NO_PENDING_JOIN_REQUEST_MSG.format(community))
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
+        return super(CancelCommunityJoinRequestView, self).get(request, *args,
+                                                               **kwargs)
