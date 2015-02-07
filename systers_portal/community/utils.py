@@ -30,6 +30,16 @@ def remove_groups(community_name):
     Group.objects.filter(name__startswith=name).delete()
 
 
+def get_groups(community_name):
+    """Get groups of a particular Community instance using its name
+
+    :param community_name: string name of Community
+    :return: list of Group objects
+    """
+    name = "{0}:".format(community_name)
+    return Group.objects.filter(name__startswith=name)
+
+
 @transaction.atomic
 def rename_groups(old_community_name, new_community_name):
     """Rename groups bound to a Community instance

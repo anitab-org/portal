@@ -5,7 +5,7 @@ from guardian.shortcuts import get_perms
 from community.models import Community
 from community.permissions import groups_templates, group_permissions
 from community.utils import (create_groups, assign_permissions, remove_groups,
-                             rename_groups)
+                             rename_groups, get_groups)
 from users.models import SystersUser
 
 
@@ -32,6 +32,19 @@ class UtilsTestCase(TestCase):
         remove_groups(name)
         community_groups = Group.objects.filter(name__startswith=name)
         self.assertEqual(list(community_groups), [])
+
+    def test_get_groups(self):
+        """Test getting groups according to community name"""
+        groups = get_groups("Foo")
+        self.assertSequenceEqual(groups, [])
+        name = "Bar"
+        create_groups(name)
+        community_groups = Group.objects.all()
+        groups = get_groups("Bar")
+        self.assertItemsEqual(community_groups, groups)
+        create_groups("New")
+        groups = get_groups("Bar")
+        self.assertItemsEqual(community_groups, groups)
 
     def test_rename_groups(self):
         """Test the renaming of groups according to a new name"""
