@@ -144,3 +144,30 @@ class JoinRequestModelTestCase(TestCase):
             systers_user, self.community)
         self.assertIsInstance(join_request, JoinRequest)
         self.assertEqual(status, "ok")
+
+    def test_cancel_join_request(self):
+        """Test model manager method to cancel join requests"""
+        user = User.objects.create(username="bar", password="foobar")
+        systers_user = SystersUser.objects.get(user=user)
+
+        status = JoinRequest.objects.cancel_join_request(systers_user,
+                                                         self.community)
+        self.assertEqual(status, "no_pending_join_request")
+
+        JoinRequest.objects.create(user=systers_user, community=self.community)
+        status = JoinRequest.objects.cancel_join_request(systers_user,
+                                                         self.community)
+        self.assertEqual(status, "ok")
+        self.assertSequenceEqual(JoinRequest.objects.all(), [])
+
+        self.community.add_member(systers_user)
+        self.community.save()
+
+        status = JoinRequest.objects.cancel_join_request(systers_user,
+                                                         self.community)
+        self.assertEqual(status, "already_member")
+
+        JoinRequest.objects.create(user=systers_user, community=self.community)
+        status = JoinRequest.objects.cancel_join_request(systers_user,
+                                                         self.community)
+        self.assertEqual(status, "already_member")

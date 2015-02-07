@@ -139,6 +139,21 @@ class JoinRequestManager(models.Manager):
             return None, JOIN_REQUEST_EXISTS
         return JoinRequest.objects.create(user=user, community=community), OK
 
+    def cancel_join_request(self, user, community):
+        """Cancel a pending join request made by a user to a community.
+
+        :param user: SystersUser object
+        :param community: Community object
+        :return: string status of canceling a request (OK if request was
+                 canceled, ALREADY_MEMBER if user is a member of the community
+                 and hence there shouldn't be any join requests,
+                 NO PENDING_JOIN_REQUEST if there are no not approved requests)
+        """
+        if user.is_member(community):
+            return ALREADY_MEMBER
+
+        return user.delete_all_join_requests(community)
+
 
 class JoinRequest(models.Model):
     """Model to represent a request to join a community by a user"""
