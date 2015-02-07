@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
 from community.models import Community, JoinRequest
+from community.utils import create_groups
 from users.models import SystersUser
 
 
@@ -34,6 +35,29 @@ class SystersUserTestCase(TestCase):
         self.assertEqual(self.systers_user.user.groups.get(), group)
         self.systers_user.leave_group(group)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
+
+    def test_leave_groups(self):
+        """Test SystersUser leaving all Community groups"""
+        name = "Baz"
+        self.systers_user.leave_groups(name)
+        self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
+        create_groups(name)
+        content_manager_group = Group.objects.get(name="Baz: Content Manager")
+        self.systers_user.join_group(content_manager_group)
+        self.assertSequenceEqual(self.systers_user.user.groups.all(),
+                                 [content_manager_group])
+        self.systers_user.leave_groups(name)
+        self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
+        other_name = "Foo"
+        create_groups(other_name)
+        admin_group = Group.objects.get(name="Foo: Community Admin")
+        self.systers_user.join_group(admin_group)
+        self.systers_user.join_group(content_manager_group)
+        self.assertItemsEqual(list(self.systers_user.user.groups.all()),
+                              [content_manager_group, admin_group])
+        self.systers_user.leave_groups(name)
+        self.assertSequenceEqual(self.systers_user.user.groups.all(),
+                                 [admin_group])
 
     def test_is_member(self):
         """Test if SystersUser is a member of a Community"""

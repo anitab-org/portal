@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django_countries.fields import CountryField
 
 from community.constants import NO_PENDING_JOIN_REQUEST, OK
+from community.utils import get_groups
 
 
 class SystersUser(models.Model):
@@ -40,6 +41,15 @@ class SystersUser(models.Model):
         :param group: Group object
         """
         group.user_set.remove(self.user)
+
+    def leave_groups(self, community_name):
+        """Leave all groups that are related to a community.
+
+        :param community: string name of Community
+        """
+        groups = get_groups(community_name)
+        for group in groups:
+            self.leave_group(group)
 
     def get_fields(self):
         """Get model fields of a SystersUser object
