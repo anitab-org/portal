@@ -304,7 +304,7 @@ class RejectCommunityJoinRequestView(LoginRequiredMixin,
         join_request = get_object_or_404(JoinRequest, community=self.community,
                                          pk=self.kwargs['pk'])
         user = join_request.user
-        user.reject_all_join_requests(self.community)
+        user.delete_all_join_requests(self.community)
         if user.is_member(self.community):
             return USER_ALREADY_MEMBER_MSG.format(
                 user, self.community), messages.INFO

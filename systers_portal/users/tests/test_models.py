@@ -71,7 +71,8 @@ class SystersUserTestCase(TestCase):
                                              community_admin=self.systers_user)
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
-        bar_systers_user.approve_all_join_requests(community)
+        status = bar_systers_user.approve_all_join_requests(community)
+        self.assertEqual(status, "no_pending_join_request")
         join_request1 = JoinRequest.objects.create(user=bar_systers_user,
                                                    community=community)
         join_request2 = JoinRequest.objects.create(user=bar_systers_user,
@@ -79,7 +80,8 @@ class SystersUserTestCase(TestCase):
         self.assertFalse(join_request1.is_approved)
         self.assertFalse(join_request2.is_approved)
 
-        bar_systers_user.approve_all_join_requests(community)
+        status = bar_systers_user.approve_all_join_requests(community)
+        self.assertEqual(status, "ok")
         join_requests = JoinRequest.objects.all()
         for join_request in join_requests:
             self.assertTrue(join_request.is_approved)
@@ -91,10 +93,13 @@ class SystersUserTestCase(TestCase):
                                              community_admin=self.systers_user)
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
-        bar_systers_user.reject_all_join_requests(community)
+        status = bar_systers_user.delete_all_join_requests(community)
+        self.assertEqual(status, "no_pending_join_request")
+
         JoinRequest.objects.create(user=bar_systers_user, community=community)
         JoinRequest.objects.create(user=bar_systers_user, community=community)
-        bar_systers_user.reject_all_join_requests(community)
+        status = bar_systers_user.delete_all_join_requests(community)
+        self.assertEqual(status, "ok")
         self.assertFalse(bar_systers_user.is_member(community))
         self.assertSequenceEqual(JoinRequest.objects.all(), [])
 

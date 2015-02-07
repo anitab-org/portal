@@ -5,6 +5,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 
+from community.constants import NO_PENDING_JOIN_REQUEST, OK
+
 
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
@@ -72,26 +74,38 @@ class SystersUser(models.Model):
         """Approve all join requests of a user towards a community.
 
         :param community: Community object
+        :return: string approve status: OK if all approved,
+                 NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
         from community.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)
+        if not join_requests.exists():
+            return NO_PENDING_JOIN_REQUEST
+
         for join_request in join_requests:
             join_request.approve()
+        return OK
 
-    def reject_all_join_requests(self, community):
-        """Reject all join request of a user towards a community by deleting
-        them.
+    def delete_all_join_requests(self, community):
+        """Delete all join request of a user towards a community, i.e. reject
+        or cancel join requests.
 
         :param community: Community object
+        :return: string approve status: OK if all approved,
+                 NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
         from community.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)
+        if not join_requests.exists():
+            return NO_PENDING_JOIN_REQUEST
+
         for join_request in join_requests:
             join_request.delete()
+        return OK
 
 
 def user_unicode(self):
