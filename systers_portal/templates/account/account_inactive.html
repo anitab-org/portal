@@ -1,0 +1,16 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Account Inactive" %}{% endblock %}
+{% block content %}
+	<div class="mt40"></div>
+	<div class="container">
+		<form class="inactive form-signin" id="inactive_form" role="form" method="post" action="{% url 'account_logout' %}">
+			<h2>{% trans "Account Inactive" %}</h2>
+			<div class="mt40"></div>
+			<p>{% trans "This account is inactive." %}</p>
+		</form>
+	</div>
+	<div class="mt40"></div>
+{% endblock %}
