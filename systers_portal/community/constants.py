@@ -9,8 +9,10 @@ DEFAULT_COMMUNITY_ACTIVE_PAGE = 'news'
 
 # status
 ALREADY_MEMBER = "already_member"
+IS_ADMIN = "is_admin"
 JOIN_REQUEST_EXISTS = "join_request_exists"
 NO_PENDING_JOIN_REQUEST = "no_pending_join_request"
+NOT_MEMBER = "not_member"
 OK = "ok"
 
 # messages displayed to the user

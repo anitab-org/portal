@@ -5,7 +5,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 
-from community.constants import NO_PENDING_JOIN_REQUEST, OK
+from community.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
+                                 IS_ADMIN)
 from community.utils import get_groups
 
 
@@ -115,6 +116,25 @@ class SystersUser(models.Model):
 
         for join_request in join_requests:
             join_request.delete()
+        return OK
+
+    def leave_community(self, community):
+        """Leave a community. That involves losing all permissions towards
+         this community.
+
+        :param community: Community object
+        :return: string status: OK if left the community, NOT_MEMBER if the
+                 user was not a member of the community in the first place,
+                 IS_ADMIN if the user is community admin and can't just leave
+                 the community
+        """
+        if not self.is_member(community):
+            return NOT_MEMBER
+        if self == community.community_admin:
+            return IS_ADMIN
+        self.leave_groups(community.name)
+        community.remove_member(self)
+        community.save()
         return OK
 
 

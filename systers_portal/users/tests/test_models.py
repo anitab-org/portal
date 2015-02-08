@@ -127,6 +127,38 @@ class SystersUserTestCase(TestCase):
         self.assertFalse(bar_systers_user.is_member(community))
         self.assertSequenceEqual(JoinRequest.objects.all(), [])
 
+    def test_leave_community(self):
+        """Test leaving a community"""
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1,
+                                             community_admin=self.systers_user)
+        status = self.systers_user.leave_community(community)
+        self.assertEqual(status, "is_admin")
+
+        user = User.objects.create_user(username='bar', password='foobar')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        status = bar_systers_user.leave_community(community)
+        self.assertEqual(status, "not_member")
+
+        community.add_member(bar_systers_user)
+        community.save()
+        self.assertTrue(bar_systers_user.is_member(community))
+        status = bar_systers_user.leave_community(community)
+        self.assertEqual(status, "ok")
+        self.assertFalse(bar_systers_user.is_member(community))
+
+        community.add_member(bar_systers_user)
+        community.save()
+        self.assertTrue(bar_systers_user.is_member(community))
+        content_manager_group = Group.objects.get(name="Foo: Content Manager")
+        bar_systers_user.join_group(content_manager_group)
+        self.assertSequenceEqual(bar_systers_user.user.groups.all(),
+                                 [content_manager_group])
+        status = bar_systers_user.leave_community(community)
+        self.assertEqual(status, "ok")
+        self.assertFalse(bar_systers_user.is_member(community))
+        self.assertSequenceEqual(bar_systers_user.user.groups.all(), [])
+
 
 class UserTestCase(TestCase):
     def setUp(self):
