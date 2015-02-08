@@ -31,3 +31,9 @@ ALREADY_MEMBER_CANCEL_MSG = "You are already a member of {0} community. " \
                             "There are no pending join requests."
 NO_PENDING_JOIN_REQUEST_MSG = "There is no pending request to join {0} " \
                               "community."
+LEAVE_OK_MSG = "You have successfully left {0} community."
+LEAVE_IS_ADMIN_MSG = "You are the {0} community admin. If you want to leave " \
+                     "the community, first transfer community ownership to " \
+                     "another user."
+NOT_MEMBER_MSG = "You are not a member of {0} community, hence you can't " \
+                 "leave the community."

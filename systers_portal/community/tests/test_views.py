@@ -657,3 +657,54 @@ class CancelCommunityJoinRequestView(TestCase):
             self.assertTrue(
                 'You are already a member of Foo community. There are no '
                 'pending join requests.' in message.message)
+
+
+class LeaveCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_leave_community(self):
+        """Test GET request to leave a community"""
+        url = reverse("leave_community", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username="foo", password="foobar")
+        nonexistent_url = reverse("leave_community", kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                'You are the Foo community admin. If you want to leave the '
+                'community, first transfer community ownership to another '
+                'user.' in message.message)
+
+        user = User.objects.create_user(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        self.client.login(username="bar", password="foobar")
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                "You are not a member of Foo community, hence you can't leave "
+                "the community." in message.message)
+
+        self.community.add_member(systers_user)
+        self.community.save()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                "You have successfully left Foo community." in message.message)
+        self.assertFalse(systers_user.is_member(self.community))

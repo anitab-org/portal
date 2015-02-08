@@ -15,7 +15,7 @@
                   <a href="#" role="button"
                      class="btn btn-primary btn-xs btn-warning pull-right">Transfer ownership</a>
                 {% else %}
-                  <a href="#" role="button"
+                  <a href="{% url "leave_community" community.slug %}" role="button"
                      class="btn btn-primary btn-xs btn-warning pull-right">Leave</a>
                 {% endif %}
               {% endif %}

@@ -8,7 +8,8 @@ from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ApproveCommunityJoinRequestView,
                              RejectCommunityJoinRequestView,
                              RequestJoinCommunityView,
-                             CancelCommunityJoinRequestView)
+                             CancelCommunityJoinRequestView,
+                             LeaveCommunityView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/$', CommunityLandingView.as_view(),
@@ -38,4 +39,6 @@ urlpatterns = [
         name="request_join_community"),
     url(r'^(?P<slug>\w+)/cancel/$', CancelCommunityJoinRequestView.as_view(),
         name="cancel_community_join_request"),
+    url(r'^(?P<slug>\w+)/leave/$', LeaveCommunityView.as_view(),
+        name="leave_community")
 ]

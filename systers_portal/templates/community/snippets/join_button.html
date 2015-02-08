@@ -6,7 +6,7 @@
     {% else %}
       {# user is a community member #}
       {% if is_member %}
-        <a href="#" role="button" class="btn btn-warning btn-block">Leave Community</a>
+        <a href="{% url "leave_community" community.slug %}" role="button" class="btn btn-warning btn-block">Leave Community</a>
       {% else %}
         {# user requested to join the community #}
         {% if join_request %}

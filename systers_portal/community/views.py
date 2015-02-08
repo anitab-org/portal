@@ -365,6 +365,7 @@ class CancelCommunityJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
         return reverse("user", kwargs={'username': self.request.user.username})
 
     def get(self, request, *args, **kwargs):
+        """Attempt to cancel user join request towards a community"""
         systers_user = get_object_or_404(SystersUser, user=self.request.user)
         community = self.get_object()
         status = JoinRequest.objects.cancel_join_request(systers_user,
@@ -383,3 +384,36 @@ class CancelCommunityJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
             # TODO: configure logging and log the unknown status
         return super(CancelCommunityJoinRequestView, self).get(request, *args,
                                                                **kwargs)
+
+
+class LeaveCommunityView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
+    """Leave a community view"""
+    model = Community
+    permanent = False
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to user profile page"""
+        return reverse("user", kwargs={'username': self.request.user.username})
+
+    def get(self, request, *args, **kwargs):
+        """Attempt to leave a community, i.e. not being a member of a
+        community anymore"""
+        systers_user = get_object_or_404(SystersUser, user=self.request.user)
+        community = self.get_object()
+        status = systers_user.leave_community(community)
+        if status == OK:
+            messages.add_message(request, messages.SUCCESS,
+                                 LEAVE_OK_MSG.format(community))
+        elif status == NOT_MEMBER:
+            messages.add_message(request, messages.WARNING,
+                                 NOT_MEMBER_MSG.format(community))
+        elif status == IS_ADMIN:
+            messages.add_message(request, messages.WARNING,
+                                 LEAVE_IS_ADMIN_MSG.format(community))
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
+        return super(LeaveCommunityView, self).get(request, *args, **kwargs)
