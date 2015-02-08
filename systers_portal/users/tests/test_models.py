@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
-from community.models import Community, JoinRequest
+from community.models import Community
 from community.utils import create_groups
+from membership.models import JoinRequest
 from users.models import SystersUser
 
 

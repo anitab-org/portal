@@ -5,9 +5,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 
-from community.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
-                                 IS_ADMIN)
 from community.utils import get_groups
+from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
+                                  IS_ADMIN)
 
 
 class SystersUser(models.Model):
@@ -74,7 +74,7 @@ class SystersUser(models.Model):
         :param community: Community object
         :return: JoinRequest object or None in case user has made no requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community).\
             order_by('-date_created')
@@ -88,7 +88,7 @@ class SystersUser(models.Model):
         :return: string approve status: OK if all approved,
                  NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)
@@ -107,7 +107,7 @@ class SystersUser(models.Model):
         :return: string approve status: OK if all approved,
                  NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)

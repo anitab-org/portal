@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 
-from community.models import JoinRequest
+from membership.models import JoinRequest
 from users.forms import UserForm
 from users.models import SystersUser
 

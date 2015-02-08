@@ -2,7 +2,8 @@ from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from community.models import Community, JoinRequest
+from community.models import Community
+from membership.models import JoinRequest
 from users.models import SystersUser
 
 
