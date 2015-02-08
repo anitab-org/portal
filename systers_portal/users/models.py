@@ -5,6 +5,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_countries.fields import CountryField
 
+from community.utils import get_groups
+from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
+                                  IS_ADMIN)
+
 
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
@@ -39,6 +43,15 @@ class SystersUser(models.Model):
         """
         group.user_set.remove(self.user)
 
+    def leave_groups(self, community_name):
+        """Leave all groups that are related to a community.
+
+        :param community: string name of Community
+        """
+        groups = get_groups(community_name)
+        for group in groups:
+            self.leave_group(group)
+
     def get_fields(self):
         """Get model fields of a SystersUser object
 
@@ -61,7 +74,7 @@ class SystersUser(models.Model):
         :param community: Community object
         :return: JoinRequest object or None in case user has made no requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community).\
             order_by('-date_created')
@@ -72,26 +85,57 @@ class SystersUser(models.Model):
         """Approve all join requests of a user towards a community.
 
         :param community: Community object
+        :return: string approve status: OK if all approved,
+                 NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)
+        if not join_requests.exists():
+            return NO_PENDING_JOIN_REQUEST
+
         for join_request in join_requests:
             join_request.approve()
+        return OK
 
-    def reject_all_join_requests(self, community):
-        """Reject all join request of a user towards a community by deleting
-        them.
+    def delete_all_join_requests(self, community):
+        """Delete all join request of a user towards a community, i.e. reject
+        or cancel join requests.
 
         :param community: Community object
+        :return: string approve status: OK if all approved,
+                 NO_PENDING_JOIN_REQUEST if no not approved join requests
         """
-        from community.models import JoinRequest
+        from membership.models import JoinRequest
         join_requests = JoinRequest.objects.filter(user=self,
                                                    community=community,
                                                    is_approved=False)
+        if not join_requests.exists():
+            return NO_PENDING_JOIN_REQUEST
+
         for join_request in join_requests:
             join_request.delete()
+        return OK
+
+    def leave_community(self, community):
+        """Leave a community. That involves losing all permissions towards
+         this community.
+
+        :param community: Community object
+        :return: string status: OK if left the community, NOT_MEMBER if the
+                 user was not a member of the community in the first place,
+                 IS_ADMIN if the user is community admin and can't just leave
+                 the community
+        """
+        if not self.is_member(community):
+            return NOT_MEMBER
+        if self == community.community_admin:
+            return IS_ADMIN
+        self.leave_groups(community.name)
+        community.remove_member(self)
+        community.save()
+        return OK
 
 
 def user_unicode(self):

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, post_delete
 
-from community.models import Community, JoinRequest, CommunityPage
+from community.models import Community, CommunityPage
 from community.signals import manage_community_groups, remove_community_groups
 from users.models import SystersUser
 
@@ -85,34 +85,3 @@ class CommunityPageModelTestCase(TestCase):
         page = CommunityPage(order=1, community=self.community, slug="bar",
                              title="Bar", author=self.systers_user)
         self.assertEqual(unicode(page), "Page Bar of Foo")
-
-
-class JoinRequestModelTestCase(TestCase):
-    def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
-        self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
-                                                  community_admin=self.
-                                                  systers_user)
-
-    def test_unicode(self):
-        """Test JoinRequest object str/unicode representation"""
-        join_request = JoinRequest(user=self.systers_user,
-                                   community=self.community)
-        self.assertEqual(unicode(join_request),
-                         "Join Request by foo - not approved")
-        join_request.is_approved = True
-        join_request.save()
-        self.assertEqual(unicode(join_request),
-                         "Join Request by foo - approved")
-
-    def test_approve(self):
-        """Test approving a join request"""
-        join_request = JoinRequest(user=self.systers_user,
-                                   community=self.community)
-        self.assertFalse(join_request.is_approved)
-        join_request.approve()
-        self.assertTrue(join_request.is_approved)
-        join_request.approve()
-        self.assertTrue(join_request.is_approved)

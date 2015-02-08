@@ -1,15 +1,14 @@
-from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, RedirectView, ListView
+from django.views.generic import DetailView, RedirectView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
+from common.mixins import UserDetailsMixin
 from community.forms import (CommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm)
 from community.mixins import CommunityMenuMixin
-from community.models import Community, CommunityPage, JoinRequest
-from common.mixins import UserDetailsMixin
+from community.models import Community, CommunityPage
 
 
 class CommunityLandingView(RedirectView):
@@ -193,120 +192,3 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
         page. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_page", self.community)
-
-
-class CommunityJoinRequestListView(LoginRequiredMixin, PermissionRequiredMixin,
-                                   ListView):
-    """List of not yet approved JoinRequest(s) to a Community"""
-    template_name = "community/join_requests.html"
-    raise_exception = True
-    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
-    # reach version 1.5
-
-    def get_context_data(self, **kwargs):
-        """Add Community object to the context"""
-        context = super(CommunityJoinRequestListView, self).get_context_data(
-            **kwargs)
-        context['community'] = self.community
-        return context
-
-    def get_queryset(self):
-        return JoinRequest.objects.filter(community=self.community,
-                                          is_approved=False)
-
-    def check_permissions(self, request):
-        """Check if the request user has the permissions to approve join
-        requests. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
-        return request.user.has_perm("approve_community_joinrequest",
-                                     self.community)
-
-
-class ApproveCommunityJoinRequestView(LoginRequiredMixin,
-                                      PermissionRequiredMixin, RedirectView):
-    """Approve a JoinRequest to a Community"""
-    permanent = False
-    raise_exception = True
-    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
-    # reach version 1.5
-
-    def get_redirect_url(self, *args, **kwargs):
-        """Redirect to the list of join requests of the community"""
-        return reverse("view_community_join_request_list",
-                       kwargs={'slug': self.community.slug})
-
-    def get(self, request, *args, **kwargs):
-        """Add a message about the result of approving a join request"""
-        message, level = self.process_join_request()
-        messages.add_message(request, level, message)
-        # TODO: notify the user about the acceptance
-        return super(ApproveCommunityJoinRequestView, self).get(request, *args,
-                                                                **kwargs)
-
-    def process_join_request(self):
-        """Approve the join request and make user member of the community.
-
-        :return: tuple containing a string message and a message level
-        """
-        join_request = get_object_or_404(JoinRequest, community=self.community,
-                                         pk=self.kwargs['pk'])
-        user = join_request.user
-        if user.is_member(self.community):
-            join_request.delete()
-            return "{0} is already a member of {1} community.".format(
-                user, self.community), messages.INFO
-        user.approve_all_join_requests(self.community)
-        self.community.add_member(join_request.user)
-        return "{0} successfully became a member of {1} community."\
-            .format(user, self.community), messages.SUCCESS
-
-    def check_permissions(self, request):
-        """Check if the request user has the permissions to approve join
-        requests. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
-        return request.user.has_perm("approve_community_joinrequest",
-                                     self.community)
-
-
-class RejectCommunityJoinRequestView(LoginRequiredMixin,
-                                     PermissionRequiredMixin, RedirectView):
-    """Reject a JoinRequest to a community"""
-    permanent = False
-    raise_exception = True
-    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
-    # reach version 1.5
-
-    def get_redirect_url(self, *args, **kwargs):
-        """Redirect to the list of join requests of the community"""
-        return reverse("view_community_join_request_list",
-                       kwargs={'slug': self.community.slug})
-
-    def get(self, request, *args, **kwargs):
-        """Add a message about the result of rejecting a join request"""
-        message, level = self.reject_join_request()
-        messages.add_message(request, level, message)
-        # TODO: notify the user about the rejection
-        return super(RejectCommunityJoinRequestView, self).get(request, *args,
-                                                               **kwargs)
-
-    def reject_join_request(self):
-        """Reject the user join request to a community.
-
-        :return: tuple containing a string message and a message level
-        """
-        join_request = get_object_or_404(JoinRequest, community=self.community,
-                                         pk=self.kwargs['pk'])
-        user = join_request.user
-        user.reject_all_join_requests(self.community)
-        if user.is_member(self.community):
-            return "{0} is already a member of {1} community.".format(
-                user, self.community), messages.INFO
-        return "{0} was successfully rejected to become a member of {1}" \
-               " community".format(user, self.community), messages.INFO
-
-    def check_permissions(self, request):
-        """Check if the request user has the permissions to approve/reject join
-        requests. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
-        return request.user.has_perm("approve_community_joinrequest",
-                                     self.community)

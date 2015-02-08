@@ -45,10 +45,11 @@ INSTALLED_APPS = (
     'django_wysiwyg',
     'guardian',
     'crispy_forms',
-    'common',
-    'users',
-    'community',
     'blog',
+    'common',
+    'community',
+    'membership',
+    'users',
 )
 
 MIDDLEWARE_CLASSES = (

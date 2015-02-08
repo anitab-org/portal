@@ -118,24 +118,3 @@ class CommunityPage(Post):
 
     def __unicode__(self):
         return "Page {0} of {1}".format(self.title, self.community)
-
-
-class JoinRequest(models.Model):
-    """Model to represent a request to join a community by a user"""
-    user = models.ForeignKey(SystersUser, related_name='created_by')
-    approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
-                                    related_name='approved_by')
-    community = models.ForeignKey(Community)
-    date_created = models.DateTimeField(auto_now_add=True)
-    is_approved = models.BooleanField(default=False)
-
-    def __unicode__(self):
-        approval_status = "approved" if self.is_approved else "not approved"
-        return "Join Request by {0} - {1}".format(self.user, approval_status)
-
-    def approve(self):
-        """Approve a join request."""
-        if self.is_approved:
-            return
-        self.is_approved = True
-        self.save()

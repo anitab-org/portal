@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 
-from community.models import JoinRequest
+from membership.models import JoinRequest
 from users.forms import UserForm
 from users.models import SystersUser
 
@@ -29,7 +29,7 @@ class UserView(LoginRequiredMixin, TemplateView):
                                                    is_approved=False)
         permission_groups = systersuser.user.groups.all()
         context_dict = {'systersuser': systersuser,
-                        'communities': communities,
+                        'community_list': communities,
                         'join_requests': join_requests,
                         'permission_groups': permission_groups}
         for key, value in context_dict.iteritems():
