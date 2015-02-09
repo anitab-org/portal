@@ -9,7 +9,9 @@
       technical roles in computing. Systers Portal is a unified platform for
       Systers and its sub-groups to share information and get the latest news.</p>
     <p>
-      <a class="btn btn-lg btn-success" href="{% url 'account_signup' %}" role="button">Join Systers</a>
+      {% if not user.is_authenticated %}
+        <a class="btn btn-lg btn-success" href="{% url 'account_signup' %}" role="button">Join Systers</a>
+      {% endif %}
     </p>
   </div>
   <hr class="featurette-divider">
