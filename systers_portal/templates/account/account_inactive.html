@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %} - Account Inactive{% endblock %}
+{% block content %}
+  <div class="container">
+    <form class="inactive form-inactive" id="inactive_form" role="form" method="post" action="{% url 'account_logout' %}">
+      <h2>Account Inactive</h2>
+      <hr/>
+      <div class="mt40"></div>
+      <p>This account is inactive.</p>
+    </form>
+  </div>
+  <div class="mt40"></div>
+{% endblock %}
