@@ -140,7 +140,8 @@ body > .container {
 .form-signup,
 .form-logout,
 .form-inactive,
-.form-password-change {
+.form-password-change,
+.form-password-reset {
   max-width: 350px;
   padding: 15px;
   margin: 0 auto;
