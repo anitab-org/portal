@@ -60,8 +60,16 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Communities <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for community in communities %}
-              <li><a href="{{ community.get_absolute_url }}">{{ community.name }}</a></li>
+              <li role="presentation">
+                <a role="menuitem" tabindex="-1" href="{{ community.get_absolute_url }}">{{ community.name }}</a>
+              </li>
             {% endfor %}
+              <li role="presentation" class="divider"></li>
+              <li role="presentation">
+                <a role="menuitem" tabindex="-1" target="_blank"
+                   href="https://docs.google.com/forms/d/1m-SlwamAD6tycq9-GDBPbWsr_m6Ih-eGeqEhb7sn6LQ/viewform">
+                  New Community Proposal</a>
+              </li>
           </ul>
         </li>
         <li><a href="http://systers.org/systers-dev/">Wiki</a></li>
