@@ -1,31 +1,22 @@
-from django import forms
-from crispy_forms.helper import FormHelper
-
-from common.crispy_forms.bootstrap import SubmitCancelFormActions
+from common.forms import ModelFormWithHelper
+from common.helpers import SubmitCancelFormHelper
 from community.models import Community, CommunityPage
 from users.models import SystersUser
 
 
-class CommunityForm(forms.ModelForm):
+class CommunityForm(ModelFormWithHelper):
+    """Form to edit Community profile"""
     class Meta:
         model = Community
         fields = ('name', 'slug', 'order', 'email', 'mailing_list',
                   'parent_community', 'website', 'facebook', 'googleplus',
                   'twitter')
-
-    def __init__(self, *args, **kwargs):
-        super(CommunityForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_profile' "
-                            "community.slug %}")
-        )
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_profile' " \
+                             "community.slug %}"
 
 
-class AddCommunityPageForm(forms.ModelForm):
+class AddCommunityPageForm(ModelFormWithHelper):
     """Form to create new CommunityPage. The author and the community of the
     page are expected to be provided when initializing the form:
 
@@ -35,19 +26,14 @@ class AddCommunityPageForm(forms.ModelForm):
     class Meta:
         model = CommunityPage
         fields = ('slug', 'title', 'order', 'content')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_landing' " \
+                             "community.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.author = kwargs.pop('author')
         self.community = kwargs.pop('community')
         super(AddCommunityPageForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_landing' "
-                            "community.slug %}")
-        )
 
     def save(self, commit=True):
         """Override save to add author and community to the instance"""
@@ -59,19 +45,11 @@ class AddCommunityPageForm(forms.ModelForm):
         return instance
 
 
-class EditCommunityPageForm(forms.ModelForm):
+class EditCommunityPageForm(ModelFormWithHelper):
     """For to edit a CommunityPage."""
     class Meta:
         model = CommunityPage
         fields = ('slug', 'title', 'order', 'content')
-
-    def __init__(self, *args, **kwargs):
-        super(EditCommunityPageForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_page' community.slug "
-                            "object.slug %}")
-        )
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_page' community.slug " \
+                             "object.slug %}"

@@ -1,12 +1,11 @@
-from django import forms
-from crispy_forms.helper import FormHelper
 
-from common.crispy_forms.bootstrap import SubmitCancelFormActions
+from common.forms import ModelFormWithHelper
+from common.helpers import SubmitCancelFormHelper
 from blog.models import News, Resource
 from users.models import SystersUser
 
 
-class AddNewsForm(forms.ModelForm):
+class AddNewsForm(ModelFormWithHelper):
     """Form to add new Community News. The author and the community of the
      news should be provided by the view:
 
@@ -17,19 +16,14 @@ class AddNewsForm(forms.ModelForm):
         model = News
         fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
                   'tags']
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_news_list' " \
+                             "community.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.author = kwargs.pop('author')
         self.community = kwargs.pop('community')
         super(AddNewsForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_news_list' "
-                            "community.slug %}")
-        )
 
     def save(self, commit=True):
         """Override save to add author and community to the instance."""
@@ -41,26 +35,18 @@ class AddNewsForm(forms.ModelForm):
         return instance
 
 
-class EditNewsForm(forms.ModelForm):
+class EditNewsForm(ModelFormWithHelper):
     """Form to edit Community News."""
     class Meta:
         model = News
         fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
                   'tags']
-
-    def __init__(self, *args, **kwargs):
-        super(EditNewsForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_news' community.slug "
-                            "object.slug %}")
-        )
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_news' community.slug " \
+                             "object.slug %}"
 
 
-class AddResourceForm(forms.ModelForm):
+class AddResourceForm(ModelFormWithHelper):
     """Form to add new Community Resource. The author and the community of the
      resource should be provided by the view:
 
@@ -71,19 +57,14 @@ class AddResourceForm(forms.ModelForm):
         model = Resource
         fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
                   'tags', 'resource_type']
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_resource_list' " \
+                             "community.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.author = kwargs.pop('author')
         self.community = kwargs.pop('community')
         super(AddResourceForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_resource_list' "
-                            "community.slug %}")
-        )
 
     def save(self, commit=True):
         """Override save to add author and community to the instance."""
@@ -95,20 +76,12 @@ class AddResourceForm(forms.ModelForm):
         return instance
 
 
-class EditResourceForm(forms.ModelForm):
+class EditResourceForm(ModelFormWithHelper):
     """Form to edit Community Resource."""
     class Meta:
         model = Resource
         fields = ['slug', 'title', 'content', 'is_public', 'is_monitored',
                   'tags', 'resource_type']
-
-    def __init__(self, *args, **kwargs):
-        super(EditResourceForm, self).__init__(*args, **kwargs)
-
-        # crispy FormHelper customization
-        self.helper = FormHelper(self)
-        self.helper.layout.append(
-            SubmitCancelFormActions(
-                cancel_href="{% url 'view_community_resource' community.slug "
-                            "object.slug %}")
-        )
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_resource' " \
+                             "community.slug object.slug %}"
