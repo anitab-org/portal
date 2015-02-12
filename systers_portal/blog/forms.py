@@ -1,4 +1,3 @@
-
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
 from blog.models import News, Resource
