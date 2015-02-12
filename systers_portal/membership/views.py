@@ -14,7 +14,7 @@ from users.models import SystersUser
 class CommunityJoinRequestListView(LoginRequiredMixin, PermissionRequiredMixin,
                                    ListView):
     """List of not yet approved JoinRequest(s) to a Community"""
-    template_name = "community/join_requests.html"
+    template_name = "membership/join_requests.html"
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
