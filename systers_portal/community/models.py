@@ -1,7 +1,10 @@
+from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
 from django.db import models
 
 from common.models import Post
+from community.constants import COMMUNITY_ADMIN
+from membership.constants import NOT_MEMBER, OK
 from users.models import SystersUser
 
 
@@ -109,6 +112,24 @@ class Community(models.Model):
         """
         return [(field.name, getattr(self, field.name)) for field in
                 Community._meta.fields]
+
+    def set_new_admin(self, new_admin):
+        """Transfer the admin role from the old to the new admin
+
+        :param new_admin: SystersUser object new admin of the community
+        :return: OK if setting was successful, NOT_MEMBER if settings was
+                 unsuccessful, since the new admin is not a member of the
+                 community
+        """
+        if not new_admin.is_member(self):
+            return NOT_MEMBER
+        name = COMMUNITY_ADMIN.format(self.name)
+        admin_group = Group.objects.get(name=name)
+        self.community_admin.leave_group(admin_group)
+        new_admin.join_group(admin_group)
+        self.community_admin = new_admin
+        self.save()
+        return OK
 
 
 class CommunityPage(Post):
