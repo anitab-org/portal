@@ -340,3 +340,70 @@ class LeaveCommunityViewTestCase(TestCase):
             self.assertTrue(
                 "You have successfully left Foo community." in message.message)
         self.assertFalse(systers_user.is_member(self.community))
+
+
+class TransferOwnershipViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_get_transfer_ownership_view(self):
+        """Test GET request to transfer ownership of a community"""
+        url = reverse('transfer_ownership', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        User.objects.create_user(username="bar", password="foobar")
+        self.client.login(username="bar", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("transfer_ownership", kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_transfer_ownership_view(self):
+        """Test POST request to transfer ownership of a community"""
+        url = reverse('transfer_ownership', kwargs={'slug': 'foo'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        bar_user = User.objects.create_user(username="bar", password="foobar")
+        bar_systers_user = SystersUser.objects.get(user=bar_user)
+        self.client.login(username="bar", password="foobar")
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("transfer_ownership", kwargs={'slug': 'new'})
+        response = self.client.post(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+        response = self.client.post(url, data={'new_admin': 42})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a valid choice.")
+
+        self.community.add_member(bar_systers_user)
+        self.community.save()
+
+        response = self.client.post(url, follow=True,
+                                    data={'new_admin': bar_systers_user.pk},)
+        self.assertEqual(response.status_code, 200)
+        community = Community.objects.get(name="Foo")
+        self.assertEqual(community.community_admin, bar_systers_user)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                "The new Foo community admin is bar. You no longer have any "
+                "admin permissions in this community." in message.message)

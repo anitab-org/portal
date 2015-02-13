@@ -28,3 +28,5 @@ LEAVE_IS_ADMIN_MSG = "You are the {0} community admin. If you want to leave " \
                      "another user."
 NOT_MEMBER_MSG = "You are not a member of {0} community, hence you can't " \
                  "leave the community."
+NEW_ADMIN_SUCCESS_MSG = "The new {0} community admin is {1}. You no longer " \
+                        "have any admin permissions in this community."
