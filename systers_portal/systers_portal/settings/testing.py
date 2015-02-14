@@ -3,6 +3,10 @@ from base import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+INSTALLED_APPS += (
+    'django_nose',
+)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
