@@ -40,6 +40,35 @@ Setup for developers
   to run all the tests
 
 
+
+Run Portal with Docker
+----------------------
+
+If you want to take a speak peek at Systers Portal, a Docker container is for
+you. The following Docker is not intended to be run in production at the
+moment (but might be configured to do so in the future).
+
+1. Install [Docker](https://docs.docker.com/installation/) on your system.
+  Check the installation steps for your specific OS. Docker runs natively on
+  Linux-based system. For Windows and Mac OS X, you should install VirtualBox
+  and Boot2Docker.
+1. Install [fig](http://www.fig.sh/install.html).
+1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
+  the `portal` directory.
+1. Run `fig build`. This command will pull the images required to run the project
+  and will install the dependencies.
+1. Run `docker run -e SECRET_KEY=foobarbaz portal_web` in your terminal.
+1. Run `fig run web python systers_portal/manage.py migrate`.
+1. Run `fig run web python systers_portal/manage.py createsuperuser` if you
+  want to create a superuser to access the admin panel.
+1. Run `fig up` to run the project.
+1. Now Systers Portal should be running on port 8000. If you are on Linux, it
+  is `http://0.0.0.0:8000`. If you are using Boot2Docker, then it might be
+  `http://192.168.59.103:8000/`. If the following IP address doesn't work for
+  you, run `boot2docker ip` and replace the previous ip with the Boot2Docker
+  outputted IP address.
+
+
 Documentation
 -------------
 
