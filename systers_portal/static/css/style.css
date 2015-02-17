@@ -134,6 +134,15 @@ body > .container {
   }
 }
 
+/* Common: about us
+-------------------------------------------------- */
+.about-us-text {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  line-height: 1.8em;
+  margin: 20px 0;
+}
+
 /* Sign in, Sign up
 -------------------------------------------------- */
 .form-signin,
