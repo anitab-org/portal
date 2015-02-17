@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+  <div class="container col-md-8 col-md-offset-2">
+    <h1>About Systers</h1>
+    <hr>
+    <img class="img-responsive" src="{% static 'img/about_systers.jpg' %}"
+           alt="Systers Communities">
+    <p class="about-us-text">
+      It’s important to know that you are not alone. Systers is a forum for all women involved in the technical aspects of computing. 
+      The list has over 4,000 members from at least 54 countries around the world. We welcome the participation of women technologists of
+      all ages and at any stage of their studies or careers. Systers is the world’s largest email community of women in technical roles in
+      computing. It was founded by Anita Borg in 1987 together with 12 other women as a small electronic mailing list for women in
+      “systems”.
+    </p>
+    <p class="about-us-text">
+      Systers Portal is a unified platform for Systers and its sub-groups to share information and get the latest news. Special Interest
+      communities are also offered where Systers can identify themselves culturally to share and offer support in challenges within
+      their communities.
+    </p>
+    <div class="mt40"></div>
+  </div>
+{% endblock %}
