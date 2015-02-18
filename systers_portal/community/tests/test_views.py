@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save, post_delete
 from django.test import TestCase
 
+from community.constants import USER_CONTENT_MANAGER
 from community.models import Community, CommunityPage
 from community.signals import manage_community_groups, remove_community_groups
 from membership.models import JoinRequest
@@ -374,3 +375,54 @@ class DeleteCommunityPageViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertSequenceEqual(CommunityPage.objects.all(), [])
+
+
+class CommunityUsersViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+        CommunityPage.objects.create(slug="bar", title="Bar", order=1,
+                                     author=self.systers_user,
+                                     content="Hi there!",
+                                     community=self.community)
+
+    def test_community_users_view(self):
+        """Test GET request to list all community members according to various
+        levels of permissions."""
+        url = reverse('community_users', kwargs={'slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('community_users', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "community/users.html")
+        self.assertContains(response, '<td><a href="/users/foo/">foo</a></td>')
+        self.assertContains(response, 'Permissions')
+        self.assertNotContains(response, 'Remove')
+
+        new_user = User.objects.create_user(username='baz', password='foobar')
+        new_systers_user = SystersUser.objects.get(user=new_user)
+        self.client.login(username='baz', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.community.add_member(new_systers_user)
+        self.community.save()
+        group = Group.objects.get(name=USER_CONTENT_MANAGER.format("Foo"))
+        new_user.groups.add(group)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "community/users.html")
+        self.assertContains(response, '<td><a href="/users/baz/">baz</a></td>')
+        self.assertContains(response, '<td><a href="/users/foo/">foo</a></td>')
+        self.assertContains(response, 'Permissions')
+        self.assertContains(response, 'Remove')

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+  - {{ community }} - Users
+{% endblock %}
+
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        {{ community }} Users
+      </h1>
+      <hr/>
+    </div>
+    <div class="col-md-9">
+      <table class="table table-hover decoration-none">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Email address</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for systers_user in object_list %}
+            <tr>
+              <th>{{ forloop.counter0|add:page_obj.start_index }}</th>
+              <td><a href="{{ systers_user.get_absolute_url }}">{{ systers_user.user.username }}</a></td>
+              <td>{{ systers_user.user.first_name }}</td>
+              <td>{{ systers_user.user.last_name }}</td>
+              <td><a href="mailto:{{ systers_user.user.email }}">{{ systers_user.user.email }}</a></td>
+              <td>
+                {% if systers_user == community.community_admin %}
+                  {% if systers_user.user == user %}
+                    <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
+                  {% endif %}
+                {% else %}
+                  <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
+                  <a href="#" role="button" class="btn btn-danger btn-xs">Remove</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-3">
+      {% include 'community/snippets/community_sidebar.html' %}
+    </div>
+    {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}
+
+{% block community_footer %}
+  {% include 'community/snippets/footer.html' %}
+{% endblock %}
