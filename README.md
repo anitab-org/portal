@@ -1,11 +1,12 @@
-Systers Portal Project [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal) [![Coverage Status](https://coveralls.io/repos/systers/portal/badge.png?branch=master)](https://coveralls.io/r/systers/portal?branch=master) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/systers/portal?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-======================
+Systers Portal [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal) [![Coverage Status](https://coveralls.io/repos/systers/portal/badge.png?branch=master)](https://coveralls.io/r/systers/portal?branch=master) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/systers/portal?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+==============
 
-Systers Portal is for Systers communities to post and share information within and with other communities.
+Systers Portal is for Systers communities to post and share information within
+and with other communities.
 
-Our project page >> http://systers.github.io/portal/
+Website: http://portal.systers.org
 
-More information on technical architecture of this project coming soon...
+Project page: http://systers.github.io/portal/
 
 
 Setup for developers
@@ -34,10 +35,10 @@ Setup for developers
   Fill in the details asked.
 1. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
   or production, feed the respective settings file from the command line, e.g. for  
-  testing `python manage.py runserver --settings=systers_portal.settings.testing`
-1. Before commiting run `flake8 systers_portal` and fix PEP8 warnings
+  testing `python manage.py runserver --settings=systers_portal.settings.testing`.
+1. Before commiting run `flake8 systers_portal` and fix PEP8 warnings.
 1. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
-  to run all the tests
+  to run all the tests.
 
 
 

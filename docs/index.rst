@@ -5,11 +5,9 @@
 
 Welcome to Systers Portal's documentation!
 ==========================================
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
+Systers Portal is a platform for Systers communities to share information
+within and with other communities. The following documentation is intended for
+Systers Portal developers and administrators. 
 
 Administration of Systers Portal
 --------------------------------

@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, RedirectView
+from django.views.generic import DetailView, RedirectView, ListView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -192,3 +192,36 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
         page. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_page", self.community)
+
+
+class CommunityUsersView(LoginRequiredMixin, PermissionRequiredMixin,
+                         ListView):
+    """Manage Community users view"""
+    template_name = "community/users.html"
+    paginate_by = 50
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_queryset(self):
+        """Set ListView queryset to all the members of the community"""
+        return self.community.members.all()
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(CommunityUsersView, self).get_context_data(**kwargs)
+        context['community'] = self.community
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to manage community
+        users (add, change, delete). The permission holds true for
+        superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        add_perm = request.user.has_perm("add_community_systersuser",
+                                         self.community)
+        change_perm = request.user.has_perm("change_community_systersuser",
+                                            self.community)
+        delete_perm = request.user.has_perm("delete_community_systersuser",
+                                            self.community)
+        return add_perm and change_perm and delete_perm
