@@ -25,6 +25,7 @@ Development of Systers Portal
 
    develop/prerequisites
    develop/contributing
+   develop/architecture
    develop/communities
    develop/groups_and_permissions
 
