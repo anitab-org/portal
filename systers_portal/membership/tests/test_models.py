@@ -12,8 +12,7 @@ class JoinRequestModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_unicode(self):
         """Test JoinRequest object str/unicode representation"""

@@ -10,7 +10,7 @@ class TransferOwnershipForm(forms.Form):
         self.community = kwargs.pop('community')
         super(TransferOwnershipForm, self).__init__(*args, **kwargs)
         members = self.community.members.all()
-        members = members.exclude(pk=self.community.community_admin.pk)
+        members = members.exclude(pk=self.community.admin.pk)
         choices = [(member.id, str(member)) for member in members]
         self.fields['new_admin'] = forms.ChoiceField(
             choices=choices, label="New community admin")
