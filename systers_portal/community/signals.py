@@ -18,21 +18,21 @@ def manage_community_groups(sender, instance, created, **kwargs):
         assign_permissions(instance, groups)
         community_admin_group = next(
             g for g in groups if g.name == COMMUNITY_ADMIN.format(name))
-        instance.community_admin.join_group(community_admin_group)
-        instance.add_member(instance.community_admin)
+        instance.admin.join_group(community_admin_group)
+        instance.add_member(instance.admin)
         instance.save()
     else:
         if name != instance.original_name and instance.original_name:
             rename_groups(instance.original_name, instance.name)
-        if instance.community_admin != instance.original_community_admin and \
-           instance.original_community_admin is not None:
+        if instance.admin != instance.original_admin and \
+           instance.original_admin is not None:
             community_admin_group = \
                 get_object_or_404(Group, name=COMMUNITY_ADMIN.format(name))
-            instance.original_community_admin.leave_group(
+            instance.original_admin.leave_group(
                 community_admin_group)
-            instance.community_admin.join_group(community_admin_group)
-            if instance.community_admin not in instance.members.all():
-                instance.add_member(instance.community_admin)
+            instance.admin.join_group(community_admin_group)
+            if instance.admin not in instance.members.all():
+                instance.add_member(instance.admin)
                 instance.save()
 
 
