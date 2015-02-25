@@ -37,10 +37,17 @@
                 {% if systers_user == community.community_admin %}
                   {% if systers_user.user == user %}
                     <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
+                    <a href="{% url 'transfer_ownership' community.slug %}"
+                       role="button" class="btn btn-warning btn-xs">Transfer ownership</a>
                   {% endif %}
                 {% else %}
                   <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
-                  <a href="#" role="button" class="btn btn-danger btn-xs">Remove</a>
+                  {% if systers_user.user == user %}
+                    <a href="{% url 'leave_community' community.slug %}" role="button"
+                        class="btn btn-warning btn-xs">Leave</a>
+                  {% else %}
+                    <a href="#" role="button" class="btn btn-danger btn-xs">Remove</a>
+                  {% endif %}
                 {% endif %}
               </td>
             </tr>

@@ -425,4 +425,10 @@ class CommunityUsersViewTestCase(TestCase):
         self.assertContains(response, '<td><a href="/users/baz/">baz</a></td>')
         self.assertContains(response, '<td><a href="/users/foo/">foo</a></td>')
         self.assertContains(response, 'Permissions')
+        self.assertContains(response, 'Leave')
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Remove')
+        self.assertContains(response, 'Transfer ownership')
