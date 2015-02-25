@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import RedirectView, ListView, FormView
@@ -278,3 +279,55 @@ class TransferOwnershipView(LoginRequiredMixin, PermissionRequiredMixin,
         of the community."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user == self.community.community_admin.user
+
+
+class RemoveCommunityMemberView(LoginRequiredMixin, PermissionRequiredMixin,
+                                RedirectView):
+    """Remove a user from community members view"""
+    permanent = False
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to the management panel of community users"""
+        return self.redirect_url
+
+    def get(self, request, *args, **kwargs):
+        """Process the removal of a user from community members and pass a
+        status message to the user."""
+        user = get_object_or_404(User, username=kwargs.get('username'))
+        systersuser = get_object_or_404(SystersUser, user=user)
+        status = systersuser.leave_community(self.community)
+        self.redirect_url = reverse('community_users',
+                                    kwargs={'slug': self.community.slug})
+        if status == OK:
+            if user == request.user:
+                messages.add_message(request, messages.SUCCESS,
+                                     LEAVE_OK_MSG.format(self.community))
+                self.redirect_url = reverse('user',
+                                            kwargs={'username': user.username})
+            else:
+                messages.add_message(request, messages.SUCCESS,
+                                     REMOVE_OK_MSG.format(user,
+                                                          self.community))
+        elif status == NOT_MEMBER:
+            messages.add_message(request, messages.WARNING,
+                                 REMOVE_NOT_MEMBER_MSG.format(user,
+                                                              self.community))
+        elif status == IS_ADMIN:
+            messages.add_message(request, messages.WARNING,
+                                 REMOVE_IS_ADMIN_MSG.format(user,
+                                                            self.community))
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
+        return super(RemoveCommunityMemberView, self).get(request, *args,
+                                                          **kwargs)
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to remove systers users
+        from a community. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm('delete_community_systersuser',
+                                     self.community)

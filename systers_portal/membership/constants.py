@@ -30,3 +30,8 @@ NOT_MEMBER_MSG = "You are not a member of {0} community, hence you can't " \
                  "leave the community."
 NEW_ADMIN_SUCCESS_MSG = "The new {0} community admin is {1}. You no longer " \
                         "have any admin permissions in this community."
+REMOVE_OK_MSG = "{0} is no longer member of {1} community."
+REMOVE_NOT_MEMBER_MSG = "{0} is not a member of {1} community, hence the " \
+                        "user can't be removed from the community members."
+REMOVE_IS_ADMIN_MSG = "{0} is the {1} community admin. It is not possible " \
+                      "to remove the admin from community members."

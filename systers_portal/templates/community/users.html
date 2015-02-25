@@ -46,7 +46,8 @@
                     <a href="{% url 'leave_community' community.slug %}" role="button"
                         class="btn btn-warning btn-xs">Leave</a>
                   {% else %}
-                    <a href="#" role="button" class="btn btn-danger btn-xs">Remove</a>
+                    <a href="{% url 'remove_member' community.slug systers_user.user.username %}"
+                       role="button" class="btn btn-danger btn-xs">Remove</a>
                   {% endif %}
                 {% endif %}
               </td>

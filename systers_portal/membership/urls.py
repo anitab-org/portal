@@ -5,8 +5,8 @@ from membership.views import (CommunityJoinRequestListView,
                               RejectCommunityJoinRequestView,
                               RequestJoinCommunityView,
                               CancelCommunityJoinRequestView,
-                              LeaveCommunityView,
-                              TransferOwnershipView)
+                              LeaveCommunityView, TransferOwnershipView,
+                              RemoveCommunityMemberView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/join_requests/$',
@@ -26,4 +26,6 @@ urlpatterns = [
         name="leave_community"),
     url(r'^(?P<slug>\w+)/transfer_ownership/$',
         TransferOwnershipView.as_view(), name="transfer_ownership"),
+    url(r'^(?P<slug>\w+)/remove/(?P<username>[\w.@+-]+)/$',
+        RemoveCommunityMemberView.as_view(), name="remove_member"),
 ]

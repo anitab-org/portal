@@ -1,7 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from community.constants import USER_CONTENT_MANAGER
 from community.models import Community
 from membership.models import JoinRequest
 from users.models import SystersUser
@@ -407,3 +408,67 @@ class TransferOwnershipViewTestCase(TestCase):
             self.assertTrue(
                 "The new Foo community admin is bar. You no longer have any "
                 "admin permissions in this community." in message.message)
+
+
+class RemoveCommunityMemberViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  community_admin=self.
+                                                  systers_user)
+
+    def test_remove_community_member_view(self):
+        """Test GET request to remove a community member"""
+        url = reverse('remove_member',
+                      kwargs={'slug': 'foo', 'username': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        admin_url = reverse('remove_member',
+                            kwargs={'slug': 'foo', 'username': 'foo'})
+        response = self.client.get(admin_url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                "foo is the Foo community admin. It is not possible to remove "
+                "the admin from community members." in message.message)
+
+        bar_user = User.objects.create_user(username="bar", password="foobar")
+        bar_systers_user = SystersUser.objects.get(user=bar_user)
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                "bar is not a member of Foo community, hence the user can't "
+                "be removed from the community members." in message.message)
+
+        self.community.add_member(bar_systers_user)
+        self.community.save()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue("bar is no longer member of Foo community."
+                            in message.message)
+
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.community.add_member(bar_systers_user)
+        self.community.save()
+        group = Group.objects.get(name=USER_CONTENT_MANAGER.format("Foo"))
+        bar_user.groups.add(group)
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue("You have successfully left Foo community."
+                            in message.message)
