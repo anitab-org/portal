@@ -130,7 +130,7 @@ class SystersUser(models.Model):
         """
         if not self.is_member(community):
             return NOT_MEMBER
-        if self == community.community_admin:
+        if self == community.admin:
             return IS_ADMIN
         self.leave_groups(community.name)
         community.remove_member(self)

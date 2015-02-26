@@ -21,7 +21,7 @@ class SignalsTestCase(TestCase):
         user1 = User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=systers_user)
+                                             admin=systers_user)
         groups_count = Group.objects.count()
         self.assertEqual(groups_count, 4)
         community_admin_group = Group.objects.get(
@@ -33,7 +33,7 @@ class SignalsTestCase(TestCase):
         user2 = User.objects.create(username='bar', password='foobar')
         systers_user2 = SystersUser.objects.get(user=user2)
         community.name = "Bar"
-        community.community_admin = systers_user2
+        community.admin = systers_user2
         community.save()
         removed_groups_count = Group.objects.filter(
             name__startswith="Foo").count()
@@ -52,7 +52,7 @@ class SignalsTestCase(TestCase):
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=systers_user)
+                                             admin=systers_user)
         groups_count = Group.objects.count()
         self.assertEqual(groups_count, 4)
         community.delete()

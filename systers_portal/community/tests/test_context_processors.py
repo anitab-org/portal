@@ -15,9 +15,9 @@ class CommunitiesProcessorTestCase(TestCase):
     def test_communities_processor(self):
         """Test the rendering of all communities in the templates"""
         Community.objects.create(name="Foo", slug="foo", order=1,
-                                 community_admin=self.systers_user)
+                                 admin=self.systers_user)
         Community.objects.create(name="Boo", slug="boo", order=2,
-                                 community_admin=self.systers_user)
+                                 admin=self.systers_user)
         index_url = reverse('index')
         response = self.client.get(index_url)
         self.assertContains(response, '<a role="menuitem" tabindex="-1" '
