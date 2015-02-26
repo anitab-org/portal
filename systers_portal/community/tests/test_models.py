@@ -18,7 +18,7 @@ class CommunityModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_unicode(self):
@@ -28,14 +28,14 @@ class CommunityModelTestCase(TestCase):
     def test_original_values(self):
         """Test original community name and admin functioning"""
         self.assertEqual(self.community.original_name, "Foo")
-        self.assertEqual(self.community.community_admin, self.systers_user)
+        self.assertEqual(self.community.admin, self.systers_user)
         self.community.name = "Bar"
         user = User.objects.create(username="bar", password="barfoo")
         systers_user2 = SystersUser.objects.get(user=user)
-        self.community.community_admin = systers_user2
+        self.community.admin = systers_user2
         self.community.save()
         self.assertEqual(self.community.original_name, "Foo")
-        self.assertEqual(self.community.original_community_admin,
+        self.assertEqual(self.community.original_admin,
                          self.systers_user)
 
     def test_has_changed_name(self):
@@ -45,14 +45,14 @@ class CommunityModelTestCase(TestCase):
         self.community.save()
         self.assertTrue(self.community.has_changed_name())
 
-    def test_has_changed_community_admin(self):
-        """Test has_changed_community_admin method of Community"""
-        self.assertFalse(self.community.has_changed_community_admin())
+    def test_has_changed_admin(self):
+        """Test has_changed_admin method of Community"""
+        self.assertFalse(self.community.has_changed_admin())
         user = User.objects.create(username="bar", password="barfoo")
         systers_user2 = SystersUser.objects.get(user=user)
-        self.community.community_admin = systers_user2
+        self.community.admin = systers_user2
         self.community.save()
-        self.assertTrue(self.community.has_changed_community_admin())
+        self.assertTrue(self.community.has_changed_admin())
 
     def test_add_remove_member(self):
         """Test adding and removing Community members"""
@@ -79,7 +79,7 @@ class CommunityModelTestCase(TestCase):
                             dispatch_uid="remove_groups")
         community = Community.objects.create(name="Bar", slug="bar",
                                              order=2,
-                                             community_admin=self.systers_user)
+                                             admin=self.systers_user)
         user = User.objects.create(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
         status = community.set_new_admin(bar_systers_user)
@@ -89,7 +89,7 @@ class CommunityModelTestCase(TestCase):
         community.save()
         status = community.set_new_admin(bar_systers_user)
         self.assertEqual(status, "ok")
-        self.assertEqual(community.community_admin, bar_systers_user)
+        self.assertEqual(community.admin, bar_systers_user)
         admin_group = Group.objects.get(name=COMMUNITY_ADMIN.format("Bar"))
         self.assertSequenceEqual(bar_systers_user.user.groups.all(),
                                  [admin_group])
@@ -102,7 +102,7 @@ class CommunityPageModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_unicode(self):

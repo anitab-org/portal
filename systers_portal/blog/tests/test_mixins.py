@@ -15,7 +15,7 @@ class ResourceTypesMixinTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_context_data_empty(self):

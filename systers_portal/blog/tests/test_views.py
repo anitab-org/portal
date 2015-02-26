@@ -13,7 +13,7 @@ class CommunityNewsListViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -74,7 +74,7 @@ class CommunityNewsViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -121,7 +121,7 @@ class AddCommunityNewsViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -171,7 +171,7 @@ class EditCommunityNewsViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.news = News.objects.create(slug="bar", title="Bar",
                                         author=self.systers_user,
@@ -221,7 +221,7 @@ class DeleteCommunityNewsViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         News.objects.create(slug="bar", title="Bar",
                             author=self.systers_user,
@@ -261,7 +261,7 @@ class CommunityResourceListViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -346,7 +346,7 @@ class CommunityResourceViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -395,7 +395,7 @@ class AddCommunityResourceViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.client = Client()
 
@@ -445,7 +445,7 @@ class EditCommunityResourceViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.resource = Resource.objects.create(slug="bar", title="Bar",
                                                 author=self.systers_user,
@@ -495,7 +495,7 @@ class DeleteCommunityResourceViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         Resource.objects.create(slug="bar", title="Bar",
                                 author=self.systers_user,

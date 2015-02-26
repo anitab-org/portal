@@ -26,7 +26,7 @@ class NewsModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_unicode(self):
@@ -44,7 +44,7 @@ class ResourceModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_unicode(self):

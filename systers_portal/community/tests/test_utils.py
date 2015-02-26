@@ -70,7 +70,7 @@ class UtilsTestCase(TestCase):
         User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=systers_user)
+                                             admin=systers_user)
         name = community.name
         groups = create_groups(name)
         assign_permissions(community, groups)
