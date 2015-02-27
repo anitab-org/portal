@@ -4,6 +4,7 @@ from django.conf import settings
 
 from common.views import IndexView
 from common.views import ContactView
+from common.views import AboutUsView
 
 try:
     admin.autodiscover()
@@ -21,6 +22,7 @@ urlpatterns = patterns(
     url(r'^accounts/', include('allauth.urls')),
     url(r'^ckeditor/', include('ckeditor.urls')),
     url(r'^contact/$', ContactView.as_view(), name='contact'),
+    url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
 )
 
 if settings.DEBUG:

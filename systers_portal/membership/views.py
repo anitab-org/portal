@@ -278,7 +278,7 @@ class TransferOwnershipView(LoginRequiredMixin, PermissionRequiredMixin,
         has the permission to transfer community ownership to another member
         of the community."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
-        return request.user == self.community.community_admin.user
+        return request.user == self.community.admin.user
 
 
 class RemoveCommunityMemberView(LoginRequiredMixin, PermissionRequiredMixin,

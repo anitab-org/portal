@@ -13,15 +13,14 @@ class CommunityFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_community_form(self):
         """Test community form"""
         data = {'name': 'Bar',
                 'slug': 'bar',
                 'order': 1,
-                'community_admin': self.systers_user}
+                'admin': self.systers_user}
         form = CommunityForm(data=data, instance=self.community)
         self.assertTrue(form.is_valid())
         form.save()
@@ -35,8 +34,7 @@ class AddCommunityPageFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_add_community_page_form(self):
         """Test add CommunityPage form"""
@@ -64,8 +62,7 @@ class EditCommunityPageFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_edit_community_page_form(self):
         """Test edit community page"""

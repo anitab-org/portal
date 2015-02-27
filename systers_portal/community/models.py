@@ -19,8 +19,8 @@ class Community(models.Model):
     members = models.ManyToManyField(SystersUser, blank=True, null=True,
                                      related_name='communities',
                                      verbose_name="Members")
-    community_admin = models.ForeignKey(SystersUser, related_name='community',
-                                        verbose_name="Community admin")
+    admin = models.ForeignKey(SystersUser, related_name='community',
+                              verbose_name="Community admin")
     parent_community = models.ForeignKey('self', blank=True, null=True,
                                          verbose_name="Parent community")
     website = models.URLField(max_length=255, blank=True,
@@ -32,7 +32,7 @@ class Community(models.Model):
     twitter = models.URLField(max_length=255, blank=True,
                               verbose_name="Twitter")
     __original_name = None
-    __original_community_admin = None
+    __original_admin = None
 
     class Meta:
         verbose_name_plural = "Communities"
@@ -61,16 +61,16 @@ class Community(models.Model):
     def __init__(self, *args, **kwargs):
         super(Community, self).__init__(*args, **kwargs)
         self.__original_name = self.name
-        if self.community_admin_id is not None:
-            self.__original_community_admin = self.community_admin
+        if self.admin_id is not None:
+            self.__original_admin = self.admin
 
     @property
     def original_name(self):
         return self.__original_name
 
     @property
-    def original_community_admin(self):
-        return self.__original_community_admin
+    def original_admin(self):
+        return self.__original_admin
 
     def get_absolute_url(self):
         """Absolute url to a Community main page"""
@@ -83,12 +83,12 @@ class Community(models.Model):
         """
         return self.name != self.original_name
 
-    def has_changed_community_admin(self):
+    def has_changed_admin(self):
         """Check if community has a new admin
 
         :return: True if community changed admin, False otherwise
         """
-        return self.community_admin != self.original_community_admin
+        return self.admin != self.original_admin
 
     def add_member(self, systers_user):
         """Add community member
@@ -125,9 +125,9 @@ class Community(models.Model):
             return NOT_MEMBER
         name = COMMUNITY_ADMIN.format(self.name)
         admin_group = Group.objects.get(name=name)
-        self.community_admin.leave_group(admin_group)
+        self.admin.leave_group(admin_group)
         new_admin.join_group(admin_group)
-        self.community_admin = new_admin
+        self.admin = new_admin
         self.save()
         return OK
 

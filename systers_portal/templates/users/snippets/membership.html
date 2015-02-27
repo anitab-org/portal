@@ -11,7 +11,7 @@
             </td>
             <td>
               {% if user == systersuser.user or user.is_superuser %}
-                {% if systersuser == community.community_admin %}
+                {% if systersuser == community.admin %}
                   <a href="#" role="button"
                      class="btn btn-primary btn-xs btn-warning pull-right">Transfer ownership</a>
                 {% else %}

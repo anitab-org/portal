@@ -9,7 +9,7 @@ class CommunityAdmin(GuardedModelAdmin):
         """Override this method in order to be able to add the community admin
         to members list via admin panel."""
         members = list(form.cleaned_data['members'])
-        members.extend([obj.community_admin])
+        members.extend([obj.admin])
         form.cleaned_data['members'] = members
         super(CommunityAdmin, self).save_model(request, obj, form, change)
 
