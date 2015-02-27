@@ -54,7 +54,7 @@ class UserViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'users/snippets/membership.html')
 
         community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=self.systers_user)
+                                             admin=self.systers_user)
         community.add_member(self.systers_user)
         community.save()
         response = self.client.get(user_url)
@@ -63,7 +63,7 @@ class UserViewTestCase(TestCase):
         new_systers_user = SystersUser.objects.get(user=new_user)
         new_comm = Community.objects.create(name="Bar", slug="bar",
                                             order=2,
-                                            community_admin=new_systers_user)
+                                            admin=new_systers_user)
         new_comm.add_member(self.systers_user)
         new_comm.save()
         response = self.client.get(user_url)
@@ -127,7 +127,7 @@ class UserProfileViewTestCase(TestCase):
         self.user.is_superuser = True
         self.user.save()
         community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             community_admin=self.systers_user)
+                                             admin=self.systers_user)
         community.add_member(systersuser)
         community.save()
         response = self.client.get(bar_profile_url)

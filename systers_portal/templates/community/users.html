@@ -34,7 +34,7 @@
               <td>{{ systers_user.user.last_name }}</td>
               <td><a href="mailto:{{ systers_user.user.email }}">{{ systers_user.user.email }}</a></td>
               <td>
-                {% if systers_user == community.community_admin %}
+                {% if systers_user == community.admin %}
                   {% if systers_user.user == user %}
                     <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
                     <a href="{% url 'transfer_ownership' community.slug %}"

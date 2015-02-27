@@ -14,7 +14,7 @@ class CommunityJoinRequestListViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_community_join_request_list_view(self):
@@ -46,7 +46,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_approve_community_join_request_view_redundant(self):
@@ -128,7 +128,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_reject_community_join_request_view_redundant(self):
@@ -184,7 +184,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_request_join_community_view(self):
@@ -245,7 +245,7 @@ class CancelCommunityJoinRequestView(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_cancel_community_join_request(self):
@@ -298,7 +298,7 @@ class LeaveCommunityViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_leave_community(self):
@@ -349,7 +349,7 @@ class TransferOwnershipViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_transfer_ownership_view(self):
@@ -402,7 +402,7 @@ class TransferOwnershipViewTestCase(TestCase):
                                     data={'new_admin': bar_systers_user.pk},)
         self.assertEqual(response.status_code, 200)
         community = Community.objects.get(name="Foo")
-        self.assertEqual(community.community_admin, bar_systers_user)
+        self.assertEqual(community.admin, bar_systers_user)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "success")
             self.assertTrue(
@@ -416,7 +416,7 @@ class RemoveCommunityMemberViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_remove_community_member_view(self):

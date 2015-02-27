@@ -16,7 +16,7 @@ class ViewCommunityProfileViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_view_community_profile_view(self):
@@ -43,7 +43,7 @@ class EditCommunityProfileViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_edit_community_profile_view(self):
@@ -108,7 +108,7 @@ class CommunityLandingViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_community_landing_view(self):
@@ -132,7 +132,7 @@ class CommunityPageViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         CommunityPage.objects.create(slug="page", title="Page", order=1,
                                      author=self.systers_user,
@@ -241,7 +241,7 @@ class AddCommunityPageViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
 
     def test_get_add_community_page_view(self):
@@ -292,7 +292,7 @@ class EditCommunityPageViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         self.page = CommunityPage.objects.create(slug="bar", title="Bar",
                                                  order=1,
@@ -344,7 +344,7 @@ class DeleteCommunityPageViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         CommunityPage.objects.create(slug="bar", title="Bar", order=1,
                                      author=self.systers_user,
@@ -383,7 +383,7 @@ class CommunityUsersViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  community_admin=self.
+                                                  admin=self.
                                                   systers_user)
         CommunityPage.objects.create(slug="bar", title="Bar", order=1,
                                      author=self.systers_user,
