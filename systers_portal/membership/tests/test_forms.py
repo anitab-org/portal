@@ -13,8 +13,7 @@ class TransferOwnershipFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_transfer_ownership_form(self):
         """Test transferring ownership form"""

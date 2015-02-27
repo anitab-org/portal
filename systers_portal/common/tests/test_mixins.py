@@ -15,8 +15,7 @@ class UserDetailsMixinTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_get_context_data_no_community(self):
         """Test mixin with no community set"""

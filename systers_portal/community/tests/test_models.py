@@ -18,8 +18,7 @@ class CommunityModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_unicode(self):
         """Test Community object str/unicode representation"""
@@ -102,8 +101,7 @@ class CommunityPageModelTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_unicode(self):
         """Test CommunityPage object str/unicode representation"""
