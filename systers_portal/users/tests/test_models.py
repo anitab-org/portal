@@ -79,6 +79,23 @@ class SystersUserTestCase(TestCase):
         self.systers_user.join_group(group)
         self.assertTrue(self.systers_user.is_group_member("Foo"))
 
+    def test_get_member_groups(self):
+        """Test getting groups of which the user is a member"""
+        groups = create_groups("Bar")
+        self.assertEqual(self.systers_user.get_member_groups(groups), [])
+        first_group = groups[0]
+        self.systers_user.join_group(first_group)
+        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
+                                 [first_group])
+        last_group = groups[-1]
+        self.systers_user.join_group(last_group)
+        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
+                                 [first_group, last_group])
+        group = Group.objects.create(name="Dummy")
+        self.systers_user.join_group(group)
+        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
+                                 [first_group, last_group])
+
     def test_get_last_join_request(self):
         """Test fetching last join request made to a community"""
         community = Community.objects.create(name="Foo", slug="foo",
