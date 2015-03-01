@@ -68,6 +68,14 @@ class SystersUser(models.Model):
         """
         return self.communities.filter(pk=community.pk).exists()
 
+    def is_group_member(self, group_name):
+        """Check if the user is a member of a group
+
+        :param group_name: string name of a Group
+        :return: True if the user is member of the group, False otherwise
+        """
+        return self.user.groups.filter(name=group_name).exists()
+
     def get_last_join_request(self, community):
         """Get the last join request made by the user to a community
 

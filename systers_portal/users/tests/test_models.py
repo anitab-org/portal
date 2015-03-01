@@ -72,6 +72,13 @@ class SystersUserTestCase(TestCase):
         community.save()
         self.assertTrue(bar_systers_user.is_member(community))
 
+    def test_is_group_member(self):
+        """Test if SystersUser is a member of a group"""
+        group = Group.objects.create(name="Foo")
+        self.assertFalse(self.systers_user.is_group_member("Foo"))
+        self.systers_user.join_group(group)
+        self.assertTrue(self.systers_user.is_group_member("Foo"))
+
     def test_get_last_join_request(self):
         """Test fetching last join request made to a community"""
         community = Community.objects.create(name="Foo", slug="foo",
