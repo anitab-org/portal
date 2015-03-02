@@ -46,7 +46,7 @@ class AddCommunityPageForm(ModelFormWithHelper):
 
 
 class EditCommunityPageForm(ModelFormWithHelper):
-    """For to edit a CommunityPage."""
+    """Form to edit a CommunityPage."""
     class Meta:
         model = CommunityPage
         fields = ('slug', 'title', 'order', 'content')
