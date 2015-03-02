@@ -1,8 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
 from community.forms import (CommunityForm, AddCommunityPageForm,
-                             EditCommunityPageForm)
+                             EditCommunityPageForm, PermissionGroupsForm)
 from community.models import Community, CommunityPage
 from users.models import SystersUser
 
@@ -86,3 +86,56 @@ class EditCommunityPageFormTestCase(TestCase):
         self.assertEqual(page.slug, 'bar')
         self.assertEqual(page.order, 2)
         self.assertEqual(page.title, "Bar page")
+
+
+class PermissionGroupsFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_permissions_groups_form(self):
+        """Test permission groups form"""
+        invalid_form = PermissionGroupsForm(user=self.systers_user,
+                                            community=self.community)
+        self.assertFalse(invalid_form.is_valid())
+
+        form = PermissionGroupsForm(user=self.systers_user, data={},
+                                    community=self.community)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.initial, {})
+        groups = [Group.objects.get(name="Foo: Content Manager"),
+                  Group.objects.get(name="Foo: Content Contributor"),
+                  Group.objects.get(name="Foo: User and Content Manager")]
+        self.assertSequenceEqual(form.groups, groups)
+        form.save()
+        for group in groups:
+            self.assertFalse(self.systers_user.is_group_member(group))
+
+        self.systers_user.join_group(groups[0])
+        form = PermissionGroupsForm(user=self.systers_user, data={},
+                                    community=self.community,
+                                    initial={'groups': [groups[0].pk]})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.initial['groups'], [groups[0].pk])
+        form.save()
+
+        form = PermissionGroupsForm(user=self.systers_user,
+                                    community=self.community,
+                                    data={'groups': [group.pk for group
+                                                     in groups]})
+        self.assertTrue(form.is_valid())
+        form.save()
+        for group in groups:
+            self.assertTrue(self.systers_user.is_group_member(group))
+
+        form = PermissionGroupsForm(user=self.systers_user,
+                                    community=self.community,
+                                    data={'groups': [groups[0].pk]})
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertTrue(self.systers_user.is_group_member(groups[0]))
+        self.assertFalse(self.systers_user.is_group_member(groups[1]))
+        self.assertFalse(self.systers_user.is_group_member(groups[2]))
