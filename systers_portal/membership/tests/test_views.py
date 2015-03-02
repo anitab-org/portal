@@ -14,8 +14,7 @@ class CommunityJoinRequestListViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_get_community_join_request_list_view(self):
         """Test GET to get the list on not yet approved community join
@@ -46,8 +45,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_approve_community_join_request_view_redundant(self):
         """Test GET request to approve a community join request for a user
@@ -128,8 +126,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_reject_community_join_request_view_redundant(self):
         """Test GET request to try to reject a community join request for a
@@ -184,8 +181,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_request_join_community_view(self):
         """Test GET request to join a community"""
@@ -245,8 +241,7 @@ class CancelCommunityJoinRequestView(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_cancel_community_join_request(self):
         """Test GET request to cancel a join request to a community"""
@@ -298,8 +293,7 @@ class LeaveCommunityViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_leave_community(self):
         """Test GET request to leave a community"""
@@ -349,8 +343,7 @@ class TransferOwnershipViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_get_transfer_ownership_view(self):
         """Test GET request to transfer ownership of a community"""
@@ -416,8 +409,7 @@ class RemoveCommunityMemberViewTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_remove_community_member_view(self):
         """Test GET request to remove a community member"""
