@@ -3,7 +3,8 @@ from django.conf.urls import url
 from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ViewCommunityProfileView, CommunityPageView,
                              AddCommunityPageView, EditCommunityPageView,
-                             DeleteCommunityPageView, CommunityUsersView)
+                             DeleteCommunityPageView, CommunityUsersView,
+                             UserPermissionGroupsView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/$', CommunityLandingView.as_view(),
@@ -22,4 +23,6 @@ urlpatterns = [
         CommunityPageView.as_view(), name="view_community_page"),
     url(r'^(?P<slug>\w+)/users/$', CommunityUsersView.as_view(),
         name="community_users"),
+    url(r'^(?P<slug>\w+)/user/(?P<username>[\w.@+-]+)/permissions/$',
+        UserPermissionGroupsView.as_view(), name="user_permission_groups"),
 ]

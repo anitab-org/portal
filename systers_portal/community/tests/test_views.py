@@ -432,3 +432,60 @@ class CommunityUsersViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Remove')
         self.assertContains(response, 'Transfer ownership')
+
+
+class UserPermissionGroupsViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_get_user_permissions_groups(self):
+        """Test GET request to user permission groups"""
+        non_existent_url = reverse('user_permission_groups',
+                                   kwargs={'slug': 'bar', 'username': 'bar'})
+        response = self.client.get(non_existent_url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse('user_permission_groups', kwargs={'slug': 'foo',
+                                                        'username': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        User.objects.create_user(username='bar', password='foobar')
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(non_existent_url)
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertSequenceEqual(
+            response.context['form'].fields['groups'].initial, [])
+
+        content_manager_group = Group.objects.get(name="Foo: Content Manager")
+        self.systers_user.join_group(content_manager_group)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertSequenceEqual(
+            response.context['form'].fields['groups'].initial,
+            [content_manager_group.pk])
+
+    def test_post_user_permissions_groups(self):
+        """Test POST request to user permission groups"""
+        url = reverse('user_permission_groups', kwargs={'slug': 'foo',
+                                                        'username': 'foo'})
+        self.client.login(username='foo', password='foobar')
+        group = Group.objects.get(name="Foo: Content Manager")
+        self.assertFalse(self.systers_user.is_group_member(group))
+        response = self.client.post(url, data={'groups': [group.pk]})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(self.systers_user.is_group_member(group))
+
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(self.systers_user.is_group_member(group))

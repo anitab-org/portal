@@ -1,14 +1,16 @@
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DetailView, RedirectView, ListView
+from django.views.generic import DetailView, RedirectView, ListView, FormView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from common.mixins import UserDetailsMixin
 from community.forms import (CommunityForm, AddCommunityPageForm,
-                             EditCommunityPageForm)
+                             EditCommunityPageForm, PermissionGroupsForm)
 from community.mixins import CommunityMenuMixin
 from community.models import Community, CommunityPage
+from users.models import SystersUser
 
 
 class CommunityLandingView(RedirectView):
@@ -225,3 +227,48 @@ class CommunityUsersView(LoginRequiredMixin, PermissionRequiredMixin,
         delete_perm = request.user.has_perm("delete_community_systersuser",
                                             self.community)
         return add_perm and change_perm and delete_perm
+
+
+class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
+                               FormView):
+    """Manage user permission groups"""
+    template_name = "community/permissions.html"
+    form_class = PermissionGroupsForm
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """On success redirect to the manage community users page"""
+        return reverse("community_users", kwargs={'slug': self.community.slug})
+
+    def get_form_kwargs(self):
+        """Add community object to form kwargs"""
+        kwargs = super(UserPermissionGroupsView, self).get_form_kwargs()
+        kwargs['community'] = self.community
+        username = self.kwargs['username']
+        user = User.objects.get(username=username)
+        self.systersuser = SystersUser.objects.get(user=user)
+        kwargs['user'] = self.systersuser
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        """Add Community object and SystersUser objects to the context"""
+        context = super(UserPermissionGroupsView, self).get_context_data(
+            **kwargs)
+        context['community'] = self.community
+        context['systersuser'] = self.systersuser
+        return context
+
+    def form_valid(self, form):
+        """If the form is valid, call save method on it."""
+        if form.has_changed():
+            form.save()
+        return super(UserPermissionGroupsView, self).form_valid(form)
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to change user
+        permission groups. The permission holds true for superusers."""
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        return request.user.has_perm("change_community_systersuser",
+                                     self.community)

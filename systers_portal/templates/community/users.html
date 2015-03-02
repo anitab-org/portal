@@ -36,12 +36,14 @@
               <td>
                 {% if systers_user == community.admin %}
                   {% if systers_user.user == user %}
-                    <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
+                    <a href="{% url 'user_permission_groups' community.slug systers_user.user.username %}"
+                       role="button" class="btn btn-primary btn-xs">Permissions</a>
                     <a href="{% url 'transfer_ownership' community.slug %}"
                        role="button" class="btn btn-warning btn-xs">Transfer ownership</a>
                   {% endif %}
                 {% else %}
-                  <a href="#" role="button" class="btn btn-primary btn-xs">Permissions</a>
+                  <a href="{% url 'user_permission_groups' community.slug systers_user.user.username %}"
+                     role="button" class="btn btn-primary btn-xs">Permissions</a>
                   {% if systers_user.user == user %}
                     <a href="{% url 'leave_community' community.slug %}" role="button"
                         class="btn btn-warning btn-xs">Leave</a>
