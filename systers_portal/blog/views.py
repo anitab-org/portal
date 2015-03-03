@@ -9,9 +9,9 @@ from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
 from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
-                        EditResourceForm)
+                        EditResourceForm, TagForm)
 from blog.mixins import ResourceTypesMixin
-from blog.models import News, Resource, ResourceType
+from blog.models import News, Resource, ResourceType, Tag
 
 
 class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
@@ -337,3 +337,26 @@ class DeleteCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_resource",
                                      self.community)
+
+
+class AddTagView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Create a new Tag"""
+    template_name = "blog/add_tag.html"
+    model = Tag
+    form_class = TagForm
+    permission_required = "blog.add_tag"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Redirect to previous page"""
+        return reverse("view_community_news_list",
+                       kwargs={'slug': self.kwargs['slug']})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(AddTagView, self).get_context_data(**kwargs)
+        context['community'] = get_object_or_404(Community,
+                                                 slug=self.kwargs['slug'])
+        return context

@@ -1,0 +1,21 @@
+{% extends "community/base.html" %}
+
+{% block title %}
+  - Add a new tag
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Add a new tag</h1>
+      <hr/>
+    </div>
+    <div class="col-md-8">
+      <div class="well">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

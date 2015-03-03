@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from blog.models import News, Resource, ResourceType
+from blog.models import News, Resource, ResourceType, Tag
 from community.models import Community
 from users.models import SystersUser
 
@@ -517,3 +517,29 @@ class DeleteCommunityResourceViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertSequenceEqual(Resource.objects.all(), [])
+
+
+class AddTagViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_add_tag_view(self):
+        """Test GET and POST requests to add a new tag"""
+        url = reverse("add_tag", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Contributor")
+        self.systers_user.join_group(group)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.post(url, data={'name': 'Baz'})
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(Tag.objects.get().name, "Baz")
