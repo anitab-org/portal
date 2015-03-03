@@ -271,7 +271,7 @@ class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
 
     def check_permissions(self, request):
         """Check if the request user has the permissions to add new community
-        news. The permission holds true for superusers."""
+        resource. The permission holds true for superusers."""
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("add_community_resource", self.community)
 
