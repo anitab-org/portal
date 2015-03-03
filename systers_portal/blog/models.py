@@ -7,7 +7,7 @@ from community.models import Community
 
 class Tag(models.Model):
     """Model to represent the tags news or resource can have"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -15,7 +15,7 @@ class Tag(models.Model):
 
 class ResourceType(models.Model):
     """Model to represent the types a resource can have"""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __unicode__(self):
         return self.name
