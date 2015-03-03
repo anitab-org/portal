@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
-                        EditResourceForm)
-from blog.models import News, Resource
+                        EditResourceForm, TagForm)
+from blog.models import News, Resource, Tag
 from community.models import Community
 from users.models import SystersUser
 
@@ -104,8 +104,7 @@ class EditResourceFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get()
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
-                                                  admin=self.
-                                                  systers_user)
+                                                  admin=self.systers_user)
 
     def test_edit_news_form(self):
         """Test edit resource form"""
@@ -129,3 +128,29 @@ class EditResourceFormTestCase(TestCase):
         self.assertEqual(resource.slug, 'bar')
         self.assertEqual(resource.title, 'Bar')
         self.assertEqual(resource.content, 'Rainbows and ponies')
+
+
+class TagFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_tag_form(self):
+        """Test adding and editing tag form"""
+        form = TagForm(data={})
+        self.assertFalse(form.is_valid())
+
+        form = TagForm(data={'name': 'foo'})
+        self.assertTrue(form.is_valid())
+        form.save()
+        tag = Tag.objects.get()
+        self.assertEqual(tag.name, 'foo')
+
+        form = TagForm(instance=tag, data={'name': 'bar'})
+        self.assertTrue(form.is_valid())
+        form.save()
+        tag = Tag.objects.get()
+        self.assertEqual(tag.name, 'bar')
