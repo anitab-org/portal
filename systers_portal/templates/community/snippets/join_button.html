@@ -2,7 +2,7 @@
   {% if user.is_authenticated and user.is_active %}
     {# user is the community admin #}
     {% if user == community.admin.user %}
-      <a href="#" role="button" class="btn btn-warning btn-block">Transfer ownership</a>
+      <a href="{% url "transfer_ownership" community.slug %}" role="button" class="btn btn-warning btn-block">Transfer ownership</a>
     {% else %}
       {# user is a community member #}
       {% if is_member %}
