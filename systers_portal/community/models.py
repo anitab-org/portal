@@ -37,6 +37,7 @@ class Community(models.Model):
     class Meta:
         verbose_name_plural = "Communities"
         permissions = (
+            ('add_tag', 'Add blog tags'),
             ('add_community_systersuser', 'Add community Systers User'),
             ('change_community_systersuser', 'Change community Systers User'),
             ('delete_community_systersuser', 'Delete community Systers User'),
