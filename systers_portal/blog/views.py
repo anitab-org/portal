@@ -341,7 +341,7 @@ class DeleteCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
 
 class AddTagView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Create a new Tag"""
-    template_name = "blog/add_tag.html"
+    template_name = "blog/tag_type.html"
     model = Tag
     form_class = TagForm
     permission_required = "blog.add_tag"
@@ -359,4 +359,5 @@ class AddTagView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context = super(AddTagView, self).get_context_data(**kwargs)
         context['community'] = get_object_or_404(Community,
                                                  slug=self.kwargs['slug'])
+        context['tag_type'] = "tag"
         return context
