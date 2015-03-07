@@ -12,15 +12,15 @@ Project page: http://systers.github.io/portal/
 Setup for developers
 --------------------
 
-1. Make sure you have installed Python 2.7 or above (preferably latest minor release), 
+1. Make sure you have installed Python 3.4 (preferably latest minor release),
    [pip](https://pip.pypa.io/en/latest/) and [virtualenv](http://www.virtualenv.org/en/latest/).
 1. Make sure you have PostgreSQL installed.
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
-1. Create a virtual environment and install dependencies:
+1. Create a virtual environment with Python 3 and install dependencies:
 
  ```bash
- $ virtualenv venv
+ $ virtualenv venv --python=/path/to/python3
  $ source venv/bin/activate
  $ pip install -r requirements/dev.txt
  ```
