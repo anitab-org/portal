@@ -20,9 +20,9 @@ class CommunityModelTestCase(TestCase):
                                                   order=1,
                                                   admin=self.systers_user)
 
-    def test_unicode(self):
-        """Test Community object str/unicode representation"""
-        self.assertEqual(unicode(self.community), "Foo")
+    def test_str(self):
+        """Test Community object string representation"""
+        self.assertEqual(str(self.community), "Foo")
 
     def test_original_values(self):
         """Test original community name and admin functioning"""
@@ -103,8 +103,8 @@ class CommunityPageModelTestCase(TestCase):
                                                   order=1,
                                                   admin=self.systers_user)
 
-    def test_unicode(self):
-        """Test CommunityPage object str/unicode representation"""
+    def test_str(self):
+        """Test CommunityPage object string representation"""
         page = CommunityPage(order=1, community=self.community, slug="bar",
                              title="Bar", author=self.systers_user)
-        self.assertEqual(unicode(page), "Page Bar of Foo")
+        self.assertEqual(str(page), "Page Bar of Foo")

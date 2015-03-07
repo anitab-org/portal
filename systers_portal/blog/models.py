@@ -9,7 +9,7 @@ class Tag(models.Model):
     """Model to represent the tags news or resource can have"""
     name = models.CharField(max_length=255, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -17,7 +17,7 @@ class ResourceType(models.Model):
     """Model to represent the types a resource can have"""
     name = models.CharField(max_length=255, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -33,7 +33,7 @@ class News(Post):
     class Meta:
         verbose_name_plural = "News"
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
 
     def get_absolute_url(self):
@@ -54,7 +54,7 @@ class Resource(Post):
     resource_type = models.ForeignKey(ResourceType, blank=True, null=True,
                                       verbose_name="Resource type")
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
 
     def get_absolute_url(self):

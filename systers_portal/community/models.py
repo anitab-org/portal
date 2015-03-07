@@ -55,7 +55,7 @@ class Community(models.Model):
                                               'request'),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def __init__(self, *args, **kwargs):
@@ -137,5 +137,5 @@ class CommunityPage(Post):
     order = models.IntegerField(unique=True, verbose_name="Order")
     community = models.ForeignKey(Community, verbose_name="Community")
 
-    def __unicode__(self):
+    def __str__(self):
         return "Page {0} of {1}".format(self.title, self.community)

@@ -16,7 +16,7 @@ class CommentModelTestCase(TestCase):
                                                   order=1,
                                                   admin=self.systers_user)
 
-    def test_unicode(self):
+    def test_str(self):
         """Test Comment object str/unicode representation"""
         news = News.objects.create(slug="foonews", title="Bar",
                                    author=self.systers_user,
@@ -26,5 +26,5 @@ class CommentModelTestCase(TestCase):
         comment = Comment.objects.create(author=self.systers_user, body="Bar",
                                          object_id=news.id,
                                          content_type=related_object_type)
-        self.assertEqual(unicode(comment),
+        self.assertEqual(str(comment),
                          "Comment by foo to Bar of Foo Community")

@@ -109,7 +109,7 @@ class PermissionGroupsFormTestCase(TestCase):
         groups = [Group.objects.get(name="Foo: Content Manager"),
                   Group.objects.get(name="Foo: Content Contributor"),
                   Group.objects.get(name="Foo: User and Content Manager")]
-        self.assertSequenceEqual(form.groups, groups)
+        self.assertCountEqual(form.groups, groups)
         form.save()
         for group in groups:
             self.assertFalse(self.systers_user.is_group_member(group))
@@ -119,7 +119,7 @@ class PermissionGroupsFormTestCase(TestCase):
                                     community=self.community,
                                     initial={'groups': [groups[0].pk]})
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.initial['groups'], [groups[0].pk])
+        self.assertCountEqual(form.initial['groups'], [groups[0].pk])
         form.save()
 
         form = PermissionGroupsForm(user=self.systers_user,

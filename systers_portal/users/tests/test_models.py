@@ -54,7 +54,7 @@ class SystersUserTestCase(TestCase):
         admin_group = Group.objects.get(name="Foo: Community Admin")
         self.systers_user.join_group(admin_group)
         self.systers_user.join_group(content_manager_group)
-        self.assertItemsEqual(list(self.systers_user.user.groups.all()),
+        self.assertCountEqual(list(self.systers_user.user.groups.all()),
                               [content_manager_group, admin_group])
         self.systers_user.leave_groups(name)
         self.assertSequenceEqual(self.systers_user.user.groups.all(),
@@ -189,12 +189,12 @@ class UserTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
 
-    def test_unicode(self):
-        """Test unicode representation of Django User model"""
-        self.assertEqual(unicode(self.user), 'foo')
+    def test_str(self):
+        """Test string representation of Django User model"""
+        self.assertEqual(str(self.user), 'foo')
         self.user.first_name = "Foo"
         self.user.save()
-        self.assertEqual(unicode(self.user), 'foo')
+        self.assertEqual(str(self.user), 'foo')
         self.user.last_name = "Bar"
         self.user.save()
-        self.assertEqual(unicode(self.user), 'Foo Bar')
+        self.assertEqual(str(self.user), 'Foo Bar')

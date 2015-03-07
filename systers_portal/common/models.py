@@ -35,5 +35,5 @@ class Comment(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
 
-    def __unicode__(self):
+    def __str__(self):
         return "Comment by {0} to {1}".format(self.author, self.content_object)

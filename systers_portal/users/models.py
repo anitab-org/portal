@@ -22,8 +22,8 @@ class SystersUser(models.Model):
                                         null=True,
                                         verbose_name="Profile picture")
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
     def get_absolute_url(self):
         """Absolute URL to a SystersUser object"""
@@ -158,8 +158,8 @@ class SystersUser(models.Model):
         return OK
 
 
-def user_unicode(self):
-    """Unicode representation of Django User model
+def user_str(self):
+    """String representation of Django User model
 
     :return: string User name
     """
@@ -171,8 +171,8 @@ def user_unicode(self):
         return self.username
 
 
-# Overriding the unicode representation of Django User model
-User.__unicode__ = user_unicode
+# Overriding the string representation of Django User model
+User.__str__ = user_str
 
 
 @receiver(post_save, sender=User)

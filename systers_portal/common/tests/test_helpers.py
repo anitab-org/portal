@@ -8,7 +8,7 @@ from common.helpers import SubmitCancelFormHelper
 class SubmitCancelFormHelperTestCase(TestCase):
     def test_submit_cancel_form_helper(self):
         """Test custom crispy forms layout helper"""
-        template = loader.get_template_from_string(u"""
+        template = loader.get_template_from_string("""
             {% load crispy_forms_tags %}
             {% crispy form %}
         """)

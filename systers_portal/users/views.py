@@ -32,7 +32,7 @@ class UserView(LoginRequiredMixin, TemplateView):
                         'community_list': communities,
                         'join_requests': join_requests,
                         'permission_groups': permission_groups}
-        for key, value in context_dict.iteritems():
+        for key, value in context_dict.items():
             context[key] = value
         return context
 

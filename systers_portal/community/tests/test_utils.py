@@ -20,10 +20,10 @@ class UtilsTestCase(TestCase):
         group_names = []
         for group in groups:
             group_names.append(group.name)
-        self.assertItemsEqual(expected_group_names, group_names)
+        self.assertCountEqual(list(expected_group_names), group_names)
 
         community_groups = Group.objects.filter(name__startswith=name)
-        self.assertItemsEqual(list(community_groups), groups)
+        self.assertCountEqual(community_groups, groups)
 
     def test_remove_groups(self):
         """Test the removal of groups according to a name"""
@@ -41,10 +41,10 @@ class UtilsTestCase(TestCase):
         create_groups(name)
         community_groups = Group.objects.all()
         groups = get_groups("Bar")
-        self.assertItemsEqual(community_groups, groups)
+        self.assertCountEqual(community_groups, groups)
         create_groups("New")
         groups = get_groups("Bar")
-        self.assertItemsEqual(community_groups, groups)
+        self.assertCountEqual(community_groups, groups)
 
     def test_rename_groups(self):
         """Test the renaming of groups according to a new name"""
@@ -58,10 +58,10 @@ class UtilsTestCase(TestCase):
         group_names = []
         for group in groups:
             group_names.append(group.name)
-        self.assertItemsEqual(expected_group_names, group_names)
+        self.assertCountEqual(expected_group_names, group_names)
 
         community_groups = Group.objects.filter(name__startswith=new_name)
-        self.assertItemsEqual(community_groups, groups)
+        self.assertCountEqual(community_groups, groups)
         old_community_groups = Group.objects.filter(name__startswith=old_name)
         self.assertSequenceEqual(old_community_groups, [])
 
@@ -79,4 +79,4 @@ class UtilsTestCase(TestCase):
             group_perms = [p.codename for p in
                            list(group.permissions.all())]
             group_perms += get_perms(group, community)
-            self.assertItemsEqual(group_perms, value)
+            self.assertCountEqual(group_perms, value)

@@ -50,7 +50,7 @@ class JoinRequest(models.Model):
 
     objects = JoinRequestManager()
 
-    def __unicode__(self):
+    def __str__(self):
         approval_status = "approved" if self.is_approved else "not approved"
         return "Join Request by {0} - {1}".format(self.user, approval_status)
 

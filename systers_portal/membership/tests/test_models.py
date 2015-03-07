@@ -16,14 +16,14 @@ class JoinRequestModelTestCase(TestCase):
                                                   systers_user)
 
     def test_unicode(self):
-        """Test JoinRequest object str/unicode representation"""
+        """Test JoinRequest object string representation"""
         join_request = JoinRequest(user=self.systers_user,
                                    community=self.community)
-        self.assertEqual(unicode(join_request),
+        self.assertEqual(str(join_request),
                          "Join Request by foo - not approved")
         join_request.is_approved = True
         join_request.save()
-        self.assertEqual(unicode(join_request),
+        self.assertEqual(str(join_request),
                          "Join Request by foo - approved")
 
     def test_approve(self):

@@ -7,17 +7,17 @@ from users.models import SystersUser
 
 
 class TagModelTestCase(TestCase):
-    def test_unicode(self):
-        """Test Tag object str/unicode representation"""
+    def test_str(self):
+        """Test Tag object string representation"""
         tag = Tag.objects.create(name="Foo")
-        self.assertEqual(unicode(tag), "Foo")
+        self.assertEqual(str(tag), "Foo")
 
 
 class ResourceTypeModelTestCase(TestCase):
-    def test_unicode(self):
-        """Test ResourceType object str/unicode representation"""
+    def test_str(self):
+        """Test ResourceType object string representation"""
         resource_type = ResourceType.objects.create(name="Foo")
-        self.assertEqual(unicode(resource_type), "Foo")
+        self.assertEqual(str(resource_type), "Foo")
 
 
 class NewsModelTestCase(TestCase):
@@ -28,13 +28,13 @@ class NewsModelTestCase(TestCase):
                                                   order=1,
                                                   admin=self.systers_user)
 
-    def test_unicode(self):
-        """Test News object str/unicode representation"""
+    def test_str(self):
+        """Test News object string representation"""
         news = News.objects.create(slug="foonews", title="Bar",
                                    author=self.systers_user,
                                    content="Hi there!",
                                    community=self.community)
-        self.assertEqual(unicode(news), "Bar of Foo Community")
+        self.assertEqual(str(news), "Bar of Foo Community")
 
 
 class ResourceModelTestCase(TestCase):
@@ -46,9 +46,9 @@ class ResourceModelTestCase(TestCase):
                                                   admin=self.systers_user)
 
     def test_unicode(self):
-        """Test Resource object str/unicode representation"""
+        """Test Resource object string representation"""
         resource = Resource.objects.create(slug="fooresource", title="Bar",
                                            author=self.systers_user,
                                            content="Hi there!",
                                            community=self.community)
-        self.assertEqual(unicode(resource), "Bar of Foo Community")
+        self.assertEqual(str(resource), "Bar of Foo Community")

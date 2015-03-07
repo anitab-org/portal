@@ -32,7 +32,7 @@ class ModelFormWithHelper(ModelForm):
         :return: dict with helper kwargs
         """
         kwargs = {}
-        for attr, value in self.Meta.__dict__.iteritems():
+        for attr, value in self.Meta.__dict__.items():
             if attr.startswith("helper_") and attr != "helper_class":
                 new_attr = attr.split("_", 1)[1]
                 kwargs[new_attr] = value
