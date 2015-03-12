@@ -543,3 +543,29 @@ class AddTagViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Tag.objects.get().name, "Baz")
+
+
+class AddResourceTypeViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get()
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_add_resourceType_view(self):
+        """Test GET and POST requests to add a new resource type"""
+        url = reverse("add_resource_type", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Contributor")
+        self.systers_user.join_group(group)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.post(url, data={'name': 'Baz'})
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(ResourceType.objects.get().name, "Baz")

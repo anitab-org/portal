@@ -5,7 +5,8 @@ from blog.views import (CommunityNewsListView, CommunityNewsView,
                         DeleteCommunityNewsView, CommunityResourceListView,
                         CommunityResourceView, AddCommunityResourceView,
                         EditCommunityResourcesView,
-                        DeleteCommunityResourceView, AddTagView)
+                        DeleteCommunityResourceView, AddTagView,
+                        AddResourceTypeView)
 
 urlpatterns = [
     url(r'^(?P<slug>\w+)/news/$', CommunityNewsListView.as_view(),
@@ -31,4 +32,6 @@ urlpatterns = [
         CommunityResourceView.as_view(), name="view_community_resource"),
     url(r'^(?P<slug>\w+)/tag/add/$', AddTagView.as_view(),
         name="add_tag"),
+    url(r'^(?P<slug>\w+)/resource_type/add/$', AddResourceTypeView.as_view(),
+        name="add_resource_type"),
 ]
