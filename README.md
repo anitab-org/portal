@@ -14,7 +14,10 @@ Setup for developers
 
 1. Make sure you have installed Python 3.4 (preferably latest minor release),
    [pip](https://pip.pypa.io/en/latest/) and [virtualenv](http://www.virtualenv.org/en/latest/).
-1. Make sure you have PostgreSQL installed.
+1. Make sure you have PostgreSQL installed. For a tutorial on installing
+   Postgres, [Django Girls'](http://djangogirls.org) ebook,
+   [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
+   The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/optional_postgresql_installation/README.md).
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
 1. Create a virtual environment with Python 3 and install dependencies:
@@ -34,7 +37,7 @@ Setup for developers
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
   Fill in the details asked.
 1. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
-  or production, feed the respective settings file from the command line, e.g. for  
+  or production, feed the respective settings file from the command line, e.g. for
   testing `python manage.py runserver --settings=systers_portal.settings.testing`.
 1. Before commiting run `flake8 systers_portal` and fix PEP8 warnings.
 1. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
@@ -82,7 +85,7 @@ $ cd docs/
 $ make html
 ```
 
-To view the documentation open the generated `index.html` file in browser - 
+To view the documentation open the generated `index.html` file in browser -
 `docs/_build/html/index.html`.
 
 For more information on semantics and builds, please refer to the Sphinx
