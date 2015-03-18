@@ -13,16 +13,12 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = false
 
-[*.{scss,js}]
-indent_style = tab
-indent_size = tab
+[*.{css,js}]
+indent_style = space 
+indent_size = 2
 
 
 # Customizations for third party libraries
-
-[static/scss/{font-awesome/*.scss,_font-awesome.scss}]
-indent_style = space
-indent_size = 2
 
 [static/js/lib/**]
 trim_trailing_whitespace = ignore
