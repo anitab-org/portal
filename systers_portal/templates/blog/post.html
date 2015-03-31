@@ -1,5 +1,22 @@
 {% extends "community/base.html" %}
 
+{% block head %}
+  <script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+  <script type="text/javascript">
+    stLight.options({publisher: "340b978f-3a42-4f70-bb42-d639f57af637",
+      doNotHash: true,
+      doNotCopy: false,
+      hashAddressBar: false,
+      st_url:
+        {% if post_type == "news" %}
+          "{% url 'view_community_news' community.slug post.slug %}"
+        {% else %}
+          "{% url 'view_community_resource' community.slug post.slug %}"
+        {% endif %}
+    });
+  </script>
+{% endblock %}
+
 {% block title %}
   - {{ community }} - {{ post.title }}
 {% endblock %}
@@ -20,6 +37,12 @@
           {% endfor %}
         </ul>
       {% endif %}
+      <div class="social-buttons">
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+        <span class='st_googleplus_large' displayText='Google +'></span>
+        <span class='st_linkedin_large' displayText='LinkedIn'></span>
+      </div>
     </div>
   </div>
 {% endblock %}
