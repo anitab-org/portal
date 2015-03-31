@@ -16,7 +16,7 @@
       {% if post.tags %}
         <ul class="list-inline tags">
           {% for tag in post.tags.all %}
-            <li><a href="#" class="label label-info">{{ tag }}</a></li>
+            <li><span class="label label-info">{{ tag }}</span></li>
           {% endfor %}
         </ul>
       {% endif %}
