@@ -89,12 +89,12 @@ class SystersUserTestCase(TestCase):
                                  [first_group])
         last_group = groups[-1]
         self.systers_user.join_group(last_group)
-        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
-                                 [first_group, last_group])
+        self.assertCountEqual(self.systers_user.get_member_groups(groups),
+                              [first_group, last_group])
         group = Group.objects.create(name="Dummy")
         self.systers_user.join_group(group)
-        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
-                                 [first_group, last_group])
+        self.assertCountEqual(self.systers_user.get_member_groups(groups),
+                              [first_group, last_group])
 
     def test_get_last_join_request(self):
         """Test fetching last join request made to a community"""

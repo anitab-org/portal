@@ -39,5 +39,5 @@ class ResourceTypesMixinTestCase(TestCase):
         view = DummyView.as_view()
         response = view(request)
         context = response.context_data
-        self.assertSequenceEqual(context.get('resource_types'),
-                                 [resource_type1, resource_type2])
+        self.assertCountEqual(context.get('resource_types'),
+                              [resource_type1, resource_type2])

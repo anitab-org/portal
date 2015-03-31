@@ -44,8 +44,8 @@ class SignalsTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Bar"))
         self.assertEqual(user2.groups.get(), community_admin_group)
         self.assertNotEqual(list(user1.groups.all()), [community_admin_group])
-        self.assertSequenceEqual(Community.objects.get().members.all(),
-                                 [systers_user, systers_user2])
+        self.assertCountEqual(Community.objects.get().members.all(),
+                              [systers_user, systers_user2])
 
     def test_remove_community_groups(self):
         """Test the removal of groups when a community is deleted"""
