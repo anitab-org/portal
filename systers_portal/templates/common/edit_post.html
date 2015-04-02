@@ -1,9 +1,4 @@
 {% extends "community/base.html" %}
-{% load wysiwyg %}
-
-{% block head %}
-  {% wysiwyg_setup %}
-{% endblock %}
 
 {% block title %}
   - Edit "{{ object.title }}"
@@ -19,8 +14,8 @@
     </div>
     <div class="col-md-8">
       <div class="well">
+        {{ form.media }}
         {% crispy form %}
-        {% wysiwyg_editor "id_content" %}
       </div>
     </div>
   </div>
