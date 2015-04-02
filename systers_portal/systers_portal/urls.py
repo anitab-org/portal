@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from ckeditor import views
 
 from common.views import IndexView
 from common.views import ContactView
@@ -20,7 +23,10 @@ urlpatterns = patterns(
     url(r'^users/', include('users.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('allauth.urls')),
-    url(r'^ckeditor/', include('ckeditor.urls')),
+    url(r'^ckeditor/upload/', login_required(views.upload),
+        name='ckeditor_upload'),
+    url(r'^ckeditor/browse/', never_cache(login_required(views.browse)),
+        name='ckeditor_browse'),
     url(r'^contact/$', ContactView.as_view(), name='contact'),
     url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
 )
