@@ -18,6 +18,7 @@ Setup for developers
    Postgres, [Django Girls'](http://djangogirls.org) ebook,
    [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
    The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/optional_postgresql_installation/README.md).
+1. Make sure you have python3-dev installed - `sudo pip install python3-dev`   
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
 1. Create a virtual environment with Python 3 and install dependencies:
