@@ -133,6 +133,7 @@ CKEDITOR_RESTRICT_BY_USER = True
 
 CKEDITOR_CONFIGS = {
     'default': {
+        'width': '100%',
         'toolbar': [
             ['Styles', 'Format', 'Font', 'FontSize', 'Bold', 'Italic',
              'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'Undo',
