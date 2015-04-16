@@ -16,6 +16,7 @@
   margin-right: 4px;
 }
 
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -168,6 +169,11 @@ body > .container {
   max-width: 350px;
   padding: 15px;
   margin: 0 auto;
+}
+
+.add_email {
+  max-width: 350px;
+  padding: 15px;
 }
 
 .social-buttons {
