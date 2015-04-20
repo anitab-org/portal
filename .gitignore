@@ -44,5 +44,6 @@ venv
 # Documentation build
 _build
 
-# Media files
+# Static and Media files
 media
+staticfiles
