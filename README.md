@@ -18,7 +18,7 @@ Setup for developers
    Postgres, [Django Girls'](http://djangogirls.org) ebook,
    [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
    The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/optional_postgresql_installation/README.md).
-1. Make sure you have python3-dev installed - `sudo pip install python3-dev`   
+1. Make sure you have python3-dev installed - `sudo pip install python3-dev`
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
 1. Create a virtual environment with Python 3 and install dependencies:
@@ -39,7 +39,7 @@ Setup for developers
   Fill in the details asked.
 1. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
   or production, feed the respective settings file from the command line, e.g. for
-  testing `python manage.py runserver --settings=systers_portal.settings.testing`.
+  testing `python systers_portal/manage.py runserver --settings=systers_portal.settings.testing`.
 1. Before commiting run `flake8 systers_portal` and fix PEP8 warnings.
 1. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
   to run all the tests.
