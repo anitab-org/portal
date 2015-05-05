@@ -134,7 +134,7 @@ class Community(models.Model):
 
 class CommunityPage(Post):
     """Model to represent an arbitrary community page"""
-    order = models.IntegerField(unique=True, verbose_name="Order")
+    order = models.IntegerField(verbose_name="Order")
     community = models.ForeignKey(Community, verbose_name="Community")
 
     def __str__(self):
