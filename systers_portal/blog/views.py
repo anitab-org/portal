@@ -56,7 +56,8 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context["community"] = self.object
 
         news_slug = self.kwargs['news_slug']
-        context['post'] = get_object_or_404(News, slug=news_slug)
+        context['post'] = get_object_or_404(News, community=self.object,
+                                            slug=news_slug)
         context["post_type"] = "news"
         return context
 
@@ -223,7 +224,8 @@ class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context["community"] = self.object
 
         resource_slug = self.kwargs['resource_slug']
-        context["post"] = get_object_or_404(Resource, slug=resource_slug)
+        context["post"] = get_object_or_404(Resource, community=self.object,
+                                            slug=resource_slug)
         context["post_type"] = "resource"
         return context
 
