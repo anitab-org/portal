@@ -30,7 +30,7 @@ class AddCommunityPageForm(ModelFormWithHelper):
     """
     class Meta:
         model = CommunityPage
-        fields = ('slug', 'title', 'order', 'content')
+        fields = ('title', 'slug', 'order', 'content')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_community_landing' " \
                              "community.slug %}"
