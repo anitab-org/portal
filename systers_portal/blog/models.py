@@ -27,8 +27,7 @@ class News(Post):
     is_public = models.BooleanField(default=True, verbose_name="Is public")
     is_monitored = models.BooleanField(default=False,
                                        verbose_name="Is monitored")
-    tags = models.ManyToManyField(Tag, blank=True, null=True,
-                                  verbose_name="Tags")
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name="Tags")
 
     class Meta:
         verbose_name_plural = "News"
@@ -50,8 +49,7 @@ class Resource(Post):
     is_public = models.BooleanField(default=True, verbose_name="Is public")
     is_monitored = models.BooleanField(default=False,
                                        verbose_name="Is monitored")
-    tags = models.ManyToManyField(Tag, blank=True, null=True,
-                                  verbose_name="Tags")
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name="Tags")
     resource_type = models.ForeignKey(ResourceType, blank=True, null=True,
                                       verbose_name="Resource type")
 

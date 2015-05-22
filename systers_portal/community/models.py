@@ -16,7 +16,7 @@ class Community(models.Model):
     email = models.EmailField(max_length=255, blank=True, verbose_name="Email")
     mailing_list = models.EmailField(max_length=255, blank=True,
                                      verbose_name="Mailing list")
-    members = models.ManyToManyField(SystersUser, blank=True, null=True,
+    members = models.ManyToManyField(SystersUser, blank=True,
                                      related_name='communities',
                                      verbose_name="Members")
     admin = models.ForeignKey(SystersUser, related_name='community',
