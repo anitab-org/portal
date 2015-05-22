@@ -32,6 +32,7 @@ class News(Post):
 
     class Meta:
         verbose_name_plural = "News"
+        unique_together = ('community', 'slug')
 
     def __str__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)
@@ -53,6 +54,9 @@ class Resource(Post):
                                   verbose_name="Tags")
     resource_type = models.ForeignKey(ResourceType, blank=True, null=True,
                                       verbose_name="Resource type")
+
+    class Meta:
+        unique_together = ('community', 'slug')
 
     def __str__(self):
         return "{0} of {1} Community".format(self.title, self.community.name)

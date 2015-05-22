@@ -137,5 +137,8 @@ class CommunityPage(Post):
     order = models.IntegerField(verbose_name="Order")
     community = models.ForeignKey(Community, verbose_name="Community")
 
+    class Meta:
+        unique_together = (('community', 'slug'), ('community', 'order'))
+
     def __str__(self):
         return "Page {0} of {1}".format(self.title, self.community)
