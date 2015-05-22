@@ -75,6 +75,7 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         """Add to the context CommunityPage object"""
         context = super(CommunityPageView, self).get_context_data(**kwargs)
         context['page'] = get_object_or_404(CommunityPage,
+                                            community=self.object,
                                             slug=self.kwargs['page_slug'])
         return context
 
