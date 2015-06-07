@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'ckeditor',
     'guardian',
     'crispy_forms',
+    'cities_light',
     'blog',
     'common',
     'community',
