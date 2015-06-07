@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'blog',
     'common',
     'community',
+    'meetup',
     'membership',
     'users',
 )
