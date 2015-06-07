@@ -48,6 +48,8 @@ INSTALLED_APPS = (
     'community',
     'membership',
     'users',
+    'cities_light',
+    'meetup',
 )
 
 MIDDLEWARE_CLASSES = (
