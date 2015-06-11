@@ -57,7 +57,8 @@ moment (but might be configured to do so in the future).
   Check the installation steps for your specific OS. Docker runs natively on
   Linux-based system. For Windows and Mac OS X, you should install VirtualBox
   and Boot2Docker.
-1. Install [fig](http://www.fig.sh/install.html).
+1. Install [fig](http://www.fig.sh/install.html). Note: fig is deprecated. Docker
+  compose (http://docs.docker.com/compose/install/) replaces it.
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
 1. Run `fig build`. This command will pull the images required to run the project
