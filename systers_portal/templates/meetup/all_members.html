@@ -1,0 +1,12 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <h3>All Members</h3>
+  <ul>
+   {% for member in object.members.all %}       
+      <li>
+        <a href="{{ member.get_absolute_utl }}"> {{ member }}</a> 
+      </li>
+    {% endfor %} 
+  </ul>
+{% endblock %}

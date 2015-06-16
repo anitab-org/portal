@@ -1,0 +1,12 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <h3>Meetup Organizers</h3>
+  <ul>
+   {% for organizer in object.organizers.all %}       
+      <li>
+        <a href="{{ organizer.gat_absolute_url }}"> {{ organizer }}</a> 
+      </li>
+    {% endfor %} 
+  </ul>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Meetup Locations
+{% endblock %}
+{% block content %}
+  <h3>Meetup Locations</h3>
+  <ul>
+   {% for meetup_location in object_list %}       
+      <li>
+        <a href="{{ meetup_location.get_absolute_url }}">{{ meetup_location.name }}</a> 
+      </li>
+    {% endfor %} 
+  </ul>
+{% endblock %}
