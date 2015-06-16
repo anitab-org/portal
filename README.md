@@ -46,33 +46,42 @@ Setup for developers
 
 
 
-Run Portal with Docker
-----------------------
+Run Portal in a Docker container
+--------------------------------
 
-If you want to take a speak peek at Systers Portal, a Docker container is for
-you. The following Docker is not intended to be run in production at the
-moment (but might be configured to do so in the future).
+If you wish to view a speak peek of the Systers Portal, you may use Docker to
+preview the Portal.
+Note: The following Docker configuration is not intended to be run in
+production at the moment. It may be configured to do so in the future.
 
-1. Install [Docker](https://docs.docker.com/installation/) on your system.
-  Check the installation steps for your specific OS. Docker runs natively on
-  Linux-based system. For Windows and Mac OS X, you should install VirtualBox
-  and Boot2Docker.
-1. Install [fig](http://www.fig.sh/install.html). Note: fig is deprecated. Docker
-  compose (http://docs.docker.com/compose/install/) replaces it.
-1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
-  the `portal` directory.
-1. Run `fig build`. This command will pull the images required to run the project
-  and will install the dependencies.
-1. Run `docker run -e SECRET_KEY=foobarbaz portal_web` in your terminal.
-1. Run `fig run web python systers_portal/manage.py migrate`.
-1. Run `fig run web python systers_portal/manage.py createsuperuser` if you
-  want to create a superuser to access the admin panel.
-1. Run `fig up` to run the project.
-1. Now Systers Portal should be running on port 8000. If you are on Linux, it
-  is `http://0.0.0.0:8000`. If you are using Boot2Docker, then it might be
-  `http://192.168.59.103:8000/`. If the following IP address doesn't work for
-  you, run `boot2docker ip` and replace the previous ip with the Boot2Docker
-  outputted IP address.
+1. Install [Docker](https://docs.docker.com/installation/).
+   Follow the installation steps for your specific operating system:
+     * Docker runs natively on a Linux-based system.
+     * For Windows and Mac OS X, you should follow instructions for installing
+       boot2docker which also installs VirtualBox.
+1. Install [docker-compose](http://docs.docker.com/compose/install/).
+   Note: fig has been deprecated. Docker-compose replaces fig.
+1. Create a new directory on your local system.
+1. Enter `git clone git@github.com:systers/portal.git` to clone the Systers
+   Portal repository. After the clone is done, change directory (cd) to the
+   `portal` directory.
+1. Run `docker-compose build`. This pulls the Docker images required to run the
+   project and installs the necessary dependencies.
+1. **This step will require the Django SECRET_KEY.**
+   Run `docker run -e SECRET_KEY=foobarbaz portal_web`.
+1. Run `docker-compose run web python systers_portal/manage.py migrate`.
+1. *Optional:*
+   Run `docker-compose run web python systers_portal/manage.py createsuperuser`
+   if you wish to create a superuser to access the admin panel.
+1. Run `docker-compose up` to start the webserver for the Django Systers Portal
+   project.
+1. Systers Portal should be running on port 8000.
+     * If you are on Linux, enter `http://0.0.0.0:8000` in your browser.
+     * If you are using boot2docker on Windows or Mac OS X, enter
+       `http://192.168.59.103:8000/` in your browser. If this IP address
+       doesn't work, run `boot2docker ip` from the command line and replace
+       the previous IP address in the HTTP request with the IP returned by
+       boot2docker.
 
 
 Documentation
