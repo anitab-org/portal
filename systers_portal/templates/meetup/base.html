@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ object.name }}
+{% endblock %}
+
+{% block content %}
+  <div class="mt40"></div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{ object.name }}</h1>
+      <hr/>
+    </div>
+    <div class="col-md-9">
+      <ul class="nav nav-pills">
+        <li> <a href="#">Upcoming</a> </li>
+        <li> <a href="#">Past</a></li>
+        <li> <a href="#">Members</a></li>        
+        <li> <a href="#">Sponsors</a></li>
+      </ul>
+      {% block meetup_location_page_content %}
+      {% endblock %}
+    </div>
+    <div class="col-md-3">
+      {% include 'meetup/snippets/meetup_sidebar.html' %}
+      {% block extra_sidebar %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}
