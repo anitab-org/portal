@@ -1,7 +1,10 @@
 {% extends "meetup/base.html" %}
 
 {% block meetup_location_page_content %}
-  <h3>About</h3>
-  <p> {{ object.description|safe }} </p>
-  <hr>
+  <div class="box-container">
+    <h3>About</h3>
+    <div class="box-body">
+      {{ object.description|safe }}
+    </div>
+  </div>
 {% endblock %}

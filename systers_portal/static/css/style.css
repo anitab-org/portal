@@ -224,7 +224,8 @@ table.decoration-none  tr a {
   font-size: 2em;
 }
 
-.blog-entry .body {
+.blog-entry .body,
+.box-body {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 1.2em;
   line-height: 1.8em;
@@ -232,6 +233,18 @@ table.decoration-none  tr a {
 
 .blog-entry .tags {
   font-size: 1.3em;
+}
+
+/* Meetup Location CSS
+------------------------------------------------- */
+.box-container {
+  margin: 25px 0px;
+  padding: 0px 25px;
+  border: 1px solid #eee;
+}
+
+.box-body {
+  margin: 30px 0px;
 }
 
 /* RESPONSIVE CSS
