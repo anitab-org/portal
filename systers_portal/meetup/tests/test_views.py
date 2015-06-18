@@ -89,3 +89,16 @@ class MeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                                      'meetup_slug': 'foo-bar-baz'})
         response = self.client.get(incorrect_pair_url)
         self.assertEqual(response.status_code, 404)
+
+
+class MeetupLocationMembersViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_view_meetup_location_members_view(self):
+        """Test Meetup Location members view for correct http response"""
+        url = reverse('members_meetup_location', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/members.html')
+
+        nonexistent_url = reverse('members_meetup_location', kwargs={'slug': 'bar'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
