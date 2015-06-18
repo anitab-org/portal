@@ -34,3 +34,13 @@ class MeetupView(MeetupLocationMixin, DetailView):
 
     def get_meetup_location(self):
         return self.object
+
+
+class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
+    """Meetup Location members view, show members list of Meetup Location"""
+    model = MeetupLocation
+    template_name = "meetup/members.html"
+    paginate_by = 50
+
+    def get_meetup_location(self):
+        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
