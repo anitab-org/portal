@@ -1,6 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db import models
-from ckeditor.fields import RichTextField
+from django.utils import timezone
 from cities_light.models import City
+from ckeditor.fields import RichTextField
+
 
 from users.models import SystersUser
 
@@ -21,3 +24,24 @@ class MeetupLocation(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Meetup(models.Model):
+    """Manage details of Meetups of MeetupLocations"""
+    title = models.CharField(max_length=50, verbose_name="Title",)
+    slug = models.SlugField(max_length=50, unique=True, verbose_name="Slug")
+    date = models.DateField(verbose_name="Date")
+    time = models.TimeField(verbose_name="Time", blank=True)
+    venue = models.TextField(verbose_name="Venue", blank=True)
+    description = RichTextField(verbose_name="Description")
+    meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
+    created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
+    last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
+
+    def __str__(self):
+        return self.title
+
+    def clean_fields(self, *args, **kwargs):
+        """Validate meetup date is not less than today's date"""
+        if self.date < timezone.now().date():
+            raise ValidationError("Date should not be less than today's date.")
