@@ -11,7 +11,7 @@
       <h1>{{ meetup_location.name }}</h1>
       <hr/>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-9">
       <ul class="nav nav-pills">
         <li> <a href="#">Upcoming</a> </li>
         <li> <a href="#">Past</a></li>
@@ -21,7 +21,7 @@
       {% block meetup_location_page_content %}
       {% endblock %}
     </div>
-    <div class="col-md-3">
+    <div class="col-sm-3">
       {% include 'meetup/snippets/meetup_sidebar.html' %}
       {% block extra_sidebar %}{% endblock %}
       {% include 'meetup/snippets/about_button.html' %}
