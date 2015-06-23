@@ -20,6 +20,10 @@
   margin-right: 4px;
 }
 
+.ml15 {
+  margin-left: 15px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -259,6 +263,13 @@ table.decoration-none  tr a {
   height:400px;
   padding-right: 15px;
   padding-left: 15px;
+}
+
+/* Meetup Location Members user-cell space
+-------------------------------------------------- */
+.user-cell-wh-100 {
+  width: 100px;
+  height: 100px;
 }
 
 /* RESPONSIVE CSS
