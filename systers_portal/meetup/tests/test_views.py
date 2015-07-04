@@ -19,6 +19,7 @@ class MeetupLocationAboutViewTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'meetup/about.html')
+        self.assertEqual(response.context['meetup_location'], self.meetup_location)
 
         nonexistent_url = reverse('about_meetup_location', kwargs={'slug': 'bar'})
         response = self.client.get(nonexistent_url)
