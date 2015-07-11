@@ -239,7 +239,7 @@ table.decoration-none  tr a {
   font-size: 1.3em;
 }
 
-/* Meetup Location CSS
+/* Meetup CSS
 ------------------------------------------------- */
 .box-container {
   margin: 25px 0px;
@@ -249,6 +249,10 @@ table.decoration-none  tr a {
 
 .box-body {
   margin: 30px 0px;
+}
+
+.pt25 {
+  padding-top: 25px;
 }
 
 .map-container {
