@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Systers Meetup Locations
+{% endblock %}
+
+{% block content %}
+  <h2 class="mt40 text-center">Systers Meetup Locations</h2>
+  <div class="row">
+    <div id="map-canvas" class="map-container mt20"></div>
+  </div>
+  {% include "meetup/snippets/meetup_locations_grid.html" %}
+  {% include "meetup/snippets/meetup_locations_map.html" %}
+{% endblock %}

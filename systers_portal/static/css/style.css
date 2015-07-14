@@ -4,6 +4,10 @@
   margin-top: 40px;
 }
 
+.mt20 {
+  margin-top: 20px;
+}
+
 .mb40 {
   margin-bottom: 40px;
 }
@@ -245,6 +249,12 @@ table.decoration-none  tr a {
 
 .box-body {
   margin: 30px 0px;
+}
+
+.map-container {
+  height:400px;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 /* RESPONSIVE CSS
