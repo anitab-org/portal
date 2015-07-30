@@ -4,6 +4,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_countries.fields import CountryField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from community.utils import get_groups
 from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
@@ -21,6 +23,9 @@ class SystersUser(models.Model):
                                         blank=True,
                                         null=True,
                                         verbose_name="Profile picture")
+    profile_picture_thumbnail = ImageSpecField(source='profile_picture',
+                                               processors=[ResizeToFill(100, 100)],
+                                               options={'quality': 100})
 
     def __str__(self):
         return str(self.user)

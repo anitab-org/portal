@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'guardian',
     'crispy_forms',
     'cities_light',
+    'imagekit',
     'blog',
     'common',
     'community',
