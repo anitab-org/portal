@@ -102,3 +102,33 @@ class MeetupLocationMembersViewTestCase(MeetupLocationViewBaseTestCase, TestCase
         nonexistent_url = reverse('members_meetup_location', kwargs={'slug': 'bar'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
+
+
+class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_add_meetup_view(self):
+        """Test GET request to add a new meetup"""
+        url = reverse('add_meetup', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/add_meetup.html')
+
+    def test_post_add_meetup_view(self):
+        """Test POST request to add a new meetup"""
+        url = reverse("add_meetup", kwargs={'slug': 'foo'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        date = (timezone.now() + timezone.timedelta(2)).date()
+        time = timezone.now().time()
+        data = {'title': 'BarTest', 'slug': 'bartest', 'date': date, 'time': time,
+                'description': "It's a test meetup."}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        new_meetup = Meetup.objects.get()
+        self.assertTrue(new_meetup.title, 'BarTest')
+        self.assertTrue(new_meetup.created_by, self.systers_user)
+        self.assertTrue(new_meetup.meetup_location, self.meetup_location)
