@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
 
@@ -132,3 +132,39 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertTrue(new_meetup.title, 'BarTest')
         self.assertTrue(new_meetup.created_by, self.systers_user)
         self.assertTrue(new_meetup.meetup_location, self.meetup_location)
+
+
+class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(DeleteMeetupViewTestCase, self).setUp()
+        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
+                                            date=timezone.now().date(),
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user,
+                                            last_updated=timezone.now())
+        self.client = Client()
+
+    def test_get_delete_meetup_view(self):
+        """Test GET to confirm deletion of meetup"""
+        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Confirm to delete")
+
+    def test_post_delete_meetup_view(self):
+        """Test POST to delete a meetup"""
+        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        self.assertSequenceEqual(Meetup.objects.all(), [])
