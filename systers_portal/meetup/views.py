@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.views.generic import DeleteView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
@@ -73,4 +73,22 @@ class AddMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
         return kwargs
 
     def get_meetup_location(self):
+        return self.meetup_location
+
+
+class DeleteMeetupView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
+    """Delete existing Meetup"""
+    template_name = "meetup/meetup_confirm_delete.html"
+    model = Meetup
+    slug_url_kwarg = "meetup_slug"
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful deletion"""
+        self.get_meetup_location()
+        return reverse("about_meetup_location",
+                       kwargs={"slug": self.meetup_location.slug})
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
