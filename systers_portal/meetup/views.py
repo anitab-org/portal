@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DeleteView, TemplateView
@@ -91,4 +93,20 @@ class DeleteMeetupView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
 
     def get_meetup_location(self):
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class UpcomingMeetupsView(MeetupLocationMixin, ListView):
+    """List upcoming meetups of a meetup location"""
+    template_name = "meetup/upcoming_meetups.html"
+    model = Meetup
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        meetup_list = Meetup.objects.filter(
+            meetup_location=self.meetup_location, date__gte=datetime.date.today()).order_by('date')
+        return meetup_list
+
+    def get_meetup_location(self):
         return self.meetup_location
