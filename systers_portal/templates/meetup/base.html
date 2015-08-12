@@ -15,7 +15,7 @@
       <ul class="nav nav-pills">
         <li> <a href="#">Upcoming</a> </li>
         <li> <a href="#">Past</a></li>
-        <li> <a href="#">Members</a></li>        
+        <li> <a href="{% url 'members_meetup_location' meetup_location.slug %}">Members</a></li>        
         <li> <a href="#">Sponsors</a></li>
       </ul>
       {% block meetup_location_page_content %}
