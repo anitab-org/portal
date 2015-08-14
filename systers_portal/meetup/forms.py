@@ -34,3 +34,14 @@ class AddMeetupForm(ModelFormWithHelper):
         if commit:
             instance.save()
         return instance
+
+
+class EditMeetupForm(ModelFormWithHelper):
+    """Form to edit Meetup"""
+    class Meta:
+        model = Meetup
+        fields = ('title', 'slug', 'date', 'time', 'description', 'venue')
+        widgets = {'date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
+                   'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug%}"
