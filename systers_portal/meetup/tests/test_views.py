@@ -18,6 +18,14 @@ class MeetupLocationViewBaseTestCase(object):
             name="Foo Systers", slug="foo", location=self.location,
             description="It's a test meetup location")
 
+        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
+                                            date=timezone.now().date(),
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user,
+                                            last_updated=timezone.now())
+
 
 class MeetupLocationAboutViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def test_view_meetup_location_about_view(self):
@@ -58,16 +66,6 @@ class MeetupLocationListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
 
 class MeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
-    def setUp(self):
-        super(MeetupViewTestCase, self).setUp()
-        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
-                                            date=timezone.now().date(),
-                                            time=timezone.now().time(),
-                                            description='This is test Meetup',
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user,
-                                            last_updated=timezone.now())
-
     def test_view_meetup(self):
         """Test Meetup view for correct response"""
         url = reverse('view_meetup', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
@@ -128,7 +126,7 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'description': "It's a test meetup."}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
-        new_meetup = Meetup.objects.get()
+        new_meetup = Meetup.objects.get(slug='bartest')
         self.assertTrue(new_meetup.title, 'BarTest')
         self.assertTrue(new_meetup.created_by, self.systers_user)
         self.assertTrue(new_meetup.meetup_location, self.meetup_location)
@@ -137,18 +135,18 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(DeleteMeetupViewTestCase, self).setUp()
-        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
-                                            date=timezone.now().date(),
-                                            time=timezone.now().time(),
-                                            description='This is test Meetup',
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user,
-                                            last_updated=timezone.now())
+        self.meetup2 = Meetup.objects.create(title='Fooba', slug='fooba',
+                                             date=timezone.now().date(),
+                                             time=timezone.now().time(),
+                                             description='This is test Meetup',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
         self.client = Client()
 
     def test_get_delete_meetup_view(self):
         """Test GET to confirm deletion of meetup"""
-        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'fooba'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
 
@@ -159,7 +157,7 @@ class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
     def test_post_delete_meetup_view(self):
         """Test POST to delete a meetup"""
-        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        url = reverse("delete_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'fooba'})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
 
@@ -167,4 +165,38 @@ class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
-        self.assertSequenceEqual(Meetup.objects.all(), [])
+
+class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_edit_meetup_view(self):
+        """Test GET edit meetup"""
+        wrong_url = reverse("edit_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo'})
+        response = self.client.get(wrong_url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse("edit_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/edit_meetup.html')
+
+    def test_post_edit_meetup_view(self):
+        """Test POST edit meetup"""
+        wrong_url = reverse("edit_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo'})
+        response = self.client.post(wrong_url)
+        self.assertEqual(response.status_code, 403)
+
+        url = reverse("edit_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        date = (timezone.now() + timezone.timedelta(2)).date()
+        time = timezone.now().time()
+        data = {'title': 'BarTes', 'slug': 'bartes', 'date': date, 'time': time,
+                'description': "It's a edit test meetup."}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+        self.assertTrue(response.url.endswith('/meetup/foo/bartes/'))
+        self.assertEqual(response.status_code, 302)
