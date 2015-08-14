@@ -2,11 +2,11 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DeleteView, TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin
 
-from meetup.forms import AddMeetupForm
+from meetup.forms import AddMeetupForm, EditMeetupForm
 from meetup.mixins import MeetupLocationMixin
 from meetup.models import Meetup, MeetupLocation
 
@@ -92,3 +92,25 @@ class DeleteMeetupView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
     def get_meetup_location(self):
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
+
+
+class EditMeetupView(LoginRequiredMixin, UpdateView):
+    """Edit an existing meetup"""
+    template_name = "meetup/edit_meetup.html"
+    model = Meetup
+    slug_url_kwarg = "meetup_slug"
+    form_class = EditMeetupForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_meetup", kwargs={"slug": self.object.meetup_location.slug,
+                       "meetup_slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
+        context = super(EditMeetupView, self).get_context_data(**kwargs)
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        context['meetup'] = self.meetup
+        context['meetup_location'] = self.meetup.meetup_location
+        return context
