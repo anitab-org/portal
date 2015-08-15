@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {{ meetup_location.name }}
+  {{ meetup_location }}
 {% endblock %}
 
 {% block content %}
-  <div class="mt40"></div>
-  <div class="row">
+  <div class="row mt40">
     <div class="col-md-12">
-      <h1>{{ meetup_location.name }}</h1>
+      <h1>{{ meetup_location }}</h1>
       <hr/>
     </div>
     <div class="col-sm-9">
@@ -18,6 +17,11 @@
         <li> <a href="{% url 'members_meetup_location' meetup_location.slug %}">Members</a></li>        
         <li> <a href="#">Sponsors</a></li>
       </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-9">
       {% block meetup_location_page_content %}
       {% endblock %}
     </div>
