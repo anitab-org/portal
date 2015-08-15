@@ -18,6 +18,14 @@ class MeetupLocationViewBaseTestCase(object):
             name="Foo Systers", slug="foo", location=self.location,
             description="It's a test meetup location")
 
+        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
+                                            date=timezone.now().date(),
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user,
+                                            last_updated=timezone.now())
+
 
 class MeetupLocationAboutViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def test_view_meetup_location_about_view(self):
@@ -58,16 +66,6 @@ class MeetupLocationListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
 
 class MeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
-    def setUp(self):
-        super(MeetupViewTestCase, self).setUp()
-        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
-                                            date=timezone.now().date(),
-                                            time=timezone.now().time(),
-                                            description='This is test Meetup',
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user,
-                                            last_updated=timezone.now())
-
     def test_view_meetup(self):
         """Test Meetup view for correct response"""
         url = reverse('view_meetup', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
@@ -128,7 +126,7 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'description': "It's a test meetup."}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
-        new_meetup = Meetup.objects.get()
+        new_meetup = Meetup.objects.get(slug='bartest')
         self.assertTrue(new_meetup.title, 'BarTest')
         self.assertTrue(new_meetup.created_by, self.systers_user)
         self.assertTrue(new_meetup.meetup_location, self.meetup_location)
@@ -137,13 +135,6 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(DeleteMeetupViewTestCase, self).setUp()
-        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
-                                            date=timezone.now().date(),
-                                            time=timezone.now().time(),
-                                            description='This is test Meetup',
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user,
-                                            last_updated=timezone.now())
         self.client = Client()
 
     def test_get_delete_meetup_view(self):
@@ -168,3 +159,26 @@ class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertSequenceEqual(Meetup.objects.all(), [])
+
+
+class UpcomingMeetupsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(UpcomingMeetupsViewTestCase, self).setUp()
+        self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
+                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+
+    def test_view_upcoming_meetup_list_view(self):
+        """Test Upcoming Meetup list view for correct http response and
+        all upcoming meetups in a list"""
+        url = reverse('upcoming_meetups', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/upcoming_meetups.html")
+        self.assertContains(response, "Foo Bar Baz")
+        self.assertContains(response, "Bar Baz")
+        self.assertEqual(len(response.context['meetup_list']), 2)
