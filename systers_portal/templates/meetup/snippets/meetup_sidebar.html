@@ -1,11 +1,11 @@
 {% if user.is_authenticated and user.is_active %}
 <div class="sidebar-module mb40">
-  <h4>Meetup Location Actions</h4>
+  <h4>Meetup Actions</h4>
   <ol class="list-unstyled">
     <li><a href="{% url 'add_meetup' meetup_location.slug %}">Add New Meetup</a></li>
-    <li><a href="#">Add New Member</a></li>
-    <li><a href="#">Remove Members</a></li>
-    <li><a href="#">Show Join Requests</a></li>
+    {% if meetup.slug %}
+      <li><a href="{% url 'delete_meetup' meetup_location.slug meetup.slug %}">Delete Meetup</a></li>
+    {% endif %}
     </ol>
 </div>
 {% endif %}
