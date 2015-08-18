@@ -45,3 +45,14 @@ class Meetup(models.Model):
         """Validate meetup date is not less than today's date"""
         if self.date < timezone.now().date():
             raise ValidationError("Date should not be less than today's date.")
+
+
+class Rsvp(models.Model):
+    """ Users RSVP for particular meetup """
+    user = models.ForeignKey(SystersUser, verbose_name="User")
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    coming = models.BooleanField(default=True)
+    plus_one = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "RSVP for meetup " + self.meetup.slug
