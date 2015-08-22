@@ -44,4 +44,4 @@ class EditMeetupForm(ModelFormWithHelper):
         widgets = {'date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug%}"
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
