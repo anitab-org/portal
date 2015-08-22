@@ -55,4 +55,4 @@ class Rsvp(models.Model):
     plus_one = models.BooleanField(default=False)
 
     def __str__(self):
-        return "RSVP for meetup " + self.meetup.slug
+        return "{0} RSVP for meetup {1}".format(self.user, self.meetup)
