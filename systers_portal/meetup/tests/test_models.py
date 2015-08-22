@@ -5,7 +5,7 @@ from django.utils import timezone
 from cities_light.models import City, Country
 from datetime import datetime, timedelta
 
-from meetup.models import MeetupLocation, Meetup
+from meetup.models import MeetupLocation, Meetup, Rsvp
 from users.models import SystersUser
 
 
@@ -50,3 +50,18 @@ class MeetupTestCase(MeetupBaseTestCase, TestCase):
                                              meetup_location=self.meetup_location,
                                              created_by=self.systers_user)
         self.assertRaises(ValidationError, self.meetup2.clean_fields)
+
+
+class RsvpTestCase(MeetupBaseTestCase, TestCase):
+    def setUp(self):
+        super(RsvpTestCase, self).setUp()
+        self.meetup = Meetup.objects.create(title="Test Meetup", slug="baz",
+                                            date=timezone.now().date(), time=timezone.now().time(),
+                                            venue="FooBar colony",
+                                            description="This is a testing meetup.",
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user)
+        self.rsvp = Rsvp.objects.create(user=self.systers_user, meetup=self.meetup)
+
+    def test_str(self):
+        self.assertEqual(str(self.rsvp), "foo RSVP for meetup Test Meetup")
