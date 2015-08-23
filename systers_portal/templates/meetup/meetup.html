@@ -3,15 +3,16 @@
 {% block meetup_location_page_content %}
   <h2>{{ meetup.title }}</h2>
   <div class="box-container box-body pt25">
-    <p> 
-      <b> Date: </b> {{ meetup.date }}
-      &nbsp; &nbsp; 
-      <b>Time: </b> {{ meetup.time }}
-    </p>
-    <p>
-      <b> Venue: </b> {{ meetup.venue }}
-    </p>
-    <hr>
-    {{ meetup.description|safe }} <br/>
-  </div>
+    <div>
+      <p>
+        <b> Date: </b> {{ meetup.date }} &nbsp; &nbsp; <b>Time: </b> {{ meetup.time }} 
+        <a class="btn btn-success pull-right" href="{% url 'rsvp_meetup' meetup.slug %}" role="button">  RSVP</a>
+      </p>
+      <p> <b> Venue: </b> {{ meetup.venue }} </p>
+      <hr>
+    </div>
+    <div>
+      {{ meetup.description|safe }} <br/>
+    </div>
+  </div
 {% endblock %}

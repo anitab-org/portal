@@ -1,0 +1,21 @@
+{% extends "meetup/base.html" %}
+
+{% block title %}
+  RSVP for {{ meetup }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block meetup_location_page_content %}
+  <h2>RSVP for - {{ meetup.title }}</h2>
+  <div class="col-sm-4 mt20">
+    <div class="well">
+    {{ form.media }}
+    {% crispy form %}
+    </div>
+  </div>
+  <div class="col-sm-4 mt20">
+    <h3> {{ attending }}/{{ total }} systers coming</h3>
+    <h3> {{ plus_one }} plus_oned</h3>
+  </div>
+{% endblock %}

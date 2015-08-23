@@ -5,8 +5,8 @@ from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 
 
-from meetup.forms import AddMeetupForm, EditMeetupForm
-from meetup.models import Meetup, MeetupLocation
+from meetup.forms import AddMeetupForm, EditMeetupForm, AddMeetupRsvpForm
+from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
 
 
@@ -71,3 +71,18 @@ class EditMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(meetup.slug, 'foobar')
         self.assertEqual(meetup.created_by, self.systers_user)
         self.assertEqual(meetup.meetup_location, self.meetup_location)
+
+
+class AddMeetupRsvpTestCase(MeetupFormTestCaseBase, TestCase):
+    def test_add_meetup_form(self):
+        """Test add Meetup form"""
+        data = {'coming': True}
+        form = AddMeetupRsvpForm(data=data, user=self.systers_user,
+                                 meetup=self.meetup)
+        self.assertTrue(form.is_valid())
+        form.save()
+        new_rsvp = Rsvp.objects.get(pk=1)
+        self.assertTrue(new_rsvp.coming, True)
+        self.assertTrue(new_rsvp.user, self.systers_user)
+        self.assertTrue(new_rsvp.meetup, self.meetup)
+        self.assertTrue(new_rsvp.coming, False)

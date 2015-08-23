@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
 
-from meetup.models import Meetup, MeetupLocation
+from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
 
 
@@ -200,3 +200,31 @@ class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.post(url, data=data)
         self.assertTrue(response.url.endswith('/meetup/foo/bartes/'))
         self.assertEqual(response.status_code, 302)
+
+
+class AddMeetupRsvpViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_add_rsvp_view(self):
+        """Test GET request to add rsvp"""
+        url = reverse('rsvp_meetup', kwargs={'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/rsvp_meetup.html')
+
+    def test_post_add_rsvp_view(self):
+        """Test POST request to add rsvp"""
+        url = reverse('rsvp_meetup', kwargs={'meetup_slug': 'foo-bar-baz'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        data = {'coming': True}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        new_rsvp = Rsvp.objects.get()
+        self.assertTrue(new_rsvp.coming, True)
+        self.assertTrue(new_rsvp.user, self.systers_user)
+        self.assertTrue(new_rsvp.meetup, self.meetup_location)
+        self.assertTrue(new_rsvp.coming, False)

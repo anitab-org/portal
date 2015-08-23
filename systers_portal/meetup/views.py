@@ -6,9 +6,9 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin
 
-from meetup.forms import AddMeetupForm, EditMeetupForm
+from meetup.forms import AddMeetupForm, EditMeetupForm, AddMeetupRsvpForm
 from meetup.mixins import MeetupLocationMixin
-from meetup.models import Meetup, MeetupLocation
+from meetup.models import Meetup, MeetupLocation, Rsvp
 
 
 class MeetupLocationAboutView(MeetupLocationMixin, TemplateView):
@@ -114,3 +114,37 @@ class EditMeetupView(LoginRequiredMixin, UpdateView):
         context['meetup'] = self.meetup
         context['meetup_location'] = self.meetup.meetup_location
         return context
+
+
+class AddMeetupRsvpView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """Rsvp meetup"""
+    template_name = "meetup/rsvp_meetup.html"
+    model = Rsvp
+    form_class = AddMeetupRsvpForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_meetup", kwargs={"slug": self.meetup.meetup_location.slug,
+                                              "meetup_slug": self.meetup.slug})
+
+    def get_form_kwargs(self):
+        """Add request user and meetup object to the form kwargs.
+        Used to autofill form fields with user and meetup without
+        explicitly filling them up in the form."""
+        kwargs = super(AddMeetupRsvpView, self).get_form_kwargs()
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        kwargs.update({'user': self.request.user})
+        kwargs.update({'meetup': self.meetup})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(AddMeetupRsvpView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        context['attending'] = len(Rsvp.objects.filter(meetup=self.meetup, coming=True))
+        context['plus_one'] = len(Rsvp.objects.filter(meetup=self.meetup, plus_one=True))
+        context['total'] = len(Rsvp.objects.filter(meetup=self.meetup))
+        return context
+
+    def get_meetup_location(self):
+        return self.meetup.meetup_location

@@ -2,7 +2,7 @@ from django import forms
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from meetup.models import Meetup
+from meetup.models import Meetup, Rsvp
 from users.models import SystersUser
 
 
@@ -45,3 +45,26 @@ class EditMeetupForm(ModelFormWithHelper):
                    'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+
+
+class AddMeetupRsvpForm(ModelFormWithHelper):
+    class Meta:
+        model = Rsvp
+        fields = ('coming', 'plus_one')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        self.meetup = kwargs.pop('meetup')
+        super(AddMeetupRsvpForm, self).__init__(*args, **kwargs)
+        self.fields['coming'].label = "I am coming"
+
+    def save(self, commit=True):
+        """Override save to add user and meetup to the instance"""
+        instance = super(AddMeetupRsvpForm, self).save(commit=False)
+        instance.user = SystersUser.objects.get(user=self.user)
+        instance.meetup = self.meetup
+        if commit:
+            instance.save()
+        return instance
