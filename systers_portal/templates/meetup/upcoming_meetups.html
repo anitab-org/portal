@@ -1,0 +1,24 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <div class="mt20 mb40">
+    <h2 class="ml15"> Upcoming Meetups </h2>
+      {% for meetup in meetup_list %}
+        <div class="mt20 ml15 box-container box-body">
+          <h3>
+            <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">{{ meetup.title }}</a>
+          </h3>
+          <p> 
+            <b> Date: </b> {{ meetup.date }} &nbsp; &nbsp; 
+            <b> Time: </b> {{ meetup.time|time:"H:i"|default:"TBA" }} &nbsp; &nbsp; 
+            <b> Venue: </b> {{ meetup.venue|default:"TBA" }}
+          </p>
+          <p>
+            {{ meetup.description|safe|truncatewords:30 }} 
+            <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">LEARN MORE</a> 
+          </p>
+        </div>
+      {% endfor %}
+      {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}
