@@ -200,3 +200,26 @@ class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.post(url, data=data)
         self.assertTrue(response.url.endswith('/meetup/foo/bartes/'))
         self.assertEqual(response.status_code, 302)
+
+
+class UpcomingMeetupsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(UpcomingMeetupsViewTestCase, self).setUp()
+        self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
+                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+
+    def test_view_upcoming_meetup_list_view(self):
+        """Test Upcoming Meetup list view for correct http response and
+        all upcoming meetups in a list"""
+        url = reverse('upcoming_meetups', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/upcoming_meetups.html")
+        self.assertContains(response, "Foo Bar Baz")
+        self.assertContains(response, "Bar Baz")
+        self.assertEqual(len(response.context['meetup_list']), 2)
