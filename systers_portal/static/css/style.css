@@ -265,6 +265,10 @@ table.decoration-none  tr a {
   padding-left: 15px;
 }
 
+.meetup-details span {
+  margin-right: 15px;
+}
+
 /* Meetup Location Members user-cell space
 -------------------------------------------------- */
 .user-cell-wh-100 {
