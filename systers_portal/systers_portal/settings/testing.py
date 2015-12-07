@@ -1,10 +1,12 @@
 from .base import *
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 INSTALLED_APPS += (
     'django_nose',
+    'coverage',
 )
 
 DATABASES = {
