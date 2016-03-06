@@ -6,7 +6,7 @@
     <p> 
       <b> Date: </b> {{ meetup.date }}
       &nbsp; &nbsp; 
-      <b>Time: </b> {{ meetup.time }}
+      <b>Time: </b> {{ meetup.time|time:"H:i" }}
     </p>
     <p>
       <b> Venue: </b> {{ meetup.venue }}
