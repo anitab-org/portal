@@ -165,7 +165,9 @@ class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
-        self.assertSequenceEqual(Meetup.objects.all(), [])
+        # One meetup deleted, another meetup left initialized in
+        # MeetupLocationViewBaseTestCase
+        self.assertSequenceEqual(Meetup.objects.all(), [self.meetup])
 
 
 class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
