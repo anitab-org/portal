@@ -165,6 +165,8 @@ class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
+        self.assertSequenceEqual(Meetup.objects.all(), [])
+
 
 class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
     def test_get_edit_meetup_view(self):
@@ -223,3 +225,24 @@ class UpcomingMeetupsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertContains(response, "Foo Bar Baz")
         self.assertContains(response, "Bar Baz")
         self.assertEqual(len(response.context['meetup_list']), 2)
+
+
+class PastMeetupListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(PastMeetupListViewTestCase, self).setUp()
+        self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
+                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+
+    def test_view_past_meetup_list_view(self):
+        """Test Past Meetup list view for correct http response and
+        all past meetups in a list"""
+        url = reverse('past_meetups', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/past_meetups.html")
+        self.assertEqual(len(response.context['meetup_list']), 1)

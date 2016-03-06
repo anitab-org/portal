@@ -132,3 +132,19 @@ class UpcomingMeetupsView(MeetupLocationMixin, ListView):
 
     def get_meetup_location(self):
         return self.meetup_location
+
+
+class PastMeetupListView(MeetupLocationMixin, ListView):
+    """List past meetups of a meetup location"""
+    template_name = "meetup/past_meetups.html"
+    model = Meetup
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        meetup_list = Meetup.objects.filter(
+            meetup_location=self.meetup_location, date__lte=datetime.date.today()).order_by('date')
+        return meetup_list
+
+    def get_meetup_location(self):
+        return self.meetup_location
