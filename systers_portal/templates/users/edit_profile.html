@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}
   {% if user == systersuser.user %}
     - Edit my profile
@@ -10,9 +9,8 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
-  <div class="mt40"></div>
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-4 col-md-offset-4">
       <h1>
         {% if user == systersuser.user %}
           Edit my profile
@@ -22,7 +20,7 @@
       </h1>
       <hr/>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4 col-md-offset-4">
       <div class="well">
         {% crispy form %}
       </div>
