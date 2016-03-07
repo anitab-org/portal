@@ -187,6 +187,23 @@ body > .container {
   margin: 10px 0;
 }
 
+/* Email
+-------------------------------------------------- */
+.email-heading {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+#email-subheading {
+  font-size: 1.2em;
+}
+
+span {
+  font-size: 1em;
+}
+
+
 /* User Profile
 -------------------------------------------------- */
 .profile-row {
