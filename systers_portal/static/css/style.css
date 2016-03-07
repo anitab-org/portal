@@ -177,7 +177,9 @@ body > .container {
   padding: 15px;
   margin: 0 auto;
 }
-
+.form-signin   {
+  max-width: 380px;
+}
 .share-buttons {
   margin: 20px 0;
 }
