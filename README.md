@@ -14,11 +14,12 @@ Setup for developers
 
 1. Make sure you have installed Python 3.4 (preferably latest minor release),
    [pip](https://pip.pypa.io/en/latest/) and [virtualenv](http://www.virtualenv.org/en/latest/).
+1. Make sure you have python3-dev installed on your operating system. For Debian, you would additionally require libpq-dev.
+   Install by using `sudo apt-get install libpq-dev python3-dev`
 1. Make sure you have PostgreSQL installed. For a tutorial on installing
    Postgres, [Django Girls'](http://djangogirls.org) ebook,
    [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
    The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/optional_postgresql_installation/README.md).
-1. Make sure you have python3-dev installed - `sudo pip install python3-dev`
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
   the `portal` directory.
 1. Create a virtual environment with Python 3 and install dependencies:
