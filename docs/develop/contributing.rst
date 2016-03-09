@@ -60,7 +60,7 @@ show you step by step how to make a contribution to Systers Portal.
 #. Choose a task to work on. It can be a beginners task or a sophisticated
    feature you want to implement for Portal. For beginners we have tasks
    with `easy TODO tag on GitHub issues <https://github.com/systers/portal/issues>`_.
-#. Create a new feature branch from ``develop`` branch. The feature branch 
+#. Create a new feature branch from ``develop`` branch. The feature branch
    should have a short and relevant name. ::
 
       $ git checkout -b <feature-branch-name>
@@ -84,7 +84,7 @@ show you step by step how to make a contribution to Systers Portal.
          same level or improve the test coverage.
 
       #. If you have made any changes to the HTML or have manipulates the DOM
-         using JavaScript, please check the validity of the file. Open the page 
+         using JavaScript, please check the validity of the file. Open the page
          in the browser, copy the page source code and paste it
          `here <http://validator.w3.org/#validate_by_input>`_. If there are
          errors, please correct them and revalidate.
@@ -178,13 +178,6 @@ For continuous integration we use Travis CI service. Every time we make a push
 to Systers Portal repo, Travis builds our project and runs the tests. It also
 notifies us about any errors or failures, that way preventing us from breaking
 the project.
-
-If you will make a pull request, you will see that Travis build will fail
-always. This doesn't mean that your change broke Portal. It happens because of
-a security issue, Travis being unable to decrypt the ``SECRET_KEY`` from an
-unknown source. Unknown source being you, since you are not a member of the
-repo. Hence it is the responsibility of the repo admins to fetch your branch
-and push it to GitHub themselves to check Travis build output.
 
 Along with Travis CI, we use code test coverage metric using coveralls service.
 Please note that high coverage is not a guarantee for good tests.

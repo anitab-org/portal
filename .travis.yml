@@ -5,9 +5,8 @@ python:
 install:
   - "pip install -r requirements/dev.txt"
   - pip install coveralls==0.4.4
-env:
-  secure: "MU+x68snHYqrm/aYHgdJcutZoTiRo1sl4MU8K09GfMp/Y4s6McNllqLheg8hM6MZAlQcOTPyp/kE8nr8cneYExl0tvH4yU6gVIZj9C7oOYJm4Qx++uNRlevbQ2Yo1lkHZnL8iNlXvqsOzxrB9ryxNClyc/M4OS6fQuyXzYcC/Fg="
 before_script:
+  - export SECRET_KEY=foobarbaz
   - psql -c "CREATE DATABASE systersdb;" -U postgres
 script:
   - coverage run systers_portal/manage.py test --settings=systers_portal.settings.testing
