@@ -14,7 +14,7 @@ class MeetupBaseTestCase():
                                             country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test location")
+            description="It's a test location", sponsors="BarBaz")
         User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get()
 

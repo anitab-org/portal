@@ -158,3 +158,12 @@ class PastMeetupListView(MeetupLocationMixin, ListView):
 
     def get_meetup_location(self):
         return self.meetup_location
+
+
+class MeetupLocationSponsorsView(MeetupLocationMixin, DetailView):
+    """View sponsors of a meetup location"""
+    template_name = "meetup/sponsors.html"
+    model = MeetupLocation
+
+    def get_meetup_location(self):
+        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])

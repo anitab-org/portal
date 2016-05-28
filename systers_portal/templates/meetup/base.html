@@ -15,7 +15,7 @@
         <li> <a href="{% url 'upcoming_meetups' meetup_location.slug %}">Upcoming</a> </li>
         <li> <a href="{% url 'past_meetups' meetup_location.slug %}">Past</a></li>
         <li> <a href="{% url 'members_meetup_location' meetup_location.slug %}">Members</a></li>        
-        <li> <a href="#">Sponsors</a></li>
+        <li> <a href="{% url 'sponsors_meetup_location' meetup_location.slug %}">Sponsors</a></li>
       </ul>
     </div>
   </div>

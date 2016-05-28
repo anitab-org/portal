@@ -18,7 +18,7 @@ class MeetupFormTestCaseBase:
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test meetup location")
+            description="It's a test meetup location", sponsors="BarBaz")
 
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foobarbaz',
                                             date=timezone.now().date(),
