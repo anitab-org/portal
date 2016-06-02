@@ -14,4 +14,10 @@
   <a href="{{ user.get_absolute_url }}">
     <p class="text-center"> {{ user }} </p>
   </a>
+  <a href="{% url "remove_member_meetup_location" meetup_location.slug user.user.username %}" role="button" class="btn btn-danger btn-xs">Remove</a>
+  {% if users == "Members" %}
+    <a href="{% url "make_organizer_meetup_location" meetup_location.slug user.user.username %}" role="button" class="btn btn-primary btn-xs">Make Organizer</a>
+  {% elif users == "Organizers" %}
+    <a href="{% url "remove_organizer_meetup_location" meetup_location.slug user.user.username %}" role="button" class="btn btn-warning btn-xs">Remove Organizer</a>
+  {% endif %}
 </div>

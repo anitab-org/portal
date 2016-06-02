@@ -3,8 +3,9 @@ from django.conf.urls import url
 from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupView,
                           MeetupLocationMembersView, AddMeetupView, DeleteMeetupView,
                           EditMeetupView, UpcomingMeetupsView, PastMeetupListView,
-                          MeetupLocationSponsorsView)
-
+                          MeetupLocationSponsorsView, RemoveMeetupLocationMemberView,
+                          AddMeetupLocationMemberView, RemoveMeetupLocationOrganizerView,
+                          MakeMeetupLocationOrganizerView)
 
 urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/about/$', MeetupLocationAboutView.as_view(),
@@ -23,5 +24,16 @@ urlpatterns = [
     url(r'locations/$', MeetupLocationList.as_view(), name='list_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/sponsors/$', MeetupLocationSponsorsView.as_view(),
         name='sponsors_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/remove/(?P<username>[\w.@+-]+)/$',
+        RemoveMeetupLocationMemberView.as_view(),
+        name='remove_member_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/add_member/$', AddMeetupLocationMemberView.as_view(),
+        name='add_member_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/remove_organizer/(?P<username>[\w.@+-]+)/$',
+        RemoveMeetupLocationOrganizerView.as_view(),
+        name='remove_organizer_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/make_organizer/(?P<username>[\w.@+-]+)/$',
+        MakeMeetupLocationOrganizerView.as_view(),
+        name='make_organizer_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
 ]
