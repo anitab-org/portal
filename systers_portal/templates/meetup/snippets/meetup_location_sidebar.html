@@ -2,8 +2,11 @@
 <div class="sidebar-module mb40">
   <h4>Meetup Location Actions</h4>
   <ol class="list-unstyled">
+    <li><a href="{% url 'add_meetup_location' %}">Add Meetup Location</a></li>
+    <li><a href="{% url 'edit_meetup_location' meetup_location.slug %}">Edit Meetup Location</a></li>
+    <li><a href="{% url 'delete_meetup_location' meetup_location.slug %}">Delete Meetup Location</a></li>
     <li><a href="{% url 'add_member_meetup_location' meetup_location.slug %}">Add New Member</a></li>
     <li><a href="#">Show Join Requests</a></li>
-  </ol>
+ </ol>
 </div>
 {% endif %}
