@@ -1,3 +1,5 @@
-<div class="sidebar-module mb40">
-  <a class="btn btn-success btn-block" href="#" role="button">Join Meetup Location</a>
-</div>
+{% if user.is_authenticated and user.is_active %}
+  <div class="sidebar-module mb40">
+    <a class="btn btn-success btn-block" href="{% url "join_meetup_location" meetup_location.slug user.username %}" role="button">Join Meetup Location</a>
+  </div>
+{% endif %}

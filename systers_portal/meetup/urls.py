@@ -5,8 +5,10 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           EditMeetupView, UpcomingMeetupsView, PastMeetupListView,
                           MeetupLocationSponsorsView, RemoveMeetupLocationMemberView,
                           AddMeetupLocationMemberView, RemoveMeetupLocationOrganizerView,
-                          MakeMeetupLocationOrganizerView, AddMeetupLocationView,
-                          EditMeetupLocationView, DeleteMeetupLocationView)
+                          MakeMeetupLocationOrganizerView, ApproveMeetupLocationJoinRequestView,
+                          RejectMeetupLocationJoinRequestView, MeetupLocationJoinRequestsView,
+                          AddMeetupLocationView, EditMeetupLocationView, DeleteMeetupLocationView,
+                          JoinMeetupLocationView)
 
 urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/about/$', MeetupLocationAboutView.as_view(),
@@ -36,6 +38,16 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/make_organizer/(?P<username>[\w.@+-]+)/$',
         MakeMeetupLocationOrganizerView.as_view(),
         name='make_organizer_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/join/(?P<username>[\w.@+-]+)/$', JoinMeetupLocationView.as_view(),
+        name='join_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/join_requests/$', MeetupLocationJoinRequestsView.as_view(),
+        name='join_requests_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/join_requests/approve/(?P<username>[\w.@+-]+)/$',
+        ApproveMeetupLocationJoinRequestView.as_view(),
+        name='approve_join_request_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/join_requests/reject/(?P<username>[\w.@+-]+)/$',
+        RejectMeetupLocationJoinRequestView.as_view(),
+        name='reject_join_request_meetup_location'),
     url(r'add/$', AddMeetupLocationView.as_view(), name="add_meetup_location"),
     url(r'^(?P<slug>[\w-]+)/edit/$', EditMeetupLocationView.as_view(), name="edit_meetup_location"),
     url(r'^(?P<slug>[\w-]+)/delete/$', DeleteMeetupLocationView.as_view(),

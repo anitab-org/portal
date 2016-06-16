@@ -20,6 +20,10 @@ class MeetupLocation(models.Model):
                                      related_name="Members",
                                      verbose_name="Members")
     sponsors = RichTextField(verbose_name="Sponsors", blank=True)
+    join_requests = models.ManyToManyField(SystersUser,
+                                           related_name="Join Requests",
+                                           verbose_name="Join Requests",
+                                           blank=True)
 
     def __str__(self):
         return self.name

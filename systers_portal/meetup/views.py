@@ -8,6 +8,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm)
@@ -243,6 +244,91 @@ class MakeMeetupLocationOrganizerView(LoginRequiredMixin, MeetupLocationMixin, R
         if systersuser not in organizers:
             self.meetup_location.organizers.add(systersuser)
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+    """Send a join request for a meetup location"""
+    model = MeetupLocation
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('about_meetup_location', kwargs={'slug': self.meetup_location.slug})
+
+    def get(self, request, *args, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        systersuser = get_object_or_404(SystersUser, user=user)
+
+        join_requests = self.meetup_location.join_requests.all()
+        members = self.meetup_location.members.all()
+
+        if systersuser not in join_requests and systersuser not in members:
+            self.meetup_location.join_requests.add(systersuser)
+            msg = "Your request to join meetup location {0} has been sent. In a short while " \
+                  "someone will review your request."
+            messages.add_message(request, messages.SUCCESS, msg.format(self.meetup_location))
+        elif systersuser in join_requests:
+            msg = "You have already requested to join meetup location {0}. Please wait until " \
+                  "someone reviews your request."
+            messages.add_message(request, messages.WARNING, msg.format(self.meetup_location))
+        elif systersuser in members:
+            msg = "You are already a member of meetup location {0}."
+            messages.add_message(request, messages.WARNING, msg.format(self.meetup_location))
+        return super(JoinMeetupLocationView, self).get(request, *args, **kwargs)
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class MeetupLocationJoinRequestsView(LoginRequiredMixin, MeetupLocationMixin, DetailView):
+    """View all join requests for a meetup location"""
+    model = MeetupLocation
+    template_name = "meetup/join_requests.html"
+    paginated_by = 20
+
+    def get_context_data(self, **kwargs):
+        context = super(MeetupLocationJoinRequestsView, self).get_context_data(**kwargs)
+        context['requests'] = self.object.join_requests.all()
+        return context
+
+    def get_meetup_location(self):
+        return self.object
+
+
+class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+    """Approve a join request for a meetup location"""
+    model = MeetupLocation
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        systersuser = get_object_or_404(SystersUser, user=user)
+        self.meetup_location.members.add(systersuser)
+        self.meetup_location.join_requests.remove(systersuser)
+        return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+    """Reject a join request for a meetup location"""
+    model = MeetupLocation
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        systersuser = get_object_or_404(SystersUser, user=user)
+        self.meetup_location.join_requests.remove(systersuser)
+        return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
         return self.meetup_location
