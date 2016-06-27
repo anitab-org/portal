@@ -1,25 +1,10 @@
-{% load guardian_tags %}
-
 {% if user.is_authenticated and user.is_active %}
-  {% get_obj_perms user for meetup_location as "meetup_location_perms" %}
-    <div class="sidebar-module mb40">
-      <h4>Meetup Location Actions</h4>
-      <ol class="list-unstyled">
-        {% if "add_meetuplocation" in meetup_location_perms %}
-          <li><a href="{% url 'add_meetup_location' %}">Add Meetup Location</a></li>
-        {% endif %}
-        {% if "change_meetuplocation" in meetup_location_perms %}
-          <li><a href="{% url 'edit_meetup_location' meetup_location.slug %}">Edit Meetup Location</a></li>
-        {% endif %}
-        {% if "delete_meetuplocation" in meetup_location_perms %}
-          <li><a href="{% url 'delete_meetup_location' meetup_location.slug %}">Delete Meetup Location</a></li>
-        {% endif %}
-        {% if "add_meetup_location_member" in meetup_location_perms %}
-          <li><a href="{% url 'add_member_meetup_location' meetup_location.slug %}">Add New Member</a></li>
-        {% endif %}
-        {% if "approve_meetup_location_joinrequest" in meetup_location_perms %}
-          <li><a href="{% url 'join_requests_meetup_location' meetup_location.slug %}">Show Join Requests</a></li>
-        {% endif %}
-      </ol>
-    </div>
+<div class="sidebar-module mb40">
+  <h4>Meetup Location Actions</h4>
+  <ol class="list-unstyled">
+    <li><a href="#">Add New Member</a></li>
+    <li><a href="#">Remove Members</a></li>
+    <li><a href="#">Show Join Requests</a></li>
+  </ol>
+</div>
 {% endif %}

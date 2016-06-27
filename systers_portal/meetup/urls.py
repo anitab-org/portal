@@ -2,13 +2,8 @@ from django.conf.urls import url
 
 from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupView,
                           MeetupLocationMembersView, AddMeetupView, DeleteMeetupView,
-                          EditMeetupView, UpcomingMeetupsView, PastMeetupListView,
-                          MeetupLocationSponsorsView, RemoveMeetupLocationMemberView,
-                          AddMeetupLocationMemberView, RemoveMeetupLocationOrganizerView,
-                          MakeMeetupLocationOrganizerView, ApproveMeetupLocationJoinRequestView,
-                          RejectMeetupLocationJoinRequestView, MeetupLocationJoinRequestsView,
-                          AddMeetupLocationView, EditMeetupLocationView, DeleteMeetupLocationView,
-                          JoinMeetupLocationView)
+                          EditMeetupView, UpcomingMeetupsView, PastMeetupListView)
+
 
 urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/about/$', MeetupLocationAboutView.as_view(),
@@ -25,32 +20,5 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/edit/$', EditMeetupView.as_view(),
         name="edit_meetup"),
     url(r'locations/$', MeetupLocationList.as_view(), name='list_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/sponsors/$', MeetupLocationSponsorsView.as_view(),
-        name='sponsors_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/remove/(?P<username>[\w.@+-]+)/$',
-        RemoveMeetupLocationMemberView.as_view(),
-        name='remove_member_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/add_member/$', AddMeetupLocationMemberView.as_view(),
-        name='add_member_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/remove_organizer/(?P<username>[\w.@+-]+)/$',
-        RemoveMeetupLocationOrganizerView.as_view(),
-        name='remove_organizer_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/make_organizer/(?P<username>[\w.@+-]+)/$',
-        MakeMeetupLocationOrganizerView.as_view(),
-        name='make_organizer_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/join/(?P<username>[\w.@+-]+)/$', JoinMeetupLocationView.as_view(),
-        name='join_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/join_requests/$', MeetupLocationJoinRequestsView.as_view(),
-        name='join_requests_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/join_requests/approve/(?P<username>[\w.@+-]+)/$',
-        ApproveMeetupLocationJoinRequestView.as_view(),
-        name='approve_join_request_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/join_requests/reject/(?P<username>[\w.@+-]+)/$',
-        RejectMeetupLocationJoinRequestView.as_view(),
-        name='reject_join_request_meetup_location'),
-    url(r'add/$', AddMeetupLocationView.as_view(), name="add_meetup_location"),
-    url(r'^(?P<slug>[\w-]+)/edit/$', EditMeetupLocationView.as_view(), name="edit_meetup_location"),
-    url(r'^(?P<slug>[\w-]+)/delete/$', DeleteMeetupLocationView.as_view(),
-        name='delete_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
 ]
