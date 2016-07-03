@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from meetup.models import Meetup, MeetupLocation
+from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
 
 
@@ -115,3 +115,26 @@ class EditMeetupLocationForm(ModelFormWithHelper):
         fields = ('name', 'slug', 'location', 'description', 'email', 'sponsors')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
+
+
+class RsvpForm(ModelFormWithHelper):
+    """Form to add RSVP"""
+    class Meta:
+        model = Rsvp
+        fields = ('coming', 'plus_one')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs['data'].pop('user')
+        self.meetup = kwargs['data'].pop('meetup')
+        super(RsvpForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add user and meetup to the instance"""
+        instance = super(RsvpForm, self).save(commit=False)
+        instance.user = SystersUser.objects.get(user=self.user)
+        instance.meetup = self.meetup
+        if commit:
+            instance.save()
+        return instance

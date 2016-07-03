@@ -13,5 +13,6 @@
     </p>
     <hr>
     {{ meetup.description|safe }} <br/>
+    <a href="{% url 'rsvp_going' meetup_location.slug meetup.slug %}">Going</a>
   </div>
 {% endblock %}

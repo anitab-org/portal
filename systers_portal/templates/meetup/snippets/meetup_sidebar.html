@@ -1,11 +1,22 @@
+{% load guardian_tags %}
+
 {% if user.is_authenticated and user.is_active %}
-<div class="sidebar-module mb40">
-  <h4>Meetup Actions</h4>
-  <ol class="list-unstyled">
-    <li><a href="{% url 'add_meetup' meetup_location.slug %}">Add New Meetup</a></li>
-    {% if meetup.slug %}
-      <li><a href="{% url 'delete_meetup' meetup_location.slug meetup.slug %}">Delete Meetup</a></li>
-    {% endif %}
-    </ol>
-</div>
+  {% get_obj_perms user for meetup_location as "meetup_location_perms" %}
+    <div class="sidebar-module mb40">
+      <h4>Meetup Actions</h4>
+      <ol class="list-unstyled">
+        {% if perms.meetup.add_meetup %}
+          <li><a href="{% url 'add_meetup' meetup_location.slug %}">Add New Meetup</a></li>
+        {% endif %}
+        {% if meetup.slug %}
+            {% if perms.meetup.change_meetup %}
+              <li><a href="{% url 'edit_meetup' meetup_location.slug meetup.slug %}">Edit Meetup</a></li>
+            {% endif %}
+            {% if perms.meetup.delete_meetup %}
+              <li><a href="{% url 'delete_meetup' meetup_location.slug meetup.slug %}">Delete Meetup</a></li>
+            {% endif %}
+            <li><a href="{% url "rsvp_meetup" meetup_location.slug meetup.slug %}">RSVP</a></li>
+        {% endif %}
+      </ol>
+    </div>
 {% endif %}
