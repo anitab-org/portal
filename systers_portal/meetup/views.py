@@ -48,8 +48,16 @@ class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
     template_name = "meetup/members.html"
     paginate_by = 50
 
+    def get_context_data(self, **kwargs):
+        context = super(MeetupLocationMembersView, self).get_context_data(**kwargs)
+        organizer_list = self.meetup_location.organizers.all()
+        context['organizer_list'] = organizer_list
+        context['member_list'] = self.meetup_location.members.exclude(id__in=organizer_list)
+        return context
+
     def get_meetup_location(self):
-        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
 
 
 class AddMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
