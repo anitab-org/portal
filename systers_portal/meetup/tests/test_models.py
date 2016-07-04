@@ -1,9 +1,7 @@
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 from cities_light.models import City, Country
-from datetime import datetime, timedelta
 
 from meetup.models import MeetupLocation, Meetup, Rsvp
 from users.models import SystersUser
@@ -40,16 +38,6 @@ class MeetupTestCase(MeetupBaseTestCase, TestCase):
     def test_str(self):
         """Test Meetup object str/unicode representation"""
         self.assertEqual(str(self.meetup), "Test Meetup")
-
-    def test_meetup_date(self):
-        """Test Meetup clean_field method to validate date is not in past"""
-        yesterday = (datetime.today() - timedelta(1)).date()
-        self.meetup2 = Meetup.objects.create(title="Test Meetup", slug="bar", date=yesterday,
-                                             time=timezone.now().time(), venue="FooBar colony",
-                                             description="This is a testing meetup.",
-                                             meetup_location=self.meetup_location,
-                                             created_by=self.systers_user)
-        self.assertRaises(ValidationError, self.meetup2.clean_fields)
 
 
 class RsvpTestCase(MeetupBaseTestCase, TestCase):

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils import timezone
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
@@ -34,6 +35,20 @@ class AddMeetupForm(ModelFormWithHelper):
         if commit:
             instance.save()
         return instance
+
+    def clean_date(self):
+        date = self.cleaned_data.get('date')
+        if date < timezone.now().date():
+            raise forms.ValidationError("Date should not be before today's date.")
+        return date
+
+    def clean_time(self):
+        time = self.cleaned_data.get('time')
+        date = self.cleaned_data.get('date')
+        if time:
+            if date == timezone.now().date() and time < timezone.now().time():
+                raise forms.ValidationError("Time should not be a time that has already passed.")
+        return time
 
 
 class EditMeetupForm(ModelFormWithHelper):
