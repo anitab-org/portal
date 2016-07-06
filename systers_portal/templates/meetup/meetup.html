@@ -14,5 +14,24 @@
     <hr>
     {{ meetup.description|safe }} <br/>
     <a href="{% url 'rsvp_going' meetup_location.slug meetup.slug %}">Going</a>
+    <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
   </div>
+  <h3>Discussion Area</h3>
+  {% if not comments %}
+    <div class="box-container box-body pt25">
+      <p>
+        <i>There are no comments yet.</i>
+      </p>
+    </div>
+  {% endif %}
+  {% for comment in comments %}
+    <div class="box-container pt25">
+      <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
+      <div class="box-body">
+        <p>{{ comment.body }}</p>
+      </div>
+      <a href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}">edit</a>
+      <a href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}">delete</a>
+    </div>
+  {% endfor %}
 {% endblock %}

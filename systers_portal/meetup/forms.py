@@ -7,6 +7,7 @@ from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
 from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
+from common.models import Comment
 
 
 class AddMeetupForm(ModelFormWithHelper):
@@ -138,3 +139,35 @@ class RsvpForm(ModelFormWithHelper):
         if commit:
             instance.save()
         return instance
+
+
+class AddMeetupCommentForm(ModelFormWithHelper):
+    """Form to add a comment to a Meetup"""
+    class Meta:
+        model = Comment
+        fields = ('body',)
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+
+    def __init__(self, *args, **kwargs):
+        self.content_object = kwargs.pop('content_object')
+        self.author = kwargs.pop('author')
+        super(AddMeetupCommentForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add content_object and author to the instance"""
+        instance = super(AddMeetupCommentForm, self).save(commit=False)
+        instance.content_object = self.content_object
+        instance.author = SystersUser.objects.get(user=self.author)
+        if commit:
+            instance.save()
+        return instance
+
+
+class EditMeetupCommentForm(ModelFormWithHelper):
+    """Form to edit a comment for a Meetup"""
+    class Meta:
+        model = Comment
+        fields = ('body',)
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"

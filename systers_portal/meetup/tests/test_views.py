@@ -3,9 +3,11 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
+from django.contrib.contenttypes.models import ContentType
 
 from meetup.models import Meetup, MeetupLocation
 from users.models import SystersUser
+from common.models import Comment
 
 
 class MeetupLocationViewBaseTestCase(object):
@@ -672,3 +674,93 @@ class DeleteMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.endswith('/meetup/locations/'))
         self.assertSequenceEqual(MeetupLocation.objects.all(), [self.meetup_location])
+
+
+class AddMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_add_meetup_comment_view(self):
+        """Test GET request to add a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse('add_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/add_comment.html')
+
+    def test_post_add_meetup_comment_view(self):
+        """Test POST request to add a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse("add_meetup_comment", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        data = {'body': 'This is a test comment'}
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is a test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.meetup)
+
+
+class EditMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(EditMeetupCommentViewTestCase, self).setUp()
+        meetup_content_type = ContentType.objects.get(app_label='meetup', model='meetup')
+        self.comment = Comment.objects.create(author=self.systers_user, is_approved=True,
+                                              body='This is a test comment',
+                                              content_type=meetup_content_type,
+                                              object_id=self.meetup.id)
+
+    def test_get_edit_meetup_comment_view(self):
+        """Test GET request to edit a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse('edit_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.comment.id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/edit_comment.html')
+
+    def test_post_edit_meetup_comment_view(self):
+        """Test POST request to edit a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse("edit_meetup_comment", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.comment.id})
+        data = {'body': 'This is an edited test comment'}
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is an edited test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.meetup)
+
+
+class DeleteMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(DeleteMeetupCommentViewTestCase, self).setUp()
+        meetup_content_type = ContentType.objects.get(app_label='meetup', model='meetup')
+        self.comment = Comment.objects.create(author=self.systers_user, is_approved=True,
+                                              body='This is a test comment',
+                                              content_type=meetup_content_type,
+                                              object_id=self.meetup.id)
+
+    def test_get_delete_meetup_comment_view(self):
+        """Test GET request to delete a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse('delete_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.comment.id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Confirm to delete")
+
+    def test_post_delete_meetup_comment_view(self):
+        """Test POST request to delete a comment to a meetup"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse("delete_meetup_comment", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.comment.id})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 0)

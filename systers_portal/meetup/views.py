@@ -9,12 +9,15 @@ from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
-                          AddMeetupLocationForm, EditMeetupLocationForm, RsvpForm)
+                          AddMeetupLocationForm, EditMeetupLocationForm, RsvpForm,
+                          AddMeetupCommentForm, EditMeetupCommentForm)
 from meetup.mixins import MeetupLocationMixin
 from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
+from common.models import Comment
 
 
 class MeetupLocationAboutView(MeetupLocationMixin, TemplateView):
@@ -38,8 +41,13 @@ class MeetupView(MeetupLocationMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(MeetupView, self).get_context_data(**kwargs)
-        context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
-                                              meetup_location=self.object)
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
+                                        meetup_location=self.object)
+        context['meetup'] = self.meetup
+        context['comments'] = Comment.objects.filter(
+            content_type=ContentType.objects.get(app_label='meetup', model='meetup'),
+            object_id=self.meetup.id,
+            is_approved=True).order_by('date_created')
         return context
 
     def get_meetup_location(self):
@@ -427,4 +435,76 @@ class RsvpGoingView(MeetupLocationMixin, ListView):
         return rsvp_list
 
     def get_meetup_location(self):
+        return self.meetup_location
+
+
+class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """Add a comment to a Meetup"""
+    template_name = "meetup/add_comment.html"
+    model = Comment
+    form_class = AddMeetupCommentForm
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
+                                              "meetup_slug": self.meetup.slug})
+
+    def get_form_kwargs(self):
+        """Add content_object and author to the form kwargs."""
+        kwargs = super(AddMeetupCommentView, self).get_form_kwargs()
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        kwargs.update({'content_object': self.meetup})
+        kwargs.update({'author': self.request.user})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(AddMeetupCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class EditMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, UpdateView):
+    """Edit a meetup's comment"""
+    template_name = "meetup/edit_comment.html"
+    model = Comment
+    form_class = EditMeetupCommentForm
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
+                       "meetup_slug": self.object.content_object.slug})
+
+    def get_context_data(self, **kwargs):
+        context = super(EditMeetupCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        return context
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class DeleteMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
+    """Delete a meetup's comment"""
+    template_name = "meetup/comment_confirm_delete.html"
+    model = Comment
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
+                       "meetup_slug": self.object.content_object.slug})
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteMeetupCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        return context
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location

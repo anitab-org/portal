@@ -3,12 +3,14 @@ from django.test import TestCase
 from django.utils import timezone
 from django.utils.timezone import timedelta
 from cities_light.models import City, Country
-
+from django.contrib.contenttypes.models import ContentType
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
-                          AddMeetupLocationForm, EditMeetupLocationForm)
+                          AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
+                          EditMeetupCommentForm)
 from meetup.models import Meetup, MeetupLocation
 from users.models import SystersUser
+from common.models import Comment
 
 
 class MeetupFormTestCaseBase:
@@ -154,3 +156,40 @@ class EditMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
         meetup_location = MeetupLocation.objects.get()
         self.assertEqual(meetup_location.description, 'test edit')
         self.assertEqual(meetup_location.sponsors, 'test')
+
+
+class AddMeetupCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
+    def test_add_meetup_comment_form(self):
+        """Test add meetup Comment form"""
+        data = {'body': 'This is a test comment'}
+        form = AddMeetupCommentForm(data=data, author=self.systers_user,
+                                    content_object=self.meetup)
+        self.assertTrue(form.is_valid())
+        form.save()
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is a test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.meetup)
+
+
+class EditMeetupCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
+    def setUp(self):
+        super(EditMeetupCommentFormTestCase, self).setUp()
+        meetup_content_type = ContentType.objects.get(app_label='meetup', model='meetup')
+        self.comment = Comment.objects.create(author=self.systers_user, is_approved=True,
+                                              body='This is a test comment',
+                                              content_type=meetup_content_type,
+                                              object_id=self.meetup.id)
+
+    def test_edit_meetup_comment_form(self):
+        """Test edit meetup Comment form"""
+        data = {'body': 'This is an edited test comment'}
+        form = EditMeetupCommentForm(instance=self.comment, data=data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is an edited test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.meetup)
