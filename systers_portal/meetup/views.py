@@ -406,18 +406,18 @@ class RsvpMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
         """Add request user and meetup object to the form kwargs.
         """
         kwargs = super(RsvpMeetupView, self).get_form_kwargs()
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         kwargs.update({'user': self.request.user})
         kwargs.update({'meetup': self.meetup})
         return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(RsvpMeetupView, self).get_context_data(**kwargs)
-        context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
-                                              meetup_location=self.meetup_location)
+        context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
 

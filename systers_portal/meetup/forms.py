@@ -127,8 +127,8 @@ class RsvpForm(ModelFormWithHelper):
         helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs['data'].pop('user')
-        self.meetup = kwargs['data'].pop('meetup')
+        self.user = kwargs.pop('user')
+        self.meetup = kwargs.pop('meetup')
         super(RsvpForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
