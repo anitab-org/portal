@@ -1,8 +1,12 @@
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, m2m_changed
 from django.dispatch import receiver
+from django.contrib.auth.models import Group
+from django.shortcuts import get_object_or_404
 
-from meetup.constants import ADMIN
+from meetup.models import MeetupLocation
+from meetup.constants import MEMBER, ORGANIZER
 from meetup.utils import (create_groups, assign_permissions, remove_groups)
+from users.models import SystersUser
 
 
 @receiver(post_save, sender='meetup.MeetupLocation',
@@ -13,10 +17,6 @@ def manage_meetup_location_groups(sender, instance, created, **kwargs):
     if created:
         groups = create_groups(name)
         assign_permissions(instance, groups)
-        meetup_location_admin_group = next(
-            g for g in groups if g.name == ADMIN.format(name))
-        instance.admin.join_group(meetup_location_admin_group)
-        instance.add_member(instance.admin)
         instance.save()
 
 
@@ -25,3 +25,17 @@ def manage_meetup_location_groups(sender, instance, created, **kwargs):
 def remove_meetup_location_groups(sender, instance, **kwargs):
     """Remove user groups for a particular Meetup Location"""
     remove_groups(instance.name)
+
+
+@receiver(m2m_changed, sender=MeetupLocation.members.through,
+          dispatch_uid="add_members")
+def add_meetup_location_members(sender, **kwargs):
+    """Add permissions to a user when she is added as a Meetup Location member"""
+    instance = kwargs.pop('instance', None)
+    action = kwargs.pop('action', None)
+    pk_set = kwargs.pop('pk_set', None)
+    if action == "pre_add":
+        systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
+        members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
+        if not systersuser.is_group_member(members_group.name):
+            systersuser.join_group(members_group)

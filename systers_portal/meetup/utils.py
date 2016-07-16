@@ -50,7 +50,8 @@ def assign_permissions(meetup_location, groups):
         group = next(
             g for g in groups if g.name == group_name.format(meetup_location.name))
         for perm in group_permissions[key]:
-            if perm.endswith('meetup') or perm.endswith('meetuplocation'):
+            if (perm.endswith('meetup') or perm.endswith('meetuplocation') or
+                    perm.endswith('rsvp') or perm.endswith('comment')):
                 group.permissions.add(Permission.objects.get(codename=perm))
                 group.save()
             else:
