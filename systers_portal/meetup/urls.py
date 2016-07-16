@@ -2,7 +2,8 @@ from django.conf.urls import url
 
 from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupView,
                           MeetupLocationMembersView, AddMeetupView, DeleteMeetupView,
-                          EditMeetupView, UpcomingMeetupsView, PastMeetupListView)
+                          EditMeetupView, UpcomingMeetupsView, PastMeetupListView,
+                          MeetupLocationSponsorsView)
 
 
 urlpatterns = [
@@ -21,4 +22,7 @@ urlpatterns = [
         name="edit_meetup"),
     url(r'locations/$', MeetupLocationList.as_view(), name='list_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
+    url(r'^(?P<slug>[\w-]+)/sponsors/$', MeetupLocationSponsorsView.as_view(),
+        name='sponsors_meetup_location'),
+
 ]

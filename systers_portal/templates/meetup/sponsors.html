@@ -1,0 +1,10 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <div class="box-container">
+    <h3>Sponsors</h3>
+    <div class="box-body">
+      {{ meetup_location.sponsors|safe }}
+    </div>
+  </div>
+{% endblock %}
