@@ -232,8 +232,17 @@ class UpcomingMeetupsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 class PastMeetupListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(PastMeetupListViewTestCase, self).setUp()
+        # a future meetup. This should not show up under 'past meetups'.
         self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
                                              date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+        # a past meetup. This should show up under 'past meetups'.
+        self.meetup3 = Meetup.objects.create(title='Foo Baz', slug='foobar',
+                                             date=(timezone.now() - timezone.timedelta(2)).date(),
                                              time=timezone.now().time(),
                                              description='This is new test Meetup',
                                              meetup_location=self.meetup_location,

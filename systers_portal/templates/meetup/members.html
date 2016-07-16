@@ -2,8 +2,8 @@
 
 {% block meetup_location_page_content %}
   <div class="mb40">
-    {% include "meetup/snippets/users-grid.html" with users="Organizers" user_list=object.organizers.all %}
-    {% include "meetup/snippets/users-grid.html" with users="Members" user_list=object.members.all %}
-  </div>
+    {% include "meetup/snippets/users-grid.html" with users="Organizers" user_list=organizer_list %}
+    {% include "meetup/snippets/users-grid.html" with users="Members" user_list=member_list %}
+ </div>
   {% include "blog/snippets/pagination.html" %}
 {% endblock %}

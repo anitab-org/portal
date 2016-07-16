@@ -1,6 +1,4 @@
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
 from cities_light.models import City
 from ckeditor.fields import RichTextField
 
@@ -40,11 +38,6 @@ class Meetup(models.Model):
 
     def __str__(self):
         return self.title
-
-    def clean_fields(self, *args, **kwargs):
-        """Validate meetup date is not less than today's date"""
-        if self.date < timezone.now().date():
-            raise ValidationError("Date should not be less than today's date.")
 
 
 class Rsvp(models.Model):
