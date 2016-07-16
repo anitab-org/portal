@@ -21,8 +21,7 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/edit/$', EditMeetupView.as_view(),
         name="edit_meetup"),
     url(r'locations/$', MeetupLocationList.as_view(), name='list_meetup_location'),
-    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
     url(r'^(?P<slug>[\w-]+)/sponsors/$', MeetupLocationSponsorsView.as_view(),
         name='sponsors_meetup_location'),
-
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
 ]
