@@ -39,3 +39,49 @@ def add_meetup_location_members(sender, **kwargs):
         members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
         if not systersuser.is_group_member(members_group.name):
             systersuser.join_group(members_group)
+            print("member permission added to", systersuser)
+
+
+@receiver(m2m_changed, sender=MeetupLocation.organizers.through,
+          dispatch_uid="add_organizers")
+def add_meetup_location_organizers(sender, **kwargs):
+    """Add permissions to a user when she is added as a Meetup Location organizer"""
+    instance = kwargs.pop('instance', None)
+    action = kwargs.pop('action', None)
+    pk_set = kwargs.pop('pk_set', None)
+    if action == "pre_add":
+        systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
+        organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
+        if not systersuser.is_group_member(organizers_group.name):
+            systersuser.join_group(organizers_group)
+            print("organizer permission added to", systersuser)
+
+
+@receiver(m2m_changed, sender=MeetupLocation.members.through,
+          dispatch_uid="delete_members")
+def delete_meetup_location_members(sender, **kwargs):
+    """Delete permissions from a user when she is removed as a Meetup Location member"""
+    instance = kwargs.pop('instance', None)
+    action = kwargs.pop('action', None)
+    pk_set = kwargs.pop('pk_set', None)
+    if action == "pre_remove":
+        systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
+        members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
+        if systersuser.is_group_member(members_group.name):
+            systersuser.leave_group(members_group)
+            print("member permission removed from", systersuser)
+
+
+@receiver(m2m_changed, sender=MeetupLocation.organizers.through,
+          dispatch_uid="delete_organizers")
+def delete_meetup_location_organizers(sender, **kwargs):
+    """Delete permissions from a user when she is removed as a Meetup Location organizer"""
+    instance = kwargs.pop('instance', None)
+    action = kwargs.pop('action', None)
+    pk_set = kwargs.pop('pk_set', None)
+    if action == "pre_remove":
+        systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
+        organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
+        if systersuser.is_group_member(organizers_group.name):
+            systersuser.leave_group(organizers_group)
+            print("organizer permission removed from", systersuser)
