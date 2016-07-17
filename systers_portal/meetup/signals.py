@@ -39,7 +39,6 @@ def add_meetup_location_members(sender, **kwargs):
         members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
         if not systersuser.is_group_member(members_group.name):
             systersuser.join_group(members_group)
-            print("member permission added to", systersuser)
 
 
 @receiver(m2m_changed, sender=MeetupLocation.organizers.through,
@@ -54,7 +53,6 @@ def add_meetup_location_organizers(sender, **kwargs):
         organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
         if not systersuser.is_group_member(organizers_group.name):
             systersuser.join_group(organizers_group)
-            print("organizer permission added to", systersuser)
 
 
 @receiver(m2m_changed, sender=MeetupLocation.members.through,
@@ -69,7 +67,6 @@ def delete_meetup_location_members(sender, **kwargs):
         members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
         if systersuser.is_group_member(members_group.name):
             systersuser.leave_group(members_group)
-            print("member permission removed from", systersuser)
 
 
 @receiver(m2m_changed, sender=MeetupLocation.organizers.through,
@@ -84,4 +81,3 @@ def delete_meetup_location_organizers(sender, **kwargs):
         organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
         if systersuser.is_group_member(organizers_group.name):
             systersuser.leave_group(organizers_group)
-            print("organizer permission removed from", systersuser)

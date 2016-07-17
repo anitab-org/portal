@@ -6,7 +6,11 @@
       {% for rsvp in rsvp_list %}
         <div class="ml15 mt20">
           <h4>
-            <a href="{{ rsvp.user.get_absolute_url }}">{{ rsvp.user }}</a>
+            {% if rsvp.plus_one %}
+              <a href="{{ rsvp.user.get_absolute_url }}">{{ rsvp.user }}</a> + 1
+            {% else %}
+              <a href="{{ rsvp.user.get_absolute_url }}">{{ rsvp.user }}</a>
+            {% endif %}
           </h4>
         </div>
       {% endfor %}

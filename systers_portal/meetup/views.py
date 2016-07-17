@@ -6,7 +6,7 @@ from django.views.generic import DeleteView, TemplateView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -48,6 +48,11 @@ class MeetupView(MeetupLocationMixin, DetailView):
             content_type=ContentType.objects.get(app_label='meetup', model='meetup'),
             object_id=self.meetup.id,
             is_approved=True).order_by('date_created')
+        coming_list = Rsvp.objects.filter(meetup=self.meetup, coming=True)
+        plus_one_list = Rsvp.objects.filter(meetup=self.meetup, plus_one=True)
+        not_coming_list = Rsvp.objects.filter(meetup=self.meetup, coming=False)
+        context['coming_no'] = len(coming_list) + len(plus_one_list)
+        context['not_coming_no'] = len(not_coming_list)
         return context
 
     def get_meetup_location(self):
@@ -310,7 +315,8 @@ class MeetupLocationJoinRequestsView(LoginRequiredMixin, MeetupLocationMixin, De
         return self.object
 
 
-class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequiredMixin,
+                                           MeetupLocationMixin, RedirectView):
     """Approve a join request for a meetup location"""
     model = MeetupLocation
     permanent = False
@@ -320,6 +326,7 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMix
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup_location.members.add(systersuser)
         self.meetup_location.join_requests.remove(systersuser)
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
@@ -327,8 +334,15 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMix
     def get_meetup_location(self):
         return self.meetup_location
 
+    def check_permissions(self, request):
+        """Check if the request user has the permission to approve a join request for the meetup
+        location. The permission holds true for superusers."""
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return request.user.has_perm('approve_meetup_location_joinrequest', self.meetup_location)
 
-class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+
+class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequiredMixin,
+                                          MeetupLocationMixin, RedirectView):
     """Reject a join request for a meetup location"""
     model = MeetupLocation
     permanent = False
@@ -338,11 +352,18 @@ class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, MeetupLocationMixi
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup_location.join_requests.remove(systersuser)
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
         return self.meetup_location
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to reject a join request for the meetup
+        location. The permission holds true for superusers."""
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return request.user.has_perm('reject_meetup_location_joinrequest', self.meetup_location)
 
 
 class AddMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
@@ -403,53 +424,6 @@ class DeleteMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, DeleteVi
         The permission holds true for superusers."""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return request.user.has_perm('delete_meetuplocation', self.meetup_location)
-
-
-class RsvpMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
-    """RSVP for a meetup"""
-    template_name = "meetup/rsvp_meetup.html"
-    model = Rsvp
-    form_class = RsvpForm
-    raise_exception = True
-
-    def get_success_url(self):
-        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
-                                              "meetup_slug": self.object.meetup.slug})
-
-    def get_form_kwargs(self):
-        """Add request user and meetup object to the form kwargs.
-        """
-        kwargs = super(RsvpMeetupView, self).get_form_kwargs()
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
-        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
-        kwargs.update({'user': self.request.user})
-        kwargs.update({'meetup': self.meetup})
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        context = super(RsvpMeetupView, self).get_context_data(**kwargs)
-        context['meetup'] = self.meetup
-        return context
-
-    def get_meetup_location(self):
-        return self.meetup_location
-
-
-class RsvpGoingView(MeetupLocationMixin, ListView):
-    """List of members whose rsvp status is 'coming'"""
-    template_name = "meetup/rsvp_going.html"
-    model = Rsvp
-    paginated_by = 30
-
-    def get_queryset(self, **kwargs):
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
-        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
-                                        meetup_location=self.meetup_location)
-        rsvp_list = Rsvp.objects.filter(meetup=self.meetup, coming=True)
-        return rsvp_list
-
-    def get_meetup_location(self):
-        return self.meetup_location
 
 
 class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
@@ -521,4 +495,56 @@ class DeleteMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, DeleteVie
 
     def get_meetup_location(self):
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class RsvpMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """RSVP for a meetup"""
+    template_name = "meetup/rsvp_meetup.html"
+    model = Rsvp
+    form_class = RsvpForm
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
+                                              "meetup_slug": self.object.meetup.slug})
+
+    def get_form_kwargs(self):
+        """Add request user and meetup object to the form kwargs.
+        """
+        kwargs = super(RsvpMeetupView, self).get_form_kwargs()
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        kwargs.update({'user': self.request.user})
+        kwargs.update({'meetup': self.meetup})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(RsvpMeetupView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class RsvpGoingView(MeetupLocationMixin, ListView):
+    """List of members whose rsvp status is 'coming'"""
+    template_name = "meetup/rsvp_going.html"
+    model = Rsvp
+    paginated_by = 30
+
+    def get_queryset(self, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
+                                        meetup_location=self.meetup_location)
+        rsvp_list = Rsvp.objects.filter(meetup=self.meetup, coming=True)
+        return rsvp_list
+
+    def get_context_data(self, **kwargs):
+        context = super(RsvpGoingView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
         return self.meetup_location

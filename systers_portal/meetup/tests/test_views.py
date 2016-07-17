@@ -5,7 +5,7 @@ from django.utils import timezone
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 
-from meetup.models import Meetup, MeetupLocation
+from meetup.models import Meetup, MeetupLocation, Rsvp
 from users.models import SystersUser
 from common.models import Comment
 
@@ -206,8 +206,8 @@ class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
                 'description': "It's a edit test meetup."}
         self.client.login(username='foo', password='foobar')
         response = self.client.post(url, data=data)
-        self.assertTrue(response.url.endswith('/meetup/foo/bartes/'))
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/meetup/foo/bartes/'))
 
 
 class UpcomingMeetupsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
@@ -764,3 +764,48 @@ class DeleteMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertEqual(response.status_code, 302)
         comments = Comment.objects.all()
         self.assertEqual(len(comments), 0)
+
+
+class RsvpMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_rsvp_meetup_view(self):
+        """Test GET request to rsvp a meetup"""
+        url = reverse('rsvp_meetup', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/rsvp_meetup.html')
+
+    def test_post_rsvp_meetup_view(self):
+        """Test POST request to rsvp a meetup"""
+        url = reverse("rsvp_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        data = {'coming': True, 'plus_one': False}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+        rsvp = Rsvp.objects.all()
+        self.assertTrue(len(rsvp), 1)
+        self.assertTrue(rsvp[0].user, self.systers_user)
+        self.assertTrue(rsvp[0].meetup, self.meetup)
+
+
+class RsvpGoingViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(RsvpGoingViewTestCase, self).setUp()
+        self.rsvp1 = Rsvp.objects.create(user=self.systers_user, meetup=self.meetup,
+                                         coming=True, plus_one=False)
+
+    def test_view_rsvp_going_view(self):
+        """Test Rsvp going view for correct http response and all Rsvps in a list"""
+        self.client.login(username='foo', password='foobar')
+        url = reverse("rsvp_going", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/rsvp_going.html")
+        self.assertContains(response, str(self.systers_user))
+        self.assertEqual(len(response.context['rsvp_list']), 1)

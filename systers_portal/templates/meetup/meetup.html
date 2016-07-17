@@ -13,8 +13,25 @@
     </p>
     <hr>
     {{ meetup.description|safe }} <br/>
-    <a href="{% url 'rsvp_going' meetup_location.slug meetup.slug %}">Going</a>
-    <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
+    <p>
+    </p>
+    <table class="table table-hover decoration-none">
+      <thead>
+        <tr>
+          <th>Coming</th>
+          <th>Not Coming</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ coming_no }}</td>
+          <td>{{ not_coming_no }}</td>
+        </tr>
+      </tbody>
+    </table> 
+    <p>
+      <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
+    </p>
   </div>
   <h3>Discussion Area</h3>
   {% if not comments %}
