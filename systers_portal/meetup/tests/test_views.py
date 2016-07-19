@@ -533,7 +533,7 @@ class ApproveMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCa
 
         self.client.login(username='foo', password='foobar')
         nonexistent_url = reverse('approve_join_request_meetup_location',
-                                  kwargs={'slug': 'foo', 'username': 'echhbbdsjcbe'})
+                                  kwargs={'slug': 'foo', 'username': 'foba'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
 

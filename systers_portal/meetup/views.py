@@ -323,10 +323,8 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequire
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup_location.members.add(systersuser)
         self.meetup_location.join_requests.remove(systersuser)
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
@@ -349,10 +347,8 @@ class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequired
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
-        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup_location.join_requests.remove(systersuser)
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 

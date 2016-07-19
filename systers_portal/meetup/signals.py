@@ -9,8 +9,7 @@ from meetup.utils import (create_groups, assign_permissions, remove_groups)
 from users.models import SystersUser
 
 
-@receiver(post_save, sender='meetup.MeetupLocation',
-          dispatch_uid="manage_groups")
+@receiver(post_save, sender=MeetupLocation, dispatch_uid="manage_groups")
 def manage_meetup_location_groups(sender, instance, created, **kwargs):
     """Manage user groups and user permissions for a particular MeetupLocation"""
     name = instance.name
@@ -20,8 +19,7 @@ def manage_meetup_location_groups(sender, instance, created, **kwargs):
         instance.save()
 
 
-@receiver(post_delete, sender='meetup.MeetupLocation',
-          dispatch_uid="remove_groups")
+@receiver(post_delete, sender=MeetupLocation, dispatch_uid="remove_groups")
 def remove_meetup_location_groups(sender, instance, **kwargs):
     """Remove user groups for a particular Meetup Location"""
     remove_groups(instance.name)
