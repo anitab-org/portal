@@ -1,25 +1,24 @@
 {% extends "meetup/base.html" %}
 
 {% block title %}
-  - Delete comment
+  - {{ meetup }} - Delete support request
 {% endblock %}
 
 {% load crispy_forms_tags %}
 {% block meetup_location_page_content %}
 
-  {% url 'delete_meetup' meetup_location.slug object.slug as delete_url %}
+  {% url 'delete_support_request' meetup_location.slug meetup.slug object.pk as delete_url %}
 
 <div class="mt40"></div>
 <div class="row">
   <div class="col-md-12">
-    <h2>Confirm to delete comment</h2>
+    <h2>Confirm to delete support request</h2>
     <hr/>
   </div>
   <div class="col-md-12">
     <form action="{{ delete_url }}" method="post">
     {% csrf_token %}
-    <p>Are you sure you want to delete this comment?</p>
-    <p>"{{ object.body }}{{ object.description }}"</p>
+    <p>Are you sure you want to delete this support request?</p>
     <input type="submit" value="Confirm" class="btn btn-danger" />
   </form>
   </div>

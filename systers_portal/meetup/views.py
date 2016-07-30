@@ -12,10 +12,12 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
-                          AddMeetupLocationForm, EditMeetupLocationForm, RsvpForm,
-                          AddMeetupCommentForm, EditMeetupCommentForm)
+                          AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
+                          EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
+                          EditSupportRequestForm, AddSupportRequestCommentForm,
+                          EditSupportRequestCommentForm)
 from meetup.mixins import MeetupLocationMixin
-from meetup.models import Meetup, MeetupLocation, Rsvp
+from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
 from users.models import SystersUser
 from common.models import Comment
 
@@ -36,6 +38,7 @@ class MeetupLocationList(ListView):
 
 
 class MeetupView(MeetupLocationMixin, DetailView):
+    # TODO: add option for organizers to moderate comments
     template_name = "meetup/meetup.html"
     model = MeetupLocation
 
@@ -455,6 +458,7 @@ class EditMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, UpdateView)
     """Edit a meetup's comment"""
     template_name = "meetup/edit_comment.html"
     model = Comment
+    pk_url_kwarg = "comment_pk"
     form_class = EditMeetupCommentForm
     raise_exception = True
 
@@ -477,6 +481,7 @@ class DeleteMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, DeleteVie
     """Delete a meetup's comment"""
     template_name = "meetup/comment_confirm_delete.html"
     model = Comment
+    pk_url_kwarg = "comment_pk"
     raise_exception = True
 
     def get_success_url(self):
@@ -543,4 +548,251 @@ class RsvpGoingView(MeetupLocationMixin, ListView):
         return context
 
     def get_meetup_location(self):
+        return self.meetup_location
+
+
+class AddSupportRequestView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """Support Request for a meetup"""
+    template_name = "meetup/add_support_request.html"
+    model = SupportRequest
+    form_class = AddSupportRequestForm
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
+                       "meetup_slug": self.meetup.slug, "pk": self.object.pk})
+
+    def get_form_kwargs(self):
+        """Add request user and meetup object to the form kwargs."""
+        kwargs = super(AddSupportRequestView, self).get_form_kwargs()
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        kwargs.update({'volunteer': self.request.user})
+        kwargs.update({'meetup': self.meetup})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(AddSupportRequestView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class EditSupportRequestView(LoginRequiredMixin, MeetupLocationMixin, UpdateView):
+    """Edit an existing support request"""
+    template_name = "meetup/edit_support_request.html"
+    model = SupportRequest
+    form_class = EditSupportRequestForm
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
+                       "meetup_slug": self.object.meetup.slug, "pk": self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(EditSupportRequestView, self).get_context_data(**kwargs)
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class DeleteSupportRequestView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
+    """Delete existing Support Request"""
+    template_name = "meetup/support_request_confirm_delete.html"
+    model = SupportRequest
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
+                       "meetup_slug": self.object.meetup.slug})
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class SupportRequestView(MeetupLocationMixin, DetailView):
+    """View a support request"""
+    template_name = "meetup/support_request.html"
+    model = SupportRequest
+
+    def get_context_data(self, **kwargs):
+        context = super(SupportRequestView, self).get_context_data(**kwargs)
+        context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        context['support_request'] = self.object
+        context['comments'] = Comment.objects.filter(
+            content_type=ContentType.objects.get(app_label='meetup', model='supportrequest'),
+            object_id=self.object.id,
+            is_approved=True).order_by('date_created')
+        return context
+
+    def get_meetup_location(self):
+        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+
+
+class SupportRequestsListView(MeetupLocationMixin, ListView):
+    """List support requests for a meetup"""
+    template_name = "meetup/list_support_requests.html"
+    model = SupportRequest
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        support_requests = SupportRequest.objects.filter(meetup=self.meetup, is_approved=True)
+        return support_requests
+
+    def get_context_data(self, **kwargs):
+        context = super(SupportRequestsListView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+
+
+class UnapprovedSupportRequestsListView(MeetupLocationMixin, ListView):
+    """List unapproved support requests for a meetup"""
+    template_name = "meetup/unapproved_support_requests.html"
+    model = SupportRequest
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        unapproved_support_requests = SupportRequest.objects.filter(
+            meetup=self.meetup, is_approved=False)
+        return unapproved_support_requests
+
+    def get_context_data(self, **kwargs):
+        context = super(UnapprovedSupportRequestsListView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        return context
+
+    def get_meetup_location(self):
+        return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+
+
+class ApproveSupportRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+    """Approve a support request for a meetup"""
+    model = SupportRequest
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
+        support_request.is_approved = True
+        support_request.save()
+        return reverse('unapproved_support_requests', kwargs={'slug': self.meetup_location.slug,
+                       'meetup_slug': self.meetup.slug})
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class RejectSupportRequestView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
+    """Reject a support request for a meetup"""
+    model = SupportRequest
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
+        support_request.delete()
+        return reverse('unapproved_support_requests', kwargs={'slug': self.meetup_location.slug,
+                       'meetup_slug': self.meetup.slug})
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class AddSupportRequestCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """Add a comment to a Support Request"""
+    template_name = "meetup/add_comment.html"
+    model = Comment
+    form_class = AddSupportRequestCommentForm
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse('view_support_request', kwargs={'slug': self.meetup_location.slug,
+                       'meetup_slug': self.meetup.slug, 'pk': self.support_request.pk})
+
+    def get_form_kwargs(self):
+        """Add content_object and author to the form kwargs."""
+        kwargs = super(AddSupportRequestCommentView, self).get_form_kwargs()
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        self.support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
+        kwargs.update({'content_object': self.support_request})
+        kwargs.update({'author': self.request.user})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(AddSupportRequestCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        context['support_request'] = self.support_request
+        return context
+
+    def get_meetup_location(self):
+        return self.meetup_location
+
+
+class EditSupportRequestCommentView(LoginRequiredMixin, MeetupLocationMixin, UpdateView):
+    """Edit a support request's comment"""
+    template_name = "meetup/edit_comment.html"
+    model = Comment
+    pk_url_kwarg = "comment_pk"
+    form_class = EditSupportRequestCommentForm
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
+                                                       "meetup_slug": self.meetup.slug,
+                                                       "pk": self.object.content_object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(EditSupportRequestCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        context['support_request'] = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
+        return context
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        return self.meetup_location
+
+
+class DeleteSupportRequestCommentView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
+    """Delete a support request's comment"""
+    template_name = "meetup/comment_confirm_delete.html"
+    model = Comment
+    pk_url_kwarg = "comment_pk"
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
+                                                       "meetup_slug": self.meetup.slug,
+                                                       "pk": self.object.content_object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteSupportRequestCommentView, self).get_context_data(**kwargs)
+        context['meetup'] = self.meetup
+        context['support_request'] = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
+        return context
+
+    def get_meetup_location(self):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         return self.meetup_location

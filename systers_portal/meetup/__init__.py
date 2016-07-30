@@ -1,1 +1,1 @@
-import meetup.signals
+import meetup.signals   # noqa

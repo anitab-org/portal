@@ -66,3 +66,14 @@ class Rsvp(models.Model):
 
     def __str__(self):
         return "{0} RSVP for meetup {1}".format(self.user, self.meetup)
+
+
+class SupportRequest(models.Model):
+    """Manage details of various volunteering activities"""
+    volunteer = models.ForeignKey(SystersUser, verbose_name="Volunteer")
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    description = models.TextField(verbose_name="Description", blank=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "{0} volunteered for meetup {1}".format(self.volunteer, self.meetup)

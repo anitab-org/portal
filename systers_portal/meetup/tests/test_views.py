@@ -5,7 +5,7 @@ from django.utils import timezone
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 
-from meetup.models import Meetup, MeetupLocation, Rsvp
+from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
 from users.models import SystersUser
 from common.models import Comment
 
@@ -713,7 +713,7 @@ class EditMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         """Test GET request to edit a comment to a meetup"""
         self.client.login(username='foo', password='foobar')
         url = reverse('edit_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
-                      'pk': self.comment.id})
+                      'comment_pk': self.comment.id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -723,7 +723,7 @@ class EditMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         """Test POST request to edit a comment to a meetup"""
         self.client.login(username='foo', password='foobar')
         url = reverse("edit_meetup_comment", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
-                      'pk': self.comment.id})
+                      'comment_pk': self.comment.id})
         data = {'body': 'This is an edited test comment'}
         response = self.client.post(url, data=data)
 
@@ -748,7 +748,7 @@ class DeleteMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         """Test GET request to delete a comment to a meetup"""
         self.client.login(username='foo', password='foobar')
         url = reverse('delete_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
-                      'pk': self.comment.id})
+                      'comment_pk': self.comment.id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -758,7 +758,7 @@ class DeleteMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         """Test POST request to delete a comment to a meetup"""
         self.client.login(username='foo', password='foobar')
         url = reverse("delete_meetup_comment", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
-                      'pk': self.comment.id})
+                      'comment_pk': self.comment.id})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, 302)
@@ -809,3 +809,348 @@ class RsvpGoingViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertTemplateUsed(response, "meetup/rsvp_going.html")
         self.assertContains(response, str(self.systers_user))
         self.assertEqual(len(response.context['rsvp_list']), 1)
+
+
+class AddSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_add_support_request_view(self):
+        """Test GET request to add a new support request"""
+        url = reverse('add_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/add_support_request.html')
+
+    def test_post_add_support_request_view(self):
+        """Test POST request to add a new support request"""
+        url = reverse('add_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        data = {'description': 'test support request'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+
+        support_requests = SupportRequest.objects.all()
+        self.assertTrue(len(support_requests), 1)
+        self.assertTrue(support_requests[0].description, 'test support request')
+        self.assertTrue(support_requests[0].volunteer, self.systers_user)
+        self.assertTrue(support_requests[0].meetup, self.meetup)
+
+
+class EditSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(EditSupportRequestViewTestCase, self).setUp()
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='This is a test description', is_approved=False)
+
+    def test_get_edit_support_request_view(self):
+        """Test GET request to edit a support request for a meetup"""
+        url = reverse('edit_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.support_request.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/edit_support_request.html')
+
+    def test_post_edit_support_request_view(self):
+        """Test POST request to edit a support request for a meetup"""
+        url = reverse('edit_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.support_request.id})
+        response = self.client.get(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        data = {'description': 'test support request, edited'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+
+        support_requests = SupportRequest.objects.all()
+        self.assertTrue(len(support_requests), 1)
+        self.assertTrue(support_requests[0].description, 'test support request')
+        self.assertTrue(support_requests[0].volunteer, self.systers_user)
+        self.assertTrue(support_requests[0].meetup, self.meetup)
+
+
+class DeleteSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(DeleteSupportRequestViewTestCase, self).setUp()
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='This is a test description', is_approved=False)
+
+    def test_get_delete_support_request_view(self):
+        """Test GET to confirm deletion of support request"""
+        url = reverse('delete_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.support_request.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Confirm to delete")
+
+    def test_post_delete_support_request_view(self):
+        """Test POST to delete support request"""
+        url = reverse('delete_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.support_request.id})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+
+        support_requests = SupportRequest.objects.all()
+        self.assertEqual(len(support_requests), 0)
+
+
+class SupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(SupportRequestViewTestCase, self).setUp()
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='This is a test description', is_approved=False)
+
+    def test_view_support_request_view(self):
+        """Test Support Request view for correct response"""
+        url = reverse('view_support_request', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz',
+                      'pk': self.support_request.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/support_request.html')
+        self.assertEqual(response.context['meetup'], self.meetup)
+        self.assertEqual(response.context['support_request'], self.support_request)
+
+
+class SupportRequestsListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(SupportRequestsListViewTestCase, self).setUp()
+        self.support_request1 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 1', is_approved=True)
+        self.support_request2 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 2', is_approved=False)
+
+    def test_view_support_requests_list_view(self):
+        """Test Support Requests list view for correct http response and
+        all support requests in a list"""
+        url = reverse('list_support_requests', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/list_support_requests.html")
+        self.assertEqual(len(response.context['support_requests']), 1)
+        self.assertContains(response, "Support Request: 1")
+
+
+class UnapprovedSupportRequestsListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(UnapprovedSupportRequestsListViewTestCase, self).setUp()
+        self.support_request1 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 1', is_approved=True)
+        self.support_request2 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 2', is_approved=False)
+
+    def test_view_unapproved_support_requests_list_view(self):
+        """Test unapproved Support Requests list view for correct http response and
+        all support requests in a list"""
+        url = reverse('unapproved_support_requests', kwargs={'slug': 'foo',
+                      'meetup_slug': 'foo-bar-baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "meetup/unapproved_support_requests.html")
+        self.assertEqual(len(response.context['unapproved_support_requests']), 1)
+        self.assertContains(response, "Support Request: 2")
+
+
+class ApproveSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(ApproveSupportRequestViewTestCase, self).setUp()
+        self.support_request1 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 1', is_approved=False)
+        self.support_request2 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 2', is_approved=False)
+
+    def test_view_approve_support_request_view(self):
+        """Test approve support request view for correct http response"""
+        url = reverse('approve_support_request', kwargs={'slug': 'foo',
+                      'meetup_slug': 'foo-bar-baz', 'pk': self.support_request1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/foo-bar-baz/unapproved_support_requests/')
+        self.assertEqual(len(response.context['unapproved_support_requests']), 1)
+        self.assertContains(response, "Support Request: 2")
+        self.assertEqual(self.support_request1.is_approved, True)
+
+
+class RejectSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(RejectSupportRequestViewTestCase, self).setUp()
+        self.support_request1 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 1', is_approved=False)
+        self.support_request2 = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Support Request: 2', is_approved=False)
+
+    def test_view_reject_support_request_view(self):
+        """Test reject support request view for correct http response"""
+        url = reverse('reject_support_request', kwargs={'slug': 'foo',
+                      'meetup_slug': 'foo-bar-baz', 'pk': self.support_request1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/foo-bar-baz/unapproved_support_requests/')
+        self.assertEqual(len(response.context['unapproved_support_requests']), 1)
+        self.assertContains(response, "Support Request: 2")
+        self.assertEqual(self.support_request1, None)
+
+
+class AddSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(AddSupportRequestCommentViewTestCase, self).setUp()
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Test Support Request', is_approved=False)
+
+    def test_get_add_support_request_comment_view(self):
+        """Test GET request to add a comment to a support request"""
+        url = reverse('add_support_request_comment', kwargs={'slug': 'foo',
+                      'meetup_slug': 'foo-bar-baz', 'pk': self.support_request.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/add_comment.html')
+
+    def test_post_add_support_request_comment_view(self):
+        """Test POST request to add a support request to a meetup"""
+        url = reverse('add_support_request_comment', kwargs={'slug': 'foo',
+                      'meetup_slug': 'foo-bar-baz', 'pk': self.support_request.pk})
+        response = self.client.get(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        data = {'body': 'This is a test comment'}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is a test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.support_request)
+
+
+class EditSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(EditSupportRequestCommentViewTestCase, self).setUp()
+        support_request_content_type = ContentType.objects.get(app_label='meetup',
+                                                               model='supportrequest')
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Test Support Request', is_approved=False)
+        self.comment = Comment.objects.create(author=self.systers_user, is_approved=True,
+                                              body='This is a test comment',
+                                              content_type=support_request_content_type,
+                                              object_id=self.support_request.id)
+
+    def test_get_edit_support_request_comment_view(self):
+        """Test GET request to edit a comment to a support request"""
+        url = reverse('edit_support_request_comment', kwargs={'slug': 'foo',
+                                                              'meetup_slug': 'foo-bar-baz',
+                                                              'pk': self.support_request.pk,
+                                                              'comment_pk': self.comment.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/edit_comment.html')
+
+    def test_post_edit_support_request_comment_view(self):
+        """Test POST request to edit a comment to a support request"""
+        url = reverse('edit_support_request_comment', kwargs={'slug': 'foo',
+                                                              'meetup_slug': 'foo-bar-baz',
+                                                              'pk': self.support_request.pk,
+                                                              'comment_pk': self.comment.pk})
+        response = self.client.get(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        data = {'body': 'This is an edited test comment'}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].body, 'This is an edited test comment')
+        self.assertEqual(comments[0].author, self.systers_user)
+        self.assertEqual(comments[0].content_object, self.support_request)
+
+
+class DeleteSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(DeleteSupportRequestCommentViewTestCase, self).setUp()
+        support_request_content_type = ContentType.objects.get(app_label='meetup',
+                                                               model='supportrequest')
+        self.support_request = SupportRequest.objects.create(
+            volunteer=self.systers_user, meetup=self.meetup,
+            description='Test Support Request', is_approved=False)
+        self.comment = Comment.objects.create(author=self.systers_user, is_approved=True,
+                                              body='This is a test comment',
+                                              content_type=support_request_content_type,
+                                              object_id=self.support_request.id)
+
+    def test_get_delete_support_request_comment_view(self):
+        """Test GET request to delete a comment to a support request"""
+        url = reverse('delete_support_request_comment', kwargs={'slug': 'foo',
+                                                                'meetup_slug': 'foo-bar-baz',
+                                                                'pk': self.support_request.pk,
+                                                                'comment_pk': self.comment.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Confirm to delete")
+
+    def test_post_delete_support_request_comment_view(self):
+        """Test POST request to delete a comment to a support request"""
+        url = reverse('delete_support_request_comment', kwargs={'slug': 'foo',
+                                                                'meetup_slug': 'foo-bar-baz',
+                                                                'pk': self.support_request.pk,
+                                                                'comment_pk': self.comment.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        comments = Comment.objects.all()
+        self.assertEqual(len(comments), 0)
