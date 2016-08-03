@@ -7,9 +7,10 @@ from django.contrib.contenttypes.models import ContentType
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
-                          EditMeetupCommentForm, AddSupportRequestForm, EditSupportRequestForm,
-                          AddSupportRequestCommentForm, EditSupportRequestCommentForm)
-from meetup.models import Meetup, MeetupLocation, SupportRequest
+                          EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
+                          EditSupportRequestForm, AddSupportRequestCommentForm,
+                          EditSupportRequestCommentForm)
+from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
 from users.models import SystersUser
 from common.models import Comment
 
@@ -194,6 +195,22 @@ class EditMeetupCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(comments[0].body, 'This is an edited test comment')
         self.assertEqual(comments[0].author, self.systers_user)
         self.assertEqual(comments[0].content_object, self.meetup)
+
+
+class RsvpFormTestCase(MeetupFormTestCaseBase, TestCase):
+    def test_rsvp_form(self):
+        """Test Rsvp form"""
+        data = {'coming': True, 'plus_one': True}
+        form = RsvpForm(data=data, user=self.systers_user,
+                        meetup=self.meetup)
+        self.assertTrue(form.is_valid())
+        form.save()
+        rsvp_list = Rsvp.objects.filter(meetup=self.meetup)
+        self.assertEqual(len(rsvp_list), 1)
+        self.assertEqual(rsvp_list[0].coming, True)
+        self.assertEqual(rsvp_list[0].plus_one, True)
+        self.assertEqual(rsvp_list[0].user, self.systers_user)
+        self.assertEqual(rsvp_list[0].meetup, self.meetup)
 
 
 class AddSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):
