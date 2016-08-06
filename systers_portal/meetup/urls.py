@@ -97,10 +97,12 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/add_comment/$',
         AddSupportRequestCommentView.as_view(),
         name="add_support_request_comment"),
-    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/edit_comment/(?P<comment_pk>\d+)/$',
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/edit_comment/'
+        '(?P<comment_pk>\d+)/$',
         EditSupportRequestCommentView.as_view(),
         name="edit_support_request_comment"),
-    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/delete_comment/(?P<comment_pk>\d+)/$',
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/delete_comment/'
+        '(?P<comment_pk>\d+)/$',
         DeleteSupportRequestCommentView.as_view(),
         name="delete_support_request_comment"),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),

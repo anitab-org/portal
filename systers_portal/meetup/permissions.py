@@ -6,12 +6,10 @@ groups_templates = {"member": MEMBER,
 member_permissions = [
     "change_meetup",
     "change_meetuplocation",
-    "add_rsvp",
-    "change_rsvp",
-    "delete_rsvp",
-    "add_comment",
-    "change_comment",
-    "delete_comment"
+    "add_meetup_rsvp",
+    "add_supportrequest",
+    "change_supportrequest",
+    "delete_supportrequest"
 ]
 
 organizer_permissions = member_permissions + [
@@ -26,7 +24,14 @@ organizer_permissions = member_permissions + [
     "approve_meetup_location_joinrequest",
     "reject_meetup_location_joinrequest",
     "approve_meetup_comment",
-    "reject_meetup_comment"
+    "reject_meetup_comment",
+    "approve_support_request",
+    "reject_support_request",
+    "add_support_request_comment",
+    "edit_support_request_comment",
+    "delete_support_request_comment",
+    "approve_support_request_comment",
+    "reject_support_request_comment"
 ]
 
 group_permissions = {"member": member_permissions,

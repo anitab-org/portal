@@ -3,7 +3,7 @@
 {% block meetup_location_page_content %}
   <div class="mt20 mb40">
     <h2 class="ml15">Unapproved Support Requests</h2>
-    {% for support_request in unapproved_support_requests %}
+    {% for support_request in supportrequest_list %}
       <div class="mt20 ml15 box-container box-body">
         <p>
           <span><strong>Volunteer:</strong> {{ support_request.volunteer }}</span>
@@ -13,9 +13,9 @@
           <a href="{% url "view_support_request" meetup_location.slug meetup.slug support_request.pk %}">SEE MORE</a>
         </p>
         <p>
-          <a href="{% url 'approve_join_request_meetup_location' meetup_location.slug join_request.user.username %}"
+          <a href="{% url 'approve_support_request' meetup_location.slug meetup.slug support_request.pk %}"
              role="button" class="btn btn-primary btn-sm">Approve</a>
-          <a href="{% url 'reject_join_request_meetup_location' meetup_location.slug join_request.user.username %}"
+          <a href="{% url 'reject_support_request' meetup_location.slug meetup.slug support_request.pk %}"
              role="button" class="btn btn-warning btn-sm">Reject</a>
         </p>
       </div>

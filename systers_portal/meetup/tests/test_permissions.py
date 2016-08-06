@@ -11,12 +11,10 @@ class PermissionsTestCase(TestCase):
         permissions = [
             "change_meetup",
             "change_meetuplocation",
-            "add_rsvp",
-            "change_rsvp",
-            "delete_rsvp",
-            "add_comment",
-            "change_comment",
-            "delete_comment"
+            "add_meetup_rsvp",
+            "add_supportrequest",
+            "change_supportrequest",
+            "delete_supportrequest"
         ]
         self.assertCountEqual(member_permissions, permissions)
 
@@ -25,12 +23,10 @@ class PermissionsTestCase(TestCase):
         permissions = [
             "change_meetup",
             "change_meetuplocation",
-            "add_rsvp",
-            "change_rsvp",
-            "delete_rsvp",
-            "add_comment",
-            "change_comment",
-            "delete_comment",
+            "add_meetup_rsvp",
+            "add_supportrequest",
+            "change_supportrequest",
+            "delete_supportrequest",
             "add_meetup",
             "delete_meetup",
             "add_meetuplocation",
@@ -42,7 +38,14 @@ class PermissionsTestCase(TestCase):
             "approve_meetup_location_joinrequest",
             "reject_meetup_location_joinrequest",
             "approve_meetup_comment",
-            "reject_meetup_comment"
+            "reject_meetup_comment",
+            "approve_support_request",
+            "reject_support_request",
+            "add_support_request_comment",
+            "edit_support_request_comment",
+            "delete_support_request_comment",
+            "approve_support_request_comment",
+            "reject_support_request_comment"
         ]
         self.assertCountEqual(organizer_permissions, permissions)
 

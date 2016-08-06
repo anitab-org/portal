@@ -3,7 +3,7 @@
 {% block meetup_location_page_content %}
   <div class="mt20 mb40">
     <h2 class="ml15">Support Requests</h2>
-    {% for support_request in support_requests %}
+    {% for support_request in supportrequest_list %}
       <div class="mt20 ml15 box-container box-body">
         <p>
           <span><strong>Volunteer:</strong> {{ support_request.volunteer }}</span>
