@@ -4,6 +4,7 @@ from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
+from django.core import mail
 
 from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
 from users.models import SystersUser
@@ -12,7 +13,8 @@ from common.models import Comment
 
 class MeetupLocationViewBaseTestCase(object):
     def setUp(self):
-        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.user = User.objects.create_user(username='foo', password='foobar',
+                                             email='user@test.com')
         self.systers_user = SystersUser.objects.get()
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
@@ -406,7 +408,8 @@ class RemoveMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, 
 class MakeMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(MakeMeetupLocationOrganizerViewTestCase, self).setUp()
-        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.user2 = User.objects.create_user(username='baz', password='bazbar',
+                                              email='user2@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.members.add(self.systers_user2)
 
@@ -430,15 +433,20 @@ class MakeMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, Te
         self.assertRedirects(response, 'meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
         self.assertEqual(len(self.meetup_location.organizers.all()), 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user2.email, mail.outbox[0].to)
+        self.assertIn('Made Organizer', mail.outbox[0].subject)
 
 
 class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(JoinMeetupLocationViewTestCase, self).setUp()
-        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.user2 = User.objects.create_user(username='baz', password='bazbar',
+                                              email='user2@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.join_requests.add(self.systers_user2)
-        self.user3 = User.objects.create_user(username='bar', password='barbar')
+        self.user3 = User.objects.create_user(username='bar', password='barbar',
+                                              email='user3@test.com')
         self.systers_user3 = SystersUser.objects.get(user=self.user3)
 
     def test_view_join_meetup_location_view(self):
@@ -468,6 +476,9 @@ class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
             self.assertTrue(
                 'Your request to join meetup location Foo Systers has been sent.'
                 in message.message)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user.email, mail.outbox[0].to)
+        self.assertIn('New Join Request', mail.outbox[0].subject)
 
         url = reverse('join_meetup_location', kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
@@ -520,7 +531,8 @@ class MeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCase, Tes
 class ApproveMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
         super(ApproveMeetupLocationJoinRequestsViewTestCase, self).setUp()
-        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.user2 = User.objects.create_user(username='baz', password='bazbar',
+                                              email='user2@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.join_requests.add(self.systers_user2)
 
@@ -544,6 +556,9 @@ class ApproveMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCa
         self.assertRedirects(response, 'meetup/foo/join_requests/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 0)
         self.assertEqual(len(self.meetup_location.members.all()), 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user2.email, mail.outbox[0].to)
+        self.assertIn('Joined Meetup Location', mail.outbox[0].subject)
 
 
 class RejectMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
@@ -1027,6 +1042,9 @@ class ApproveSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase
         self.assertEqual(len(response.context['supportrequest_list']), 1)
         self.assertEqual(response.context['supportrequest_list'][0].description,
                          "Support Request: 2")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user.email, mail.outbox[0].to)
+        self.assertIn('Support Request Approved', mail.outbox[0].subject)
 
 
 class RejectSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):

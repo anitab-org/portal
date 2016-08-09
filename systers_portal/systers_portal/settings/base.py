@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'cities_light',
     'imagekit',
+    'pinax.notifications',
     'blog',
     'common',
     'community',
