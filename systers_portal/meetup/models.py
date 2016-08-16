@@ -72,6 +72,9 @@ class Rsvp(models.Model):
     coming = models.BooleanField(default=True)
     plus_one = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = (('user', 'meetup'),)
+
     def __str__(self):
         return "{0} RSVP for meetup {1}".format(self.user, self.meetup)
 
