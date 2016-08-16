@@ -44,12 +44,15 @@ class AddMeetupForm(ModelFormWithHelper):
         return instance
 
     def clean_date(self):
+        """Check if the date is less than the current date. If so, raise an error."""
         date = self.cleaned_data.get('date')
         if date < timezone.now().date():
             raise forms.ValidationError("Date should not be before today's date.")
         return date
 
     def clean_time(self):
+        """Check that if the date is the current date, the time is not the current time. If so,
+        raise an error."""
         time = self.cleaned_data.get('time')
         date = self.cleaned_data.get('date')
         if time:
@@ -79,7 +82,7 @@ class AddMeetupLocationMemberForm(ModelFormWithHelper):
 
     def save(self, commit=True):
         """Override save to map input username to User and append it to the meetup location. Also,
-        send the corresponding user the relevent notification."""
+        send the corresponding user a notification."""
         instance = super(AddMeetupLocationMemberForm, self).save(commit=False)
         user = get_object_or_404(User, username=self.username)
         systersuser = get_object_or_404(SystersUser, user=user)
@@ -91,7 +94,7 @@ class AddMeetupLocationMemberForm(ModelFormWithHelper):
         return instance
 
     def clean(self):
-        """Ensure only the username of an existing systers user is given"""
+        """Check that only the username of an existing systers user is given"""
         cleaned_data = super(AddMeetupLocationMemberForm, self).clean()
         self.username = cleaned_data.get('username')
 

@@ -29,21 +29,25 @@ class MeetupLocationAboutView(MeetupLocationMixin, TemplateView):
     template_name = "meetup/about.html"
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
 
 
 class MeetupLocationList(ListView):
+    """List all Meetup Locations"""
     template_name = "meetup/list_location.html"
     model = MeetupLocation
     paginate_by = 20
 
 
 class MeetupView(MeetupLocationMixin, DetailView):
-    # TODO: add option for organizers to moderate comments
+    """View details of a meetup, including date, time, venue, description, number of users who
+    rsvp'd and comments."""
     template_name = "meetup/meetup.html"
     model = MeetupLocation
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object, number of users who rsvp'd and comments to the context"""
         context = super(MeetupView, self).get_context_data(**kwargs)
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
                                         meetup_location=self.object)
@@ -60,6 +64,7 @@ class MeetupView(MeetupLocationMixin, DetailView):
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.object
 
 
@@ -70,6 +75,7 @@ class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
     paginate_by = 50
 
     def get_context_data(self, **kwargs):
+        """Add list of members and organizers to the context"""
         context = super(MeetupLocationMembersView, self).get_context_data(**kwargs)
         organizer_list = self.meetup_location.organizers.all()
         context['organizer_list'] = organizer_list
@@ -77,6 +83,7 @@ class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -89,7 +96,7 @@ class AddMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationM
     raise_exception = True
 
     def get_success_url(self):
-        """Supply the redirect URL in case of successful submit"""
+        """Redirect to meetup view page in case of successful submit"""
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                                               "meetup_slug": self.object.slug})
 
@@ -104,6 +111,7 @@ class AddMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationM
         return kwargs
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -121,12 +129,13 @@ class DeleteMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocati
     raise_exception = True
 
     def get_success_url(self):
-        """Supply the redirect URL in case of successful deletion"""
+        """Redirect to meetup location's about page in case of successful deletion"""
         self.get_meetup_location()
         return reverse("about_meetup_location",
                        kwargs={"slug": self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -145,12 +154,12 @@ class EditMeetupView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def get_success_url(self):
-        """Supply the redirect URL in case of successful submit"""
+        """Redirect to meetup view page in case of successful submit"""
         return reverse("view_meetup", kwargs={"slug": self.object.meetup_location.slug,
                        "meetup_slug": self.object.slug})
 
     def get_context_data(self, **kwargs):
-        """Add Meetup object to the context"""
+        """Add Meetup and MeetupLocation objects to the context"""
         context = super(EditMeetupView, self).get_context_data(**kwargs)
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         context['meetup'] = self.meetup
@@ -170,6 +179,8 @@ class UpcomingMeetupsView(MeetupLocationMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self, **kwargs):
+        """Set ListView queryset to all the meetups whose date is equal to or greater than the
+        current date"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         meetup_list = Meetup.objects.filter(
             meetup_location=self.meetup_location,
@@ -177,6 +188,7 @@ class UpcomingMeetupsView(MeetupLocationMixin, ListView):
         return meetup_list
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
 
@@ -187,6 +199,7 @@ class PastMeetupListView(MeetupLocationMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self, **kwargs):
+        """Set ListView queryset to all the meetups whose date is less than the current date"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         meetup_list = Meetup.objects.filter(
             meetup_location=self.meetup_location,
@@ -194,6 +207,7 @@ class PastMeetupListView(MeetupLocationMixin, ListView):
         return meetup_list
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
 
@@ -203,6 +217,7 @@ class MeetupLocationSponsorsView(MeetupLocationMixin, DetailView):
     model = MeetupLocation
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
 
 
@@ -214,8 +229,8 @@ class RemoveMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        """Remove the member from 'member' and 'organizer' lists, and remove associated
-        permissions"""
+        """Remove the member from 'member' and 'organizer' lists and redirect to the members page
+        of the meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         organizers = self.meetup_location.organizers.all()
@@ -226,6 +241,7 @@ class RemoveMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -244,10 +260,11 @@ class AddMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin, M
     raise_exception = True
 
     def get_success_url(self):
-        """Supply the redirect URL in case of successful addition"""
+        """Redirect to the members page of the meetup location in case of successful addition"""
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -265,6 +282,8 @@ class RemoveMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMi
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Remove the member from the 'organizer' list and redirect to the members page of the
+        meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         organizers = self.meetup_location.organizers.all()
@@ -273,6 +292,7 @@ class RemoveMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMi
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -290,6 +310,8 @@ class MakeMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMixi
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Add the member to the 'organizer' list and send her a notification email. Redirect to
+        the members page of the meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         organizers = self.meetup_location.organizers.all()
@@ -299,6 +321,7 @@ class MakeMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMixi
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -315,9 +338,19 @@ class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectVi
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Redirect to meetup location's about page."""
         return reverse('about_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get(self, request, *args, **kwargs):
+        """Display messages to the user as per the following conditions:
+
+        * if the user is not a meetup location member and has not requested to join the location
+          before, add the user's join request, display the corresponding message and send a
+          notification to all organizers
+        * if the user is not a meetup location member and has requested to join the location
+          before, display the corresponding message
+        * if the user is aleady a member of the meetup location, display the corresponding message
+        """
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
@@ -344,6 +377,7 @@ class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectVi
         return super(JoinMeetupLocationView, self).get(request, *args, **kwargs)
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
 
@@ -354,11 +388,13 @@ class MeetupLocationJoinRequestsView(LoginRequiredMixin, MeetupLocationMixin, De
     paginated_by = 20
 
     def get_context_data(self, **kwargs):
+        """Add all join requests to the context"""
         context = super(MeetupLocationJoinRequestsView, self).get_context_data(**kwargs)
         context['requests'] = self.object.join_requests.all()
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.object
 
 
@@ -370,6 +406,8 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequire
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Add the user to the members of the meetup location, send the user a notification and
+        redirect to meetup location's join request page"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         self.meetup_location.members.add(systersuser)
@@ -379,6 +417,7 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequire
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -396,12 +435,14 @@ class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequired
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Delete the user's join request and redirect to meetup location's join request page"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         self.meetup_location.join_requests.remove(systersuser)
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -421,11 +462,14 @@ class AddMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
     raise_exception = True
 
     def get_success_url(self):
+        """Add the request user to the meetup location's members and organizers and redirect to
+        the about page in case of successful addition"""
         self.object.members.add(self.systersuser)
         self.object.organizers.add(self.systersuser)
         return reverse("about_meetup_location", kwargs={"slug": self.object.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.object
 
     def check_permissions(self, request):
@@ -444,10 +488,12 @@ class EditMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, Meetup
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup location's about page in case of successful submission"""
         self.get_meetup_location()
         return reverse("about_meetup_location", kwargs={"slug": self.meetup_location.slug})
 
     def get_meetup_location(self, **kwargs):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -465,9 +511,11 @@ class DeleteMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, Meet
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the list of meetup locations in case of successful deletion"""
         return reverse("list_meetup_location")
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.object
 
     def check_permissions(self, request):
@@ -485,11 +533,13 @@ class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup view page in case of successful addition"""
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                                               "meetup_slug": self.meetup.slug})
 
     def get_form_kwargs(self):
-        """Add content_object and author to the form kwargs."""
+        """Add meetup object and request user to the form kwargs. Used to autofill form fields with
+        content_object and author without explicitly filling them up in the form."""
         kwargs = super(AddMeetupCommentView, self).get_form_kwargs()
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
@@ -498,11 +548,13 @@ class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(AddMeetupCommentView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
 
@@ -516,16 +568,19 @@ class EditMeetupCommentView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.object.content_object.slug})
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(EditMeetupCommentView, self).get_context_data(**kwargs)
         context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -545,16 +600,19 @@ class DeleteMeetupCommentView(LoginRequiredMixin, PermissionRequiredMixin, Meetu
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.object.content_object.slug})
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(DeleteMeetupCommentView, self).get_context_data(**kwargs)
         context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -573,12 +631,13 @@ class RsvpMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocation
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup view page in case of successful submission"""
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                                               "meetup_slug": self.object.meetup.slug})
 
     def get_form_kwargs(self):
-        """Add request user and meetup object to the form kwargs.
-        """
+        """Add request user and meetup object to the form kwargs. Used to autofill form fields
+        with user and meetup without explicitly filling them up in the form."""
         kwargs = super(RsvpMeetupView, self).get_form_kwargs()
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
@@ -587,11 +646,13 @@ class RsvpMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocation
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(RsvpMeetupView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -608,6 +669,7 @@ class RsvpGoingView(LoginRequiredMixin, MeetupLocationMixin, ListView):
     paginated_by = 30
 
     def get_queryset(self, **kwargs):
+        """Set ListView queryset to all rsvps whose 'coming' attribute is set to True"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'],
                                         meetup_location=self.meetup_location)
@@ -615,11 +677,13 @@ class RsvpGoingView(LoginRequiredMixin, MeetupLocationMixin, ListView):
         return rsvp_list
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(RsvpGoingView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
 
@@ -632,11 +696,13 @@ class AddSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the support request view page in case of successful submission"""
         return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.meetup.slug, "pk": self.object.pk})
 
     def get_form_kwargs(self):
-        """Add request user and meetup object to the form kwargs."""
+        """Add request user and meetup object to the form kwargs. Used to autofill form fields
+        with volunteer and meetup without explicitly filling them up in the form."""
         kwargs = super(AddSupportRequestView, self).get_form_kwargs()
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
@@ -645,11 +711,13 @@ class AddSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(AddSupportRequestView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -667,17 +735,20 @@ class EditSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meetup
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the support request view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.object.meetup.slug, "pk": self.object.pk})
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(EditSupportRequestView, self).get_context_data(**kwargs)
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -695,11 +766,13 @@ class DeleteSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meet
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the meetup view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.object.meetup.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         return self.meetup_location
 
@@ -715,6 +788,7 @@ class SupportRequestView(MeetupLocationMixin, DetailView):
     model = SupportRequest
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object, SupportRequest object and approved comments to the context"""
         context = super(SupportRequestView, self).get_context_data(**kwargs)
         context['meetup'] = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         context['support_request'] = self.object
@@ -725,6 +799,7 @@ class SupportRequestView(MeetupLocationMixin, DetailView):
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
 
 
@@ -735,16 +810,19 @@ class SupportRequestsListView(MeetupLocationMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self, **kwargs):
+        """Set ListView queryset to all approved support requests of the meetup"""
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         supportrequest_list = SupportRequest.objects.filter(meetup=self.meetup, is_approved=True)
         return supportrequest_list
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(SupportRequestsListView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
 
 
@@ -756,17 +834,20 @@ class UnapprovedSupportRequestsListView(LoginRequiredMixin, PermissionRequiredMi
     paginate_by = 10
 
     def get_queryset(self, **kwargs):
+        """Set ListView queryset to all unapproved support requests of the meetup"""
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         supportrequest_list = SupportRequest.objects.filter(
             meetup=self.meetup, is_approved=False)
         return supportrequest_list
 
     def get_context_data(self, **kwargs):
+        """Add Meetup object to the context"""
         context = super(UnapprovedSupportRequestsListView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -783,6 +864,8 @@ class ApproveSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Mee
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Approve the support request, send the user a notification and redirect to the unapproved
+        support requests' page"""
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         support_request.is_approved = True
@@ -794,6 +877,7 @@ class ApproveSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Mee
                        'meetup_slug': self.meetup.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -810,6 +894,7 @@ class RejectSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meet
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
+        """Delete the support request and redirect to the unapproved support requests' page"""
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         support_request.delete()
@@ -817,6 +902,7 @@ class RejectSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meet
                        'meetup_slug': self.meetup.slug})
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -834,11 +920,13 @@ class AddSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the support request view page in case of successful submission"""
         return reverse('view_support_request', kwargs={'slug': self.meetup_location.slug,
                        'meetup_slug': self.meetup.slug, 'pk': self.support_request.pk})
 
     def get_form_kwargs(self):
-        """Add content_object and author to the form kwargs."""
+        """Add support request object and request user to the form kwargs. Used to autofill form
+        fields with content_object and author without explicitly filling them up in the form."""
         kwargs = super(AddSupportRequestCommentView, self).get_form_kwargs()
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         self.support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
@@ -847,12 +935,14 @@ class AddSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add Meetup and SupportRequest objects to the context"""
         context = super(AddSupportRequestCommentView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         context['support_request'] = self.support_request
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         return self.meetup_location
 
     def check_permissions(self, request):
@@ -872,26 +962,28 @@ class EditSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the support request view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
                                                        "meetup_slug": self.meetup.slug,
                                                        "pk": self.support_request.pk})
 
     def get_context_data(self, **kwargs):
+        """Add Meetup and SupportRequest objects to the context"""
         context = super(EditSupportRequestCommentView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         context['support_request'] = self.support_request
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         self.support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         return self.meetup_location
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to edit a comment to a Support Request.
-        The permission holds true for superusers."""
+        """Check if the request user has the permission to edit a comment to a Support Request"""
         self.comment = get_object_or_404(Comment, pk=self.kwargs['comment_pk'])
         systersuser = get_object_or_404(SystersUser, user=request.user)
         return systersuser == self.comment.author
@@ -906,26 +998,28 @@ class DeleteSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixi
     raise_exception = True
 
     def get_success_url(self):
+        """Redirect to the support request view page in case of successful submission"""
         self.get_meetup_location()
         return reverse("view_support_request", kwargs={"slug": self.meetup_location.slug,
                                                        "meetup_slug": self.meetup.slug,
                                                        "pk": self.support_request.pk})
 
     def get_context_data(self, **kwargs):
+        """Add Meetup and SupportRequest objects to the context"""
         context = super(DeleteSupportRequestCommentView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         context['support_request'] = self.support_request
         return context
 
     def get_meetup_location(self):
+        """Add MeetupLocation object to the context"""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
         self.support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         return self.meetup_location
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to edit a Support Request for a meetup.
-        The permission holds true for superusers."""
+        """Check if the request user has the permission to edit a Support Request for a meetup"""
         self.comment = get_object_or_404(Comment, pk=self.kwargs['comment_pk'])
         systersuser = get_object_or_404(SystersUser, user=request.user)
         return systersuser == self.comment.author

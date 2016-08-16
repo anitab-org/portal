@@ -35,7 +35,7 @@ class SignalsTestCase(TestCase):
         """Test addition of groups when saving a Meetup Location object"""
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
-        meetup_location = MeetupLocation.objects.create(
+        meetup_location = MeetupLocation.objects.create(    # noqa
             name="Foo", slug="foo", location=location,
             description="It's a test meetup location")
         groups_count = Group.objects.count()
