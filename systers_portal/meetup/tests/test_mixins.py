@@ -13,7 +13,7 @@ class MeetupLocationMixinTestCase(TestCase):
         self.location = City.objects.create(name='Foo', display_name='Foo', country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test location")
+            description="It's a test location", sponsors="BarBaz")
 
     def test_get_context_data_no_meetup_location(self):
         """Test mixin with no meetup_location"""
