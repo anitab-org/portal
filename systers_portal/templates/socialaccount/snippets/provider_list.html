@@ -1,7 +1,11 @@
 {% load socialaccount %}
 
 {% for provider in socialaccount.providers %}
-  <a title="{{ provider.name }}" role="button"
-     class="socialaccount_provider primaryAction btn btn-lg btn-primary btn-block {{ provider.id }}"
-     href="{% provider_login_url provider.id process=process %}">{{ provider.name }}</a>
+  <button title="{{ provider.name }}" role="button"
+    class="socialaccount_provider {{ provider.id }}"
+     href="{% provider_login_url provider.id process=process %}">
+     <i class="fa fa-{{ provider.name | lower }}"></i>
+
+     {{ provider.name }}</button>
+
 {% endfor %}

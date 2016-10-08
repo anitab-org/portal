@@ -154,16 +154,23 @@ body > .container {
 }
 
 .contact-icon {
-  margin: 0 5px;
-}
-
-.contact-social a {
+  font-size: 2.5em !important;
+  margin-right: 15px;
   color: #888888;
 }
 
-.contact-social a:hover {
+.contact-icon a:hover {
   color: #444444;
 }
+
+.contact-icon.fa-facebook-official:hover{color: #3b5998;}
+
+.contact-icon.fa-twitter:hover{color: #4099ff;}
+
+.contact-icon.fa-linkedin:hover{color: #0e76a8;}
+
+.contact-icon.fa-github:hover{color: #333;}
+
 
 /* Sign in, Sign up
 -------------------------------------------------- */
@@ -177,6 +184,39 @@ body > .container {
   padding: 15px;
   margin: 0 auto;
 }
+
+.social-buttons {
+  max-width: 365px !important;
+  padding: 15px 0 !important;
+}
+
+.socialaccount_provider {
+  display: inline-block;
+  margin:0.5%;
+  width: 23%;
+  padding: 0.5em 0.3em;
+  font-size: 1.05em;
+  border: none;
+  border-radius:3px;
+  color: #f0f0f0;
+  transition: all 0.3s ease-in;
+  -ms-transition: all 0.3s ease-in;
+  -moz-transition: all 0.3s ease-in;
+  -webkit-transition: all 0.3s ease-in;
+}
+
+.socialaccount_provider.facebook{background: #3b5998;}
+.socialaccount_provider.facebook:hover{background: #5684E3;}
+
+.socialaccount_provider.twitter{background: #4099ff;}
+.socialaccount_provider.twitter:hover{background: #73AEF0;}
+
+.socialaccount_provider.google{background: #d34836;}
+.socialaccount_provider.google:hover{background: #F95540;}
+
+.socialaccount_provider.github{background: #333;}
+.socialaccount_provider.github:hover{background: #666;}
+
 
 .share-buttons {
   margin: 20px 0;
