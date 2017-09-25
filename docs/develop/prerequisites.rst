@@ -51,7 +51,7 @@ Django is one of the most popular Python web framework. Django official website
 contains pretty detailed `documentation <https://docs.djangoproject.com/en/>`_. At
 first try out the tutorial and build a small app. After you feel confident about
 Django, scroll through Systers Portal codebase to check your understanding. If
-some parts seem complicated, go back to the documentation to focus on a specific 
+some parts seem complicated, go back to the documentation to focus on a specific
 topic or layer.
 
 
@@ -74,5 +74,5 @@ PEP8
 ----
 
 PEP8 is the style guide for Python code. We are following the guide throughout
-the whole codebase and check everything againt a PEP8 linter. So please take
+the whole codebase and check everything against a PEP8 linter. So please take
 some time to read through this document - https://www.python.org/dev/peps/pep-0008.
