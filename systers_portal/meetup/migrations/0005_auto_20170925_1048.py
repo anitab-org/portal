@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('meetup', '0003_rsvp'),
+        ('meetup', '0004_meetuplocation_sponsors'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='meetup',
             name='venue',
-            field=models.CharField(max_length=512, verbose_name=b'Venue', blank=True),
+            field=models.CharField(verbose_name='Venue', max_length=512, blank=True),
             preserve_default=True,
         ),
     ]
