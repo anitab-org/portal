@@ -41,7 +41,7 @@
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav text-uppercase">
-        <li><a href="{% url 'about-us' %}">About Us</a></li>
+        <li><a href="{% url 'about-us' %}" id="about-us">About Us</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Communities <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -57,9 +57,9 @@
               </li>
           </ul>
         </li>
-        <li><a href="{% url 'list_meetup_location' %}">Meetup Locations</a></li>
+        <li><a href="{% url 'list_meetup_location' %}" id="list_meetup_location">Meetup Locations</a></li>
         <li><a href="http://systers.org/systers-dev/doku.php" target="blank_">Wiki</a></li>
-        <li><a href="{% url 'contact'%}">Contact</a></li>
+        <li><a href="{% url 'contact'%}" id="contact">Contact</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right text-uppercase">
         {% if user.is_authenticated and user.is_active %}
@@ -76,8 +76,8 @@
             </ul>
           </li>
         {% else %}
-          <li><a href="{% url 'account_signup' %}">Sign up</a></li>
-          <li><a href="{% url 'account_login' %}">Login</a></li>
+          <li><a href="{% url 'account_signup' %}" id="account_signup">Sign up</a></li>
+          <li><a href="{% url 'account_login' %}" id="account_login">Login</a></li>
         {% endif %}
       </ul>
     </div>
@@ -108,6 +108,23 @@
 
 <script src="{% static 'js/libs/jquery-1.11.1.min.js' %}"></script>
 <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
+
+<!-- Script to highlight the active section/page on the top navigation bar. Just make sure that every
+section, which is supposed to be highlighted (<li> tag in the HTML code) has an id with the same name as its view-->
+<script type="text/javascript">
+  var arr = [];
+  var navElements = document.querySelectorAll(".navbar-fixed-top .container .navbar-collapse .text-uppercase li");
+  for(var i=0; i<navElements.length; i++){
+    try{arr.push(navElements[i].getElementsByTagName("a")[0].id);}
+    catch(e){}
+  }
+
+  for(i=0; i<arr.length; i++){
+    if(arr[i]== "{{ request.resolver_match.url_name }}"){
+      document.getElementById(arr[i]).style.cssText = "color: black; font-weight: none; background-color: #e7e7e7;";
+    }
+  }
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

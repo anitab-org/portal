@@ -44,6 +44,7 @@ Setup for developers
 1. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
   or production, feed the respective settings file from the command line, e.g. for
   testing `python systers_portal/manage.py runserver --settings=systers_portal.settings.testing`.
+1. Run `./systers_portal/manage.py cities_light` to populate your database with countries and cities data.
 1. Before commiting run `flake8 systers_portal` and fix PEP8 warnings.
 1. Run `python systers_portal/manage.py test --settings=systers_portal.settings.testing`
   to run all the tests.
