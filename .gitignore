@@ -1,5 +1,17 @@
 *.py[cod]
 
+### Django ###
+*.log
+*.pot
+*.pyc
+local_settings.py
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+
+
 # C extensions
 *.so
 
@@ -18,32 +30,75 @@ develop-eggs
 lib
 lib64
 __pycache__
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+*.egg-info/
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
 
 # Installer logs
 pip-log.txt
+pip-delete-this-directory.txt
 
 # Unit test / coverage reports
+htmlcov/
+.tox/
 .coverage
-.tox
+.cache
 nosetests.xml
+coverage.xml
+
+# Vagrant
+.vagrant*
+
+# Vim
+*~
+*.swo
+*.swk
+*.swn
+*.swo
+*.swo
 
 # Translations
 *.mo
+*.pot
 
 # Mr Developer
 .mr.developer.cfg
 .project
 .pydevproject
 
+# PyBuilder
+target/
+
 # Virtualenv
 venv
+
+.lesshst
+.viminfo
+.zcompdump
+.zshrc
+LOGS/
+bin/
+include/
+local/
+*.sql
 
 # PyCharm IDE
 .idea
 
 # Documentation build
 _build
-
-# Static and Media files
-media
-staticfiles
