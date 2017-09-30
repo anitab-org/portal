@@ -9,6 +9,7 @@ Website: http://portal.systers.org
 Project page: http://systers.github.io/portal/
 
 
+If you are an Outreachy Applicant, start with reading [this](https://github.com/systers/ossprojects/wiki/Systers-Portal) for meetup features, please go through [this](https://github.com/systers/ossprojects/wiki/Meetup-Features).
 Setup for developers
 --------------------
 
