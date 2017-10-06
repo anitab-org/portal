@@ -157,13 +157,84 @@ body > .container {
   margin: 0 5px;
 }
 
-.contact-social a {
-  color: #888888;
+/*social icons contact page
+---------------------------------------------------*/
+.fb_icon {
+  color: #3b5998;  
 }
 
-.contact-social a:hover {
-  color: #444444;
+.twitt_icon {
+ color: #55acee;  
 }
+
+.git_icon {
+  color: #333333;
+}
+
+.linked_icon {
+  color: #0077b5; 
+}
+
+/* log-in page social icons
+----------------------------*/
+.facebook_icon {
+  background-color: #3b5998;
+  color: #3b5998;  
+}
+
+.facebook_icon:hover {
+  background-color: #3b5998;
+  color: #3b5998;  
+}
+
+.linkedin_icon {
+  background-color: #0077b5;
+  color: #0077b5;  
+}
+
+.linkedin_icon:hover {
+  background-color: #0077b5;
+  color: #0077b5;  
+}
+
+.twitter_icon {
+  background-color:  #55acee;
+  color: #55acee;  
+}
+
+.twitter_icon:hover {
+  background-color:  #55acee;
+  color: #55acee;  
+}
+
+.github_icon {
+  background-color: #333333;
+  /*color: #333333;  */
+}
+
+.github_icon:hover {
+  background-color: #333333;
+  color: #333333;  
+}
+
+.google_icon {
+  background-color: #dc4e41;
+  color: #dc4e41;  
+}
+
+.google_icon:hover {
+  background-color: #dc4e41;
+  color: #dc4e41;  
+}
+
+.social_icon_text {
+  color: #ffffff;
+}
+
+.social_icon_text:hover {
+  color: #ffffff;
+}
+
 
 /* Sign in, Sign up
 -------------------------------------------------- */
@@ -186,6 +257,23 @@ body > .container {
   text-align: center;
   margin: 10px 0;
 }
+
+/* Email
+-------------------------------------------------- */
+.email-heading {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+#email-subheading {
+  font-size: 1.2em;
+}
+
+span {
+  font-size: 1em;
+}
+
 
 /* User Profile
 -------------------------------------------------- */
