@@ -157,84 +157,69 @@ body > .container {
   margin: 0 5px;
 }
 
-/*social icons contact page
+/* social icons contact page
 ---------------------------------------------------*/
-.fb_icon {
-  color: #3b5998;  
-}
-
-.twitt_icon {
- color: #55acee;  
-}
-
-.git_icon {
-  color: #333333;
-}
-
-.linked_icon {
-  color: #0077b5; 
-}
-
-/* log-in page social icons
-----------------------------*/
 .facebook_icon {
-  background-color: #3b5998;
-  color: #3b5998;  
-}
-
-.facebook_icon:hover {
-  background-color: #3b5998;
-  color: #3b5998;  
-}
-
-.linkedin_icon {
-  background-color: #0077b5;
-  color: #0077b5;  
-}
-
-.linkedin_icon:hover {
-  background-color: #0077b5;
-  color: #0077b5;  
+  color: #3b5998;
 }
 
 .twitter_icon {
-  background-color:  #55acee;
-  color: #55acee;  
-}
-
-.twitter_icon:hover {
-  background-color:  #55acee;
-  color: #55acee;  
+ color: #55acee;
 }
 
 .github_icon {
+  color: #333333;
+}
+
+.linkedin_icon {
+  color: #0077b5;
+}
+
+/* log-in page social buttons
+----------------------------*/
+
+.facebook_button,
+.facebook_button:hover,
+.twitter_button,
+.twitter_button:hover,
+.github_button,
+.github_button:hover,
+.google_button,
+.google_button:hover {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+  display: block;
+}
+
+.facebook_button,
+.facebook_button:hover {
+  background-color: #3b5998;
+  color: #3b5998;
+}
+
+.twitter_button,
+.twitter_button:hover {
+  background-color:  #55acee;
+  color: #55acee;
+}
+
+.github_button,
+.github_button:hover {
   background-color: #333333;
-  /*color: #333333;  */
+  color: #333333;
 }
 
-.github_icon:hover {
-  background-color: #333333;
-  color: #333333;  
-}
-
-.google_icon {
+.google_button,
+.google_button:hover {
   background-color: #dc4e41;
-  color: #dc4e41;  
+  color: #dc4e41;
 }
 
-.google_icon:hover {
-  background-color: #dc4e41;
-  color: #dc4e41;  
-}
-
-.social_icon_text {
+.social_button_text,
+.social_button_text:hover {
   color: #ffffff;
 }
-
-.social_icon_text:hover {
-  color: #ffffff;
-}
-
 
 /* Sign in, Sign up
 -------------------------------------------------- */
