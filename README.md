@@ -55,7 +55,7 @@ Setup for developers
 Run Portal in a Docker container
 --------------------------------
 
-If you wish to view a speak peek of the Systers Portal, you may use Docker to
+If you wish to view a sneak peek of the Systers Portal, you may use Docker to
 preview the Portal.
 Note: The following Docker configuration is not intended to be run in
 production at the moment. It may be configured to do so in the future.
