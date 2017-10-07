@@ -10,7 +10,7 @@
               <a href="{% url "view_community_landing" community.slug %}" class="table-anchor">{{ community }}</a>
             </td>
             <td>
-              {% if user == systersuser.user or user.is_superuser %}
+              {% if user == systersuser.user %}
                 {% if systersuser == community.admin %}
                   <a href="{% url 'transfer_ownership' community.slug %}" role="button"
                      class="btn btn-primary btn-xs btn-warning pull-right">Transfer ownership</a>

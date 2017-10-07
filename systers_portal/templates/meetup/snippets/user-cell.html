@@ -3,7 +3,7 @@
 <div class="user-cell-wh-100">
   {% if user.profile_picture.name and user.profile_picture.name != "False" %}
     <a href="{{ user.get_absolute_url }}">
-      <img src="{{ user.profile_picture_thumbnail.url }}" class="img-responsive" alt="{{ user }} profile picture"/>
+      <img src="{{ user.profile_picture_thumbnail.png }}" class="img-responsive" alt="{{ user }} profile picture"/>
     </a>
   {% else %}
     <a href="{{ user.get_absolute_url }}">      
