@@ -185,19 +185,21 @@ class RequestJoinCommunityViewTestCase(TestCase):
 
     def test_request_join_community_view(self):
         """Test GET request to join a community"""
+        current_url = reverse("view_community_news_list", kwargs={'slug': 'foo'})
         url = reverse("request_join_community", kwargs={'slug': 'foo'})
-        response = self.client.get(url)
+        response = self.client.get(url, {'current_url': current_url})
         self.assertEqual(response.status_code, 403)
 
         user = User.objects.create_user(username='bar', password='foobar')
         systers_user = SystersUser.objects.get(user=user)
         self.client.login(username="bar", password="foobar")
+        nonexistentnews_url = reverse("view_community_news_list", kwargs={'slug': 'new'})
         nonexistent_url = reverse("request_join_community",
                                   kwargs={'slug': 'new'})
-        response = self.client.get(nonexistent_url)
+        response = self.client.get(nonexistent_url, {'current_url': nonexistentnews_url})
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(JoinRequest.objects.get())
         self.assertFalse(JoinRequest.objects.get().is_approved)
@@ -209,7 +211,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
                 'In a short while someone will review your request.'
                 in message.message)
 
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(JoinRequest.objects.all().count(), 1)
         self.assertFalse(JoinRequest.objects.get().is_approved)
@@ -223,7 +225,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
         join_request = JoinRequest.objects.get()
         join_request.approve()
         self.community.add_member(systers_user)
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(JoinRequest.objects.all().count(), 1)
         self.assertTrue(JoinRequest.objects.get().is_approved)
@@ -245,19 +247,21 @@ class CancelCommunityJoinRequestView(TestCase):
 
     def test_cancel_community_join_request(self):
         """Test GET request to cancel a join request to a community"""
+        current_url = reverse("view_community_news_list", kwargs={'slug': 'foo'})
         url = reverse("cancel_community_join_request", kwargs={'slug': 'foo'})
-        response = self.client.get(url)
+        response = self.client.get(url, {'current_url': current_url})
         self.assertEqual(response.status_code, 403)
 
         user = User.objects.create_user(username='bar', password='foobar')
         systers_user = SystersUser.objects.get(user=user)
         self.client.login(username="bar", password="foobar")
+        nonexistentnews_url = reverse("view_community_news_list", kwargs={'slug': 'new'})
         nonexistent_url = reverse("request_join_community",
                                   kwargs={'slug': 'new'})
-        response = self.client.get(nonexistent_url)
+        response = self.client.get(nonexistent_url, {'current_url': nonexistentnews_url})
         self.assertEqual(response.status_code, 404)
 
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "warning")
@@ -267,7 +271,7 @@ class CancelCommunityJoinRequestView(TestCase):
 
         JoinRequest.objects.create(user=systers_user, community=self.community)
         self.assertEqual(JoinRequest.objects.all().count(), 1)
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(JoinRequest.objects.all().count(), 0)
         for message in response.context['messages']:
@@ -278,7 +282,7 @@ class CancelCommunityJoinRequestView(TestCase):
 
         self.community.add_member(systers_user)
         self.community.save()
-        response = self.client.get(url, follow=True)
+        response = self.client.get(url, {'current_url': current_url}, follow=True)
         self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "warning")

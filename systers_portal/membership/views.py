@@ -140,8 +140,8 @@ class RequestJoinCommunityView(LoginRequiredMixin, SingleObjectMixin,
     # reach version 1.5
 
     def get_redirect_url(self, *args, **kwargs):
-        """Redirect to user profile page"""
-        return reverse("user", kwargs={'username': self.request.user.username})
+        """Redirect to the page the user was previously on"""
+        return self.request.GET.get('current_url')
 
     def get(self, request, *args, **kwargs):
         """Attempt to create a join request and add a message about the result.
@@ -176,8 +176,8 @@ class CancelCommunityJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
     # reach version 1.5
 
     def get_redirect_url(self, *args, **kwargs):
-        """Redirect to user profile page"""
-        return reverse("user", kwargs={'username': self.request.user.username})
+        """Redirect to the page the user was previously on"""
+        return self.request.GET.get('current_url')
 
     def get(self, request, *args, **kwargs):
         """Attempt to cancel user join request towards a community"""
