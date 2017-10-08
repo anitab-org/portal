@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %} - Page Not Found{% endblock %}
+{% block title %} - Server Error{% endblock %}
 
 {% block content %}
   
   <div class="jumbotron jumbotron-custom">
-    <h1>404</h1>
-    <h1>Page Not Found</h1>
-    <p>Unfortunately, this page does not exist. Please check your URL or return back to the previous page.</p>
+    <h1>500</h1>
+    <h1>Server Error/Internal Server Error</h1>
+    <p>An unexpected error seems to have occured. Try refreshing the page or return to the previous page.</p>
     <p>
     	<a class="btn btn-lg btn-success" href="#" role="button" style="margin-top: 80px" onclick="history.go(-1); return false;">Back to previous page</a>
     </p>
