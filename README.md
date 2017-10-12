@@ -52,6 +52,7 @@ Setup for developers
   to run all the tests.
 
 
+If you face some issues while installing and making Portal up in your local, have a look at issues labelled as [While Setting up Portal](https://github.com/systers/portal/labels/While%20Setting%20up%20Portal).
 
 Run Portal in a Docker container
 --------------------------------
