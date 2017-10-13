@@ -9,7 +9,9 @@
     <h1>Access Denied</h1>
     <p>Unfortunately, you don't have permission to access this page.</p>
     <p>
-    	<a class="btn btn-lg btn-success" href="#" role="button" style="margin-top: 80px" onclick="history.go(-1); return false;">Back to previous page</a>
+    	<script>
+    	document.write('<a class="btn btn-lg btn-success" role="button" style="margin-top: 80px" href="' + document.referrer + '">Back to previous page</a>');
+	</script>
     </p>
   </div>
 
