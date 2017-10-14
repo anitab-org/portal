@@ -8,6 +8,7 @@ from ckeditor import views
 from common.views import IndexView
 from common.views import ContactView
 from common.views import AboutUsView
+from common.views import NewCommunityProposalView
 
 try:
     admin.autodiscover()
@@ -30,6 +31,8 @@ urlpatterns = patterns(
         name='ckeditor_browse'),
     url(r'^contact/$', ContactView.as_view(), name='contact'),
     url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
+    url(r'^propose/newcommunity/$', NewCommunityProposalView.as_view(),
+        name='new-community-proposal'),
 )
 
 if settings.DEBUG:
