@@ -11,3 +11,7 @@ class ContactView(TemplateView):
 
 class AboutUsView(TemplateView):
     template_name = "common/about_us.html"
+
+
+class NewCommunityProposalView(TemplateView):
+    template_name = "common/new_community_proposal.html"
