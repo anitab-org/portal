@@ -41,7 +41,7 @@ Setup for developers
   shell variable every time you activate the virtualenv, edit `venv/bin/activate`
   and add to the bottom the export statement.
 1. Run `python systers_portal/manage.py migrate`.
-1. Run `python manage.py cities_light` for downloading and importing data for django-cities-light.
+1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
   Fill in the details asked.
 1. Run `python systers_portal/manage.py runserver` to start the development server. When in testing
@@ -78,7 +78,7 @@ production at the moment. It may be configured to do so in the future.
 1. **This step will require the Django SECRET_KEY.**
    Run `docker run -e SECRET_KEY=foobarbaz portal_web`.
 1. Run `docker-compose run web python systers_portal/manage.py migrate`.
-1. Run `docker-compose run web python manage.py cities_light` for downloading and importing data for django-cities-light.
+1. Run `docker-compose run web python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. *Optional:*
    Run `docker-compose run web python systers_portal/manage.py createsuperuser`
    if you wish to create a superuser to access the admin panel.
