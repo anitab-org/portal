@@ -23,34 +23,9 @@ class SystersUserAccountAdapter(DefaultAccountAdapter):
             if digit and uppercase and special_char:
                 return password
 
-            elif not digit and not uppercase and special_char:
-                raise ValidationError(
-                    "Password must have atleast one uppercase letter and one digit.")
-
-            elif not special_char and not digit and uppercase:
-                raise ValidationError(
-                    "Password must have atleast one special character and one digit.")
-
-            elif not special_char and not uppercase and digit:
-                raise ValidationError(
-                    "Password must have atleast one uppercase letter and one special character.")
-
-            elif not special_char and digit and uppercase:
-                raise ValidationError(
-                    "Password must have atleast one special character")
-
-            elif not uppercase and digit and special_char:
-                raise ValidationError(
-                    "Password must have atleast one uppercase letter")
-
-            elif not digit and special_char and uppercase:
-                raise ValidationError("Password must have atleast one digit")
-
             else:
                 raise ValidationError(
-                    "Password must have atleast one uppercase letter," +
-                    " one special character and one digit")
-
+                    "Password must have at least, 6 characters, one uppercase letter, one special character and one digit.")          
         else:
             raise ValidationError("Password must have atleast 6 characters")
 
