@@ -19,16 +19,12 @@ class SystersUserAccountAdapter(DefaultAccountAdapter):
         digit = re.match(z, password)
         special_char = set(y).intersection(password)
         uppercase = re.match(x, password)
-        if len(password) >= 6:
-            if digit and uppercase and special_char:
-                return password
-
-            else:
-                raise ValidationError(
-                    "Password must have at least, 6 characters, one uppercase letter, "
-                    "one special character and one digit.")
+        if len(password) >= 6 and digit and uppercase and special_char:
+            return password
         else:
-            raise ValidationError("Password must have atleast 6 characters")
+            raise ValidationError(
+                "Password must have at least, 6 characters, one uppercase letter, "
+                "one special character and one digit.")
 
     def get_login_redirect_url(self, request):
         return reverse('user', args=[request.user.username])
