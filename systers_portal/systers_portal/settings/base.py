@@ -127,6 +127,7 @@ MEDIA_URL = "/media/"
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 
 # Ckeditor configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
