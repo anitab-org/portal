@@ -10,7 +10,7 @@ from users.models import SystersUser
 class CommunityNewsListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -70,7 +70,7 @@ class CommunityNewsListViewTestCase(TestCase):
 class CommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -145,7 +145,7 @@ class CommunityNewsViewTestCase(TestCase):
 class AddCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -194,7 +194,7 @@ class AddCommunityNewsViewTestCase(TestCase):
 class EditCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -243,7 +243,7 @@ class EditCommunityNewsViewTestCase(TestCase):
 class DeleteCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -282,7 +282,7 @@ class DeleteCommunityNewsViewTestCase(TestCase):
 class CommunityResourceListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -366,7 +366,7 @@ class CommunityResourceListViewTestCase(TestCase):
 class CommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -443,7 +443,7 @@ class CommunityResourceViewTestCase(TestCase):
 class AddCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -492,7 +492,7 @@ class AddCommunityResourceViewTestCase(TestCase):
 class EditCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -541,7 +541,7 @@ class EditCommunityResourceViewTestCase(TestCase):
 class DeleteCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -580,7 +580,7 @@ class DeleteCommunityResourceViewTestCase(TestCase):
 class AddTagViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -606,7 +606,7 @@ class AddTagViewTestCase(TestCase):
 class AddResourceTypeViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

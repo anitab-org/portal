@@ -20,7 +20,7 @@ class MeetupFormTestCaseBase:
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar',
                                              email='user@test.com')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.meetup_location = MeetupLocation.objects.create(
@@ -57,7 +57,7 @@ class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user,
+        form = AddMeetupForm(data=data, created_by=self.user,
                              meetup_location=self.meetup_location)
         self.assertTrue(form.is_valid())
         form.save()
@@ -184,7 +184,7 @@ class AddMeetupCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_meetup_comment_form(self):
         """Test add meetup Comment form"""
         data = {'body': 'This is a test comment'}
-        form = AddMeetupCommentForm(data=data, author=self.systers_user,
+        form = AddMeetupCommentForm(data=data, author=self.user,
                                     content_object=self.meetup)
         self.assertTrue(form.is_valid())
         form.save()
@@ -221,7 +221,7 @@ class RsvpFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_rsvp_form(self):
         """Test Rsvp form"""
         data = {'coming': True, 'plus_one': True}
-        form = RsvpForm(data=data, user=self.systers_user,
+        form = RsvpForm(data=data, user=self.user,
                         meetup=self.meetup)
         self.assertTrue(form.is_valid())
         form.save()
@@ -237,7 +237,7 @@ class AddSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_support_request_form(self):
         """Test add Support Request form"""
         data = {'description': 'This is a test description'}
-        form = AddSupportRequestForm(data=data, volunteer=self.systers_user,
+        form = AddSupportRequestForm(data=data, volunteer=self.user,
                                      meetup=self.meetup)
         self.assertTrue(form.is_valid())
         form.save()
@@ -281,7 +281,7 @@ class AddSupportRequestCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_support_request_comment_form(self):
         """Test add support request Comment form"""
         data = {'body': 'This is a test comment'}
-        form = AddSupportRequestCommentForm(data=data, author=self.systers_user,
+        form = AddSupportRequestCommentForm(data=data, author=self.user,
                                             content_object=self.support_request)
         self.assertTrue(form.is_valid())
         form.save()

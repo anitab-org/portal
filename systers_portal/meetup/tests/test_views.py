@@ -15,7 +15,7 @@ class MeetupLocationViewBaseTestCase(object):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar',
                                              email='user@test.com')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.meetup_location = MeetupLocation.objects.create(
@@ -313,14 +313,14 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
                       kwargs={'slug': 'foo', 'username': 'bar'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
 
         url = reverse("remove_member_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 1)
         self.assertEqual(len(self.meetup_location.organizers.all()), 1)
 
@@ -328,7 +328,7 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
                       kwargs={'slug': 'foo', 'username': 'foo'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 1)
         self.assertEqual(len(self.meetup_location.organizers.all()), 1)
 
@@ -392,7 +392,7 @@ class RemoveMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, 
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
         self.assertEqual(len(self.meetup_location.organizers.all()), 1)
 
@@ -400,7 +400,7 @@ class RemoveMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, 
                       kwargs={'slug': 'foo', 'username': 'foo'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
         self.assertEqual(len(self.meetup_location.organizers.all()), 1)
 
@@ -430,7 +430,7 @@ class MakeMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, Te
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
         self.assertEqual(len(self.meetup_location.organizers.all()), 2)
         self.assertEqual(len(mail.outbox), 1)
@@ -469,7 +469,7 @@ class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('join_meetup_location', kwargs={'slug': 'foo', 'username': 'bar'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/about/')
+        self.assertRedirects(response, '/meetup/foo/about/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 2)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "success")
@@ -483,7 +483,7 @@ class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('join_meetup_location', kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/about/')
+        self.assertRedirects(response, '/meetup/foo/about/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 2)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "warning")
@@ -494,7 +494,7 @@ class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('join_meetup_location', kwargs={'slug': 'foo', 'username': 'foo'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/about/')
+        self.assertRedirects(response, '/meetup/foo/about/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 2)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "warning")
@@ -553,7 +553,7 @@ class ApproveMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCa
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/join_requests/')
+        self.assertRedirects(response, '/meetup/foo/join_requests/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 0)
         self.assertEqual(len(self.meetup_location.members.all()), 2)
         self.assertEqual(len(mail.outbox), 1)
@@ -585,7 +585,7 @@ class RejectMeetupLocationJoinRequestsViewTestCase(MeetupLocationViewBaseTestCas
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/join_requests/')
+        self.assertRedirects(response, '/meetup/foo/join_requests/')
         self.assertEqual(len(self.meetup_location.join_requests.all()), 0)
         self.assertEqual(len(self.meetup_location.members.all()), 1)
 
@@ -1038,7 +1038,7 @@ class ApproveSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/foo-bar-baz/unapproved_support_requests/')
+        self.assertRedirects(response, '/meetup/foo/foo-bar-baz/unapproved_support_requests/')
         self.assertEqual(len(response.context['supportrequest_list']), 1)
         self.assertEqual(response.context['supportrequest_list'][0].description,
                          "Support Request: 2")
@@ -1067,7 +1067,7 @@ class RejectSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase)
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'meetup/foo/foo-bar-baz/unapproved_support_requests/')
+        self.assertRedirects(response, '/meetup/foo/foo-bar-baz/unapproved_support_requests/')
         self.assertEqual(len(response.context['supportrequest_list']), 1)
         self.assertEqual(response.context['supportrequest_list'][0].description,
                          "Support Request: 2")

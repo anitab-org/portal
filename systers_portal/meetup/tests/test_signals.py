@@ -57,7 +57,7 @@ class SignalsTestCase(TestCase):
     def test_add_meetup_location_members(self):
         """Test addition of permissions to a user when she is made a meetup location member"""
         user = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
         meetup_location = MeetupLocation.objects.create(
@@ -70,7 +70,7 @@ class SignalsTestCase(TestCase):
     def test_add_meetup_location_organizers(self):
         """Test addition of permissions to a user when she is made a meetup location organizer"""
         user = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
         meetup_location = MeetupLocation.objects.create(
@@ -84,7 +84,7 @@ class SignalsTestCase(TestCase):
         """Test removal of permissions from a user when she is removed as a meetup location
         member"""
         user = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
         meetup_location = MeetupLocation.objects.create(
@@ -100,7 +100,7 @@ class SignalsTestCase(TestCase):
         """Test removal of permissions from a user when she is removed as a meetup location
         organizer"""
         user = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
         meetup_location = MeetupLocation.objects.create(

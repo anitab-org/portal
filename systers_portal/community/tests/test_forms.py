@@ -9,8 +9,8 @@ from users.models import SystersUser
 
 class CommunityFormTestCase(TestCase):
     def setUp(self):
-        User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -31,7 +31,7 @@ class CommunityFormTestCase(TestCase):
 class AddCommunityPageFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -59,7 +59,7 @@ class AddCommunityPageFormTestCase(TestCase):
 class EditCommunityPageFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -91,7 +91,7 @@ class EditCommunityPageFormTestCase(TestCase):
 class PermissionGroupsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

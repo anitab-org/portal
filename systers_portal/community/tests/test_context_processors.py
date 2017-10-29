@@ -8,8 +8,8 @@ from community.models import Community
 
 class CommunitiesProcessorTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.client = Client()
 
     def test_communities_processor(self):

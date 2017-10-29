@@ -14,8 +14,8 @@ class CommunityModelTestCase(TestCase):
                              dispatch_uid="manage_groups")
         post_delete.disconnect(remove_community_groups, sender=Community,
                                dispatch_uid="remove_groups")
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -97,8 +97,8 @@ class CommunityModelTestCase(TestCase):
 
 class CommunityPageModelTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
