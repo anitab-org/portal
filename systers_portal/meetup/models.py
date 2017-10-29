@@ -21,7 +21,7 @@ class MeetupLocation(models.Model):
                                      verbose_name="Members")
     sponsors = RichTextField(verbose_name="Sponsors", blank=True)
     join_requests = models.ManyToManyField(SystersUser,
-                                           related_name="Join Requests",
+                                           related_name="Join_Requests",
                                            verbose_name="Join Requests",
                                            blank=True)
 

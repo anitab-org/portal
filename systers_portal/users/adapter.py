@@ -12,7 +12,7 @@ class SystersUserAccountAdapter(DefaultAccountAdapter):
             raise ValidationError("Username must be atleast 3 characters long")
         return username
 
-    def clean_password(self, password):
+    def clean_password(self, password, user=None):
         # Password should have at least one uppercase letter, one digit and one special character
         x = r'^(?=.*?[A-Z])'
         y = '[~!@#$%^&*()_+{}":;\']+$'

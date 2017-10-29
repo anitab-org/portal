@@ -1,7 +1,6 @@
 from .base import *
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = True
 
 INSTALLED_APPS += (
     'django_nose',
