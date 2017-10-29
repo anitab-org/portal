@@ -1,11 +1,11 @@
-from django.template import Context
+from django.template import Context, Engine
 from django.test import TestCase
 from crispy_forms.tests.forms import SampleForm
-from django.template import Engine
 from common.helpers import SubmitCancelFormHelper
 
 
 class SubmitCancelFormHelperTestCase(TestCase):
+
     def test_submit_cancel_form_helper(self):
         """Test custom crispy forms layout helper"""
         template = Engine().get_default().from_string("""
