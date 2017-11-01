@@ -1,5 +1,6 @@
 from django import forms
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
@@ -60,3 +61,38 @@ class EditMeetupForm(ModelFormWithHelper):
                    'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+
+
+class AddMeetupLocationMemberForm(ModelFormWithHelper):
+    """Form for adding a new member to a meetup location"""
+    class Meta:
+        model = User
+        fields = ('username',)
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'members_meetup_location' meetup_location.slug %}"
+
+    def __init__(self, *args, **kwargs):
+        super(AddMeetupLocationMemberForm, self).__init__(*args, **kwargs)
+        self.meetup_location = kwargs.get('instance')
+        if 'data' in kwargs:
+            self.username = kwargs['data']['username']
+
+    def save(self, commit=True):
+        """Override save to map input username to User and append it to the meetup location."""
+        instance = super(AddMeetupLocationMemberForm, self).save(commit=False)
+        instance.username = self.username
+        user = User.objects.get(username=instance.username)
+        systersuser = SystersUser.objects.get(user=user)
+        if systersuser not in self.meetup_location.members.all():
+            self.meetup_location.members.add(systersuser)
+        if commit:
+            instance.save()
+        return instance
+
+    def clean(self):
+        """Ensure only the username of an existing systers user is given"""
+        cleaned_data = super(AddMeetupLocationMemberForm, self).clean()
+        username = cleaned_data.get('username')
+
+        if len(User.objects.filter(username=username)) != 1:
+            raise forms.ValidationError("Enter username of an existing user")

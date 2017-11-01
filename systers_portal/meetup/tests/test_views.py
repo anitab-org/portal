@@ -17,6 +17,8 @@ class MeetupLocationViewBaseTestCase(object):
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
             description="It's a test meetup location", sponsors="BarBaz")
+        self.meetup_location.members.add(self.systers_user)
+        self.meetup_location.organizers.add(self.systers_user)
 
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
                                             date=timezone.now().date(),
@@ -271,3 +273,156 @@ class MeetupLocationSponsorsViewTestCase(MeetupLocationViewBaseTestCase, TestCas
         nonexistent_url = reverse('sponsors_meetup_location', kwargs={'slug': 'bar'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
+
+
+class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(RemoveMeetupLocationMemberViewTestCase, self).setUp()
+        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+        self.meetup_location.members.add(self.systers_user2)
+        self.meetup_location.organizers.add(self.systers_user2)
+        self.user3 = User.objects.create_user(username='bar', password='barbar')
+        self.systers_user3 = SystersUser.objects.get(user=self.user3)
+        self.meetup_location.members.add(self.systers_user3)
+
+    def test_view_remove_meetup_location_member_view(self):
+        """Test remove Meetup Location member view for 3 cases:
+
+        * removing only a member
+        * removing one of two organizers
+        * removing one of one organizer
+        """
+        url = reverse("remove_member_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("remove_member_meetup_location",
+                                  kwargs={'slug': 'foo', 'username': 'barbaz'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        url = reverse("remove_member_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'bar'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 2)
+
+        url = reverse("remove_member_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'baz'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 1)
+        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+
+        url = reverse("remove_member_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'foo'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 1)
+        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+
+
+class AddMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(AddMeetupLocationMemberViewTestCase, self).setUp()
+        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+
+    def test_get_add_meetup_location_member_view(self):
+        url = reverse("add_member_meetup_location", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/add_member.html')
+
+    def test_post_add_meetup_location_member_view(self):
+        url = reverse("add_member_meetup_location", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        username = self.user2.get_username()
+        data = {'username': username}
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=data)
+        self.assertTrue(response.url.endswith('/meetup/foo/members/'))
+        self.assertEqual(response.status_code, 302)
+
+
+class RemoveMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(RemoveMeetupLocationOrganizerViewTestCase, self).setUp()
+        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+        self.meetup_location.members.add(self.systers_user2)
+        self.meetup_location.organizers.add(self.systers_user2)
+
+    def test_view_remove_meetup_location_organizer_view(self):
+        """Test remove Meetup Location organizer view for 2 cases:
+
+        * remove one of two organizers
+        * remove the only organizer
+        """
+        url = reverse("remove_organizer_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("remove_organizer_meetup_location",
+                                  kwargs={'slug': 'foo', 'username': 'barbaz'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        url = reverse("remove_organizer_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'baz'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 2)
+        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+
+        url = reverse("remove_organizer_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'foo'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 2)
+        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+
+
+class MakeMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(MakeMeetupLocationOrganizerViewTestCase, self).setUp()
+        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+        self.meetup_location.members.add(self.systers_user2)
+
+    def test_view_make_meetup_location_organizer_view(self):
+        """Test make Meetup Location organizer view for correct http response"""
+        url = reverse("make_organizer_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'baz'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("make_organizer_meetup_location",
+                                  kwargs={'slug': 'foo', 'username': 'barbaz'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        url = reverse("make_organizer_meetup_location",
+                      kwargs={'slug': 'foo', 'username': 'baz'})
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, 'meetup/foo/members/')
+        self.assertEqual(len(self.meetup_location.members.all()), 2)
+        self.assertEqual(len(self.meetup_location.organizers.all()), 2)
