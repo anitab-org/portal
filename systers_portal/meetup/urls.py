@@ -5,7 +5,8 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           EditMeetupView, UpcomingMeetupsView, PastMeetupListView,
                           MeetupLocationSponsorsView, RemoveMeetupLocationMemberView,
                           AddMeetupLocationMemberView, RemoveMeetupLocationOrganizerView,
-                          MakeMeetupLocationOrganizerView)
+                          MakeMeetupLocationOrganizerView, AddMeetupLocationView,
+                          EditMeetupLocationView, DeleteMeetupLocationView)
 
 urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/about/$', MeetupLocationAboutView.as_view(),
@@ -35,5 +36,9 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/make_organizer/(?P<username>[\w.@+-]+)/$',
         MakeMeetupLocationOrganizerView.as_view(),
         name='make_organizer_meetup_location'),
+    url(r'add/$', AddMeetupLocationView.as_view(), name="add_meetup_location"),
+    url(r'^(?P<slug>[\w-]+)/edit/$', EditMeetupLocationView.as_view(), name="edit_meetup_location"),
+    url(r'^(?P<slug>[\w-]+)/delete/$', DeleteMeetupLocationView.as_view(),
+        name='delete_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
 ]

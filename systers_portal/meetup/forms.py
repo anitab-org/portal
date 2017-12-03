@@ -1,10 +1,11 @@
 from django import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from meetup.models import Meetup
+from meetup.models import Meetup, MeetupLocation
 from users.models import SystersUser
 
 
@@ -74,15 +75,15 @@ class AddMeetupLocationMemberForm(ModelFormWithHelper):
     def __init__(self, *args, **kwargs):
         super(AddMeetupLocationMemberForm, self).__init__(*args, **kwargs)
         self.meetup_location = kwargs.get('instance')
-        if 'data' in kwargs:
+        if self.is_bound:
             self.username = kwargs['data']['username']
 
     def save(self, commit=True):
         """Override save to map input username to User and append it to the meetup location."""
         instance = super(AddMeetupLocationMemberForm, self).save(commit=False)
         instance.username = self.username
-        user = User.objects.get(username=instance.username)
-        systersuser = SystersUser.objects.get(user=user)
+        user = get_object_or_404(User, username=instance.username)
+        systersuser = get_object_or_404(SystersUser, user=user)
         if systersuser not in self.meetup_location.members.all():
             self.meetup_location.members.add(systersuser)
         if commit:
@@ -96,3 +97,21 @@ class AddMeetupLocationMemberForm(ModelFormWithHelper):
 
         if len(User.objects.filter(username=username)) != 1:
             raise forms.ValidationError("Enter username of an existing user")
+
+
+class AddMeetupLocationForm(ModelFormWithHelper):
+    """Form to create new Meetup Location"""
+    class Meta:
+        model = MeetupLocation
+        fields = ('name', 'slug', 'location', 'description', 'email', 'sponsors')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'list_meetup_location' %}"
+
+
+class EditMeetupLocationForm(ModelFormWithHelper):
+    """Form to edit Meetup Location"""
+    class Meta:
+        model = MeetupLocation
+        fields = ('name', 'slug', 'location', 'description', 'email', 'sponsors')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"

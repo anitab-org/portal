@@ -9,7 +9,8 @@ from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin
 from django.contrib.auth.models import User
 
-from meetup.forms import AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm
+from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
+                          AddMeetupLocationForm, EditMeetupLocationForm)
 from meetup.mixins import MeetupLocationMixin
 from meetup.models import Meetup, MeetupLocation
 from users.models import SystersUser
@@ -245,3 +246,46 @@ class MakeMeetupLocationOrganizerView(LoginRequiredMixin, MeetupLocationMixin, R
 
     def get_meetup_location(self):
         return self.meetup_location
+
+
+class AddMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+    """Add new meetup location"""
+    template_name = "meetup/add_meetup_location.html"
+    model = MeetupLocation
+    form_class = AddMeetupLocationForm
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse("about_meetup_location", kwargs={"slug": self.object.slug})
+
+    def get_meetup_location(self):
+        return self.object
+
+
+class EditMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, UpdateView):
+    """Edit an existing meetup location"""
+    template_name = "meetup/edit_meetup_location.html"
+    model = MeetupLocation
+    form_class = EditMeetupLocationForm
+    raise_exception = True
+
+    def get_success_url(self):
+        self.get_meetup_location()
+        return reverse("about_meetup_location", kwargs={"slug": self.meetup_location.slug})
+
+    def get_meetup_location(self, **kwargs):
+        self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return self.meetup_location
+
+
+class DeleteMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, DeleteView):
+    """Delete an existing meetup location"""
+    template_name = "meetup/meetup_location_confirm_delete.html"
+    model = MeetupLocation
+    raise_exception = True
+
+    def get_success_url(self):
+        return reverse("list_meetup_location")
+
+    def get_meetup_location(self):
+        return self.object
