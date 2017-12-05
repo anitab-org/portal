@@ -16,7 +16,8 @@
       {% for location in object_list %}
           var point = new google.maps.LatLng({{location.location.latitude}},{{location.location.longitude}});
           var marker = new google.maps.Marker({position: point, map: map, title: '{{ location.name }}',});
-          marker['infowindow']  = new google.maps.InfoWindow({content: "<h4>{{location.name}}</h4>",});
+          marker['infowindow'] = new google.maps.InfoWindow({content: 
+            "<a href='{% url "about_meetup_location" location.slug %}'>{{location}}</a>", });
           google.maps.event.addListener(marker, 'click', function() {this['infowindow'].open(map, this);});
       {% endfor %}    
   }
