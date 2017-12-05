@@ -9,7 +9,30 @@ from community.utils import get_groups
 from users.models import SystersUser
 
 
-class CommunityForm(ModelFormWithHelper):
+class AddCommunityForm(ModelFormWithHelper):
+    """ Form to create a new Community by admin. """
+    class Meta:
+        model = Community
+        fields = ('name', 'slug', 'order', 'email', 'mailing_list',
+                  'parent_community', 'website', 'facebook', 'googleplus',
+                  'twitter')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'index' %}"
+
+    def __init__(self, *args, **kwargs):
+        self.admin = kwargs.pop('admin')
+        super(AddCommunityForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add admin to the instance"""
+        instance = super(AddCommunityForm, self).save(commit=False)
+        instance.admin = self.admin
+        if commit:
+            instance.save()
+        return instance
+
+
+class EditCommunityForm(ModelFormWithHelper):
     """Form to edit Community profile"""
     class Meta:
         model = Community

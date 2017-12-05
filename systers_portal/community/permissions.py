@@ -38,6 +38,7 @@ user_content_manager_permissions = content_manager_permissions + [
 
 community_admin_permissions = user_content_manager_permissions + [
     "change_community",
+    "add_community"
 ]
 
 group_permissions = {

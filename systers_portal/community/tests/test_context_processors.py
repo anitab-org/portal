@@ -20,7 +20,7 @@ class CommunitiesProcessorTestCase(TestCase):
                                  admin=self.systers_user)
         index_url = reverse('index')
         response = self.client.get(index_url)
-        self.assertContains(response, '<a role="menuitem" tabindex="-1" '
+        self.assertContains(response, '<a role="menuitem" '
                                       'href="/community/foo/">Foo</a>')
-        self.assertContains(response, '<a role="menuitem" tabindex="-1" '
+        self.assertContains(response, '<a role="menuitem" '
                                       'href="/community/boo/">Boo</a>')

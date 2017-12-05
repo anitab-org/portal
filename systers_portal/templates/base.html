@@ -46,15 +46,20 @@
           <ul class="dropdown-menu" role="menu">
             {% for community in communities %}
               <li {% if community.get_absolute_url in request.path %}class="active"{% endif %} role="presentation">
-                <a role="menuitem" tabindex="-1" href="{{ community.get_absolute_url }}">{{ community.name }}</a>
+                <a role="menuitem" href="{{ community.get_absolute_url }}">{{ community.name }}</a>
               </li>
             {% endfor %}
               <li {% if url == request.path %}class="active"{% endif %}role="presentation">
-                <a role="menuitem" tabindex="-1"
-                   href="{{ url }}">
+                <a role="menuitem" href="{{ url }}">
                   New Community Proposal
                 </a>
               </li>
+              {% if user.is_authenticated and user.is_active and user.is_staff %}
+              <li {% if url == request.path %}class="active"{% endif %}role="presentation">
+                <a role="menuitem" href="{% url 'add_community' %}">
+                  Add a new community</a>
+              </li>
+              {% endif %}
           </ul>
         </li>
         <li class="dropdown">
