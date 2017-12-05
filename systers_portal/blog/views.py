@@ -59,6 +59,7 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context['post'] = get_object_or_404(News, community=self.object,
                                             slug=news_slug)
         context["post_type"] = "news"
+        context["share_message"] = self.object.name + " @systers_org " + context['post'].title
         return context
 
     def get_community(self):

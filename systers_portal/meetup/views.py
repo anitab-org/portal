@@ -61,6 +61,8 @@ class MeetupView(MeetupLocationMixin, DetailView):
         not_coming_list = Rsvp.objects.filter(meetup=self.meetup, coming=False)
         context['coming_no'] = len(coming_list) + len(plus_one_list)
         context['not_coming_no'] = len(not_coming_list)
+        context['share_message'] = self.meetup.title + " @systers_org " + \
+            self.meetup.meetup_location.name
         return context
 
     def get_meetup_location(self):

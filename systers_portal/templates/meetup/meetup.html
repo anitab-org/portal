@@ -29,6 +29,7 @@
       </tbody>
     </table> 
     <hr>
+    {% include 'meetup/snippets/share_buttons.html' %}
     <p>
       <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
     </p>
