@@ -9,6 +9,13 @@
   <div class="row">
     <div id="map-canvas" class="map-container mt20"></div>
   </div>
-  {% include "meetup/snippets/meetup_locations_grid.html" %}
+  <div class="row">
+    <div class="col-sm-8">
+        {% include "meetup/snippets/meetup_locations_grid.html" %}
+    </div>
+    <div class="col-sm-4 mt20">
+        {% include "meetup/snippets/systers_twitter_feed.html" %}               
+    </div>
+  </div>
   {% include "meetup/snippets/meetup_locations_map.html" %}
 {% endblock %}
