@@ -1,0 +1,10 @@
+{% block content %}
+<h3 class="text-bottom"> Upcoming Meetups </h3> 
+	<div class="upcomingMeetupslist">	
+    	{% for meetup in meetup_list %}
+      		<a href="{% url "view_meetup" meetup.meetup_location.slug meetup.slug %}" class="row">
+      			{{ meetup }}
+      		</a>
+      	{% endfor %}
+ 	</div>
+{% endblock %}
