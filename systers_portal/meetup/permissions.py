@@ -4,8 +4,6 @@ groups_templates = {"member": MEMBER,
                     "organizer": ORGANIZER}
 
 member_permissions = [
-    "change_meetup",
-    "change_meetuplocation",
     "add_meetup_rsvp",
     "add_supportrequest",
     "change_supportrequest",
@@ -14,8 +12,10 @@ member_permissions = [
 
 organizer_permissions = member_permissions + [
     "add_meetup",
+    "change_meetup",
     "delete_meetup",
     "add_meetuplocation",
+    "change_meetuplocation",
     "delete_meetuplocation",
     "add_meetup_location_member",
     "delete_meetup_location_member",
