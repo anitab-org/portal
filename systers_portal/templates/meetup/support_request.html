@@ -43,8 +43,10 @@
       <div class="box-body">
         <p>{{ comment.body }}</p>
       </div>
-      <a href="{% url 'edit_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">edit</a>
-      <a href="{% url 'delete_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">delete</a>
+      {% if user == comment.author.user %}
+        <a href="{% url 'edit_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">edit</a>
+        <a href="{% url 'delete_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">delete</a>
+      {% endif %}
     </div>
   {% endfor %}
 {% endblock %}
