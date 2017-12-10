@@ -10,6 +10,8 @@
         </p>
         <p>
           {{ support_request.description|safe|truncatewords:30 }}
+        </p>
+        <p>
           <a href="{% url "view_support_request" meetup_location.slug meetup.slug support_request.pk %}">SEE MORE</a>
         </p>
         <p>
