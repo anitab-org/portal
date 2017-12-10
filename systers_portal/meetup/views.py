@@ -413,6 +413,8 @@ class AddMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
     raise_exception = True
 
     def get_success_url(self):
+        self.object.members.add(self.systersuser)
+        self.object.organizers.add(self.systersuser)
         return reverse("about_meetup_location", kwargs={"slug": self.object.slug})
 
     def get_meetup_location(self):
