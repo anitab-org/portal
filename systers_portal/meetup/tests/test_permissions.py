@@ -9,8 +9,6 @@ class PermissionsTestCase(TestCase):
     def test_member_permissions(self):
         """Test member list of permissions"""
         permissions = [
-            "change_meetup",
-            "change_meetuplocation",
             "add_meetup_rsvp",
             "add_supportrequest",
             "change_supportrequest",
