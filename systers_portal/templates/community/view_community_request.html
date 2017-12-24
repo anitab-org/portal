@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ community_request.name }}</h2>
+  <div class="row">
+  <div class="box-container box-body col-md-9">
+
+  
+    {% for field,value in community_request_fields %}
+      <p> 
+        <b> {{ field }} </b> : {{ value }}
+      </p>
+    {% endfor %}
+ </div>
+    <div class="col-md-3 mt20 pt25">
+    <a href="{% url 'edit_community_request' community_request.slug %}"> Edit community request </a>
+    </div>
+    </div>
+{% endblock %}

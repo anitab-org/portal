@@ -3,9 +3,32 @@ from django.db.models.signals import post_save, post_delete
 from django.test import TestCase
 
 from community.constants import COMMUNITY_ADMIN
-from community.models import Community, CommunityPage
-from community.signals import manage_community_groups, remove_community_groups
+from community.models import Community, CommunityPage, RequestCommunity
+from community.signals import manage_community_groups, remove_community_groups, manage_requestor_groups
 from users.models import SystersUser
+
+
+class RequestCommunityModelTestCase(TestCase):
+    def setUp(self):
+        post_save.disconnect(manage_requestor_groups, sender=RequestCommunity,
+                            dispatch_uid="manage_request_groups")
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.request_community = RequestCommunity.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  user=self.systers_user)
+    def test_str(self):
+        self.assertEqual(str(self.request_community), "Foo")
+    
+    def test_get_fields(self):
+        fields = self.request_community.get_fields()
+        self.assertTrue(len(fields), 12)
+        self.assertTrue(fields[1], ('name', 'Foo'))
+
+    def test_get_verbose_fields(self):
+        fields = self.request_community.get_fields()
+        self.assertTrue(len(fields), 12)
+        self.assertTrue(fields[1], ('Community Name', 'Foo'))
 
 
 class CommunityModelTestCase(TestCase):

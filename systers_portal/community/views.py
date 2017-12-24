@@ -3,15 +3,134 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, RedirectView, ListView, FormView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserRequiredMixin
 
 from common.mixins import UserDetailsMixin
 from community.forms import (EditCommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm, PermissionGroupsForm,
+                             RequestCommunityForm, EditCommunityRequestForm,
                              AddCommunityForm)
 from community.mixins import CommunityMenuMixin
-from community.models import Community, CommunityPage
+from community.models import Community, CommunityPage, RequestCommunity
+from guardian.shortcuts import assign_perm
 from users.models import SystersUser
+
+
+class RequestCommunityView(LoginRequiredMixin, CreateView):
+    """View to Request a new community"""
+    template_name = "community/request_community.html"
+    model = RequestCommunity
+    form_class = RequestCommunityForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_request", kwargs={"slug":self.object.slug})
+
+    def get_form_kwargs(self):
+        """Add request user to the form kwargs.
+        Used to autofill form fields with requestor without
+        explicitly filling them up in the form."""
+        kwargs = super(RequestCommunityView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+
+class ViewCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
+                                DetailView):
+    """View the community request"""
+    template_name = "community/view_community_request.html"
+    model = RequestCommunity
+    raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        """Add RequestCommunity object and it's verbose fields to the context."""
+        context = super(ViewCommunityRequestView, self).get_context_data(**kwargs)
+        context['community_request'] = self.community_request
+        context['community_request_fields'] = self.community_request.get_verbose_fields()
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to view the community request.
+        The permission holds true for superusers."""
+        self.community_request = get_object_or_404(RequestCommunity, slug=self.kwargs['slug'])
+        return self.request.user.has_perm("view_community_request", self.community_request)
+
+
+class EditCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
+                            UpdateView):
+    """Edit the community request"""
+    template_name = "community/edit_community_request.html"
+    model = RequestCommunity
+    form_class = EditCommunityRequestForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_request", kwargs={"slug":self.kwargs['slug']})
+
+    def get_context_data(self, **kwargs):
+        """Add RequestCommunity object to the context"""
+        context = super(EditCommunityRequestView, self).get_context_data(**kwargs)
+        context['community_request'] = self.community_request
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to edit the community request.
+        The permission holds true for superusers."""
+        self.community_request = get_object_or_404(RequestCommunity, slug=self.kwargs['slug'])
+        return self.request.user.has_perm('edit_community_request', self.community_request)
+
+
+class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin, RedirectView):
+    """Approve the new community request"""
+    model = RequestCommunity
+    raise_exception = True 
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Supply the redirect URL in case of successful approval.
+        Creates a new Community object and copy fields,values from RequestCommunity object,
+        sets the requestor as the community admin and sets the RequestCommunity object's
+        is_approved field to True."""
+        community_request = get_object_or_404(RequestCommunity, slug=self.kwargs['slug'])
+        new_community = Community()
+        community_request_fields = community_request.get_fields()
+        new_community_fields = [field.name for field in new_community._meta.fields]
+        fields = [(field_name,field_value) for field_name,field_value in community_request_fields 
+                    if field_name in new_community_fields]
+        for field_name,field_value in fields:
+            setattr(new_community,field_name,field_value)
+        self.systersuser = get_object_or_404(SystersUser, user=community_request.user)
+        new_community.admin = self.systersuser
+        new_community.save()
+        community_request.is_approved = True
+        community_request.save()
+        return reverse("view_community_landing", kwargs={"slug":new_community.slug})
+
+
+class RejectRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin, RedirectView):
+    """Reject the new Community Request"""
+    model = RequestCommunity
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Supply the redirect URL in case of successful submit"""
+        community_request = get_object_or_404(RequestCommunity, slug=self.kwargs['slug'])
+        community_request.delete()
+        return reverse('unapproved_community_requests')
+
+
+class NewCommunityRequestsListView(LoginRequiredMixin, StaffuserRequiredMixin, ListView):
+    """List of Community Requests"""
+    template_name = "community/new_community_requests.html"
+    model = RequestCommunity
+    raise_exception = True
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        """Set ListView queryset to all the unapproved community requests"""
+        request_community_list = RequestCommunity.objects.filter(is_approved=False)
+        return request_community_list
 
 
 class CommunityLandingView(RedirectView):

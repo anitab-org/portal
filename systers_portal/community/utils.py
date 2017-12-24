@@ -2,8 +2,16 @@ from django.contrib.auth.models import Group, Permission
 from django.db import transaction
 from guardian.shortcuts import assign_perm
 
-from community.permissions import groups_templates, group_permissions
+from community.permissions import groups_templates, group_permissions, requestor_group_templates,requestor_group_permissions
 
+
+@transaction.atomic
+def create_request_groups(community_request_name):
+    community_request_groups = []
+    for key, group_name in requestor_group_templates.items():
+        group, created = Group.objects.get_or_create(name=group_name.format(community_request_name))
+        community_request_groups.append(group)
+    return community_request_groups
 
 @transaction.atomic
 def create_groups(community_name):
@@ -58,6 +66,17 @@ def rename_groups(old_community_name, new_community_name):
         new_community_groups.append(group)
     return new_community_groups
 
+
+def assign_requestor_permissions(community_request, groups):
+    for key, group_name in requestor_group_templates.items():
+        group = next(
+            g for g in groups if g.name == group_name.format(community_request.name))
+        for perm in requestor_group_permissions[key]:
+            # if perm.endswith('tag') or perm.endswith('resourcetype'):
+            # group.permissions.add(Permission.objects.get(codename=perm))
+            # group.save()
+            # # else:
+            assign_perm(perm, group, community_request)
 
 def assign_permissions(community, groups):
     """Assign row-level permissions to community groups and community object

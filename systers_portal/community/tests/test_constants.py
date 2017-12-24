@@ -1,7 +1,8 @@
 from django.test import TestCase
 
 from community.constants import (CONTENT_CONTRIBUTOR, CONTENT_MANAGER,
-                                 USER_CONTENT_MANAGER, COMMUNITY_ADMIN)
+                                 USER_CONTENT_MANAGER, COMMUNITY_ADMIN,
+                                 COMMUNITY_REQUESTOR, DEFAULT_COMMUNITY_ACTIVE_PAGE)
 
 
 class ConstantsTestCase(TestCase):
@@ -27,3 +28,11 @@ class ConstantsTestCase(TestCase):
         """Test COMMUNITY_ADMIN constant value"""
         community_admin = COMMUNITY_ADMIN.format(self.foo)
         self.assertEqual(community_admin, "Foo: Community Admin")
+
+    def test_default_active_community_page(self):
+        default_active_community_page = 'news'
+        self.assertEqual(default_active_community_page, DEFAULT_COMMUNITY_ACTIVE_PAGE)
+
+    def test_community_requestor_constant(self):
+        community_requestor = COMMUNITY_REQUESTOR.format(self.foo)
+        self.assertEqual(community_requestor, "Foo: Community Requestor")

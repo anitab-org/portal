@@ -1,0 +1,25 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="mt20 mb40">
+    <h2 class="ml15">Unapproved Community Requests</h2>
+    {% for community_request in object_list %}
+      <div class="mt20 ml15 box-container box-body">
+        <p>
+          <span><strong>Requestor:</strong> {{ support_request.user }}</span>
+        </p>
+        <p>
+          <a href="{% url 'view_community_request' community_request.slug %}">{{ community_request.name}}</a>
+        </p>
+        <p>
+          <a href="{% url 'approve_community_request' community_request.slug %}"
+             role="button" class="btn btn-primary btn-sm">Approve</a>
+          <a href="{% url 'reject_community_request' community_request.slug %}"
+             role="button" class="btn btn-warning btn-sm">Reject</a>
+        </p>
+      </div>
+    {% endfor %}
+    {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}

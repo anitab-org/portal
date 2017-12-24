@@ -10,6 +10,26 @@ from membership.models import JoinRequest
 from users.models import SystersUser
 
 
+class RequestCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+
+    def test_get_request_community_view(self):
+        url = reverse('request_community')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        #add_templates
+
+    def test_post_request_community_view(self):
+        url = reverse
+
+
 class ViewCommunityProfileViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')

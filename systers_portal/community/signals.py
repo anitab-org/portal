@@ -3,9 +3,25 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 
-from community.constants import COMMUNITY_ADMIN
+from community.constants import COMMUNITY_ADMIN,COMMUNITY_REQUESTOR
 from community.utils import (create_groups, assign_permissions, remove_groups,
-                             rename_groups)
+                             rename_groups, create_request_groups, assign_requestor_permissions)
+from guardian.shortcuts import assign_perm
+from users.models import SystersUser,User
+from community.models import RequestCommunity
+
+
+@receiver(post_save, sender='community.RequestCommunity',
+        dispatch_uid="manage_request_groups")
+def manage_requestor_groups(sender, instance, created, **kwargs):
+    name = instance.name
+    if created:
+        groups = create_request_groups(name)
+        assign_requestor_permissions(instance, groups)
+        community_requestor_group = next(
+            g for g in groups if g.name == COMMUNITY_REQUESTOR.format(name))
+        instance.user.join_group(community_requestor_group)
+        instance.save()    
 
 
 @receiver(post_save, sender='community.Community',

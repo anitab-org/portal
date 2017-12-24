@@ -1,10 +1,54 @@
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
+
 from community.forms import (EditCommunityForm, AddCommunityPageForm,
-                             EditCommunityPageForm, PermissionGroupsForm, AddCommunityForm)
-from community.models import Community, CommunityPage
+                             EditCommunityPageForm, PermissionGroupsForm,
+                             RequestCommunityForm, AddCommunityForm)
+from community.models import Community, CommunityPage, RequestCommunity
 from users.models import SystersUser
+
+
+class RequestCommunityFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+
+    def test_request_community_form(self):
+        invalid_data = {'name': 'Bar',
+                        'slug': 'foo'}
+        form = RequestCommunityForm(data=invalid_data, user=self.user)
+        self.assertFalse(form.is_valid())
+
+        data = {'name': 'Bar',
+                'slug': 'foo',
+                'order': '1'}
+        form = RequestCommunityForm(data=data, user=self.user)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.community_request = RequestCommunity.objects.get()
+        self.assertEqual(self.community_request.name, 'Bar')
+        self.assertEqual(self.community_request.slug, 'foo')
+        self.assertEqual(self.community_request.user, self.systers_user)
+
+
+class EditCommunityRequestFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community_request = RequestCommunity.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  user=self.systers_user)
+    def test_edit_community_form(self):
+        data = {'name': 'Bar',
+                'slug': 'bar',
+                'order': 1,
+                'user': self.user}
+        form = CommunityForm(data=data, instance=self.community_request)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(self.community_request.name, 'Bar')
+        self.assertEqual(self.community_request.slug, 'bar')
 
 
 class EditCommunityFormTestCase(TestCase):

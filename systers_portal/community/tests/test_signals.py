@@ -2,9 +2,9 @@ from django.test import TestCase
 from django.contrib.auth.models import Group, User
 from django.db.models.signals import post_save, post_delete
 
-from community.constants import COMMUNITY_ADMIN
-from community.models import Community
-from community.signals import manage_community_groups, remove_community_groups
+from community.constants import COMMUNITY_ADMIN, COMMUNITY_REQUESTOR
+from community.models import Community, RequestCommunity
+from community.signals import manage_community_groups, remove_community_groups, manage_requestor_groups
 from users.models import SystersUser
 
 
@@ -14,6 +14,20 @@ class SignalsTestCase(TestCase):
                           dispatch_uid="manage_groups")
         post_delete.connect(remove_community_groups, sender=Community,
                             dispatch_uid="remove_groups")
+        post_save.connect(manage_requestor_groups, sender=RequestCommunity,
+                            dispatch_uid="remove_groups")
+
+    def test_manage_requestor_groups(self):
+        user1 = User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get()
+        community = RequestCommunity.objects.create(name="Foo", slug="foo", order=1,
+                                             user=systers_user)
+        groups_count = Group.objects.count()
+        self.assertEqual(groups_count, 1)
+        community_requestor_group = Group.objects.get(
+            name=COMMUNITY_REQUESTOR.format("Foo"))
+        self.assertEqual(user1.groups.get(), community_requestor_group)
+
 
     def test_manage_community_groups(self):
         """Test handling of operations required when saving a Community
