@@ -123,14 +123,17 @@ class PermissionsTestCase(TestCase):
         self.assertEqual(groups_templates["community_admin"], COMMUNITY_ADMIN)
 
     def test_requestor_permissions(self):
+        """Test requestor permissions"""
         permissions = [
-        "view_community_request",
-        "edit_community_request"
+            "view_community_request",
+            "edit_community_request"
         ]
         self.assertCountEqual(requestor_permissions, permissions)
 
     def test_requestor_group_permissions(self):
+        """Test group permission keys"""
         self.assertTrue("requestor" in requestor_group_permissions)
 
     def test_requestor_group_templates(self):
+        """Test group templates values"""
         self.assertEqual(requestor_group_templates["requestor"], COMMUNITY_REQUESTOR)

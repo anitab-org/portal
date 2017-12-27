@@ -4,7 +4,8 @@ from django.test import TestCase
 
 from community.forms import (EditCommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm, PermissionGroupsForm,
-                             RequestCommunityForm, AddCommunityForm)
+                             RequestCommunityForm, EditCommunityRequestForm,
+                             AddCommunityForm)
 from community.models import Community, CommunityPage, RequestCommunity
 from users.models import SystersUser
 
@@ -15,20 +16,25 @@ class RequestCommunityFormTestCase(TestCase):
         self.systers_user = SystersUser.objects.get(user=self.user)
 
     def test_request_community_form(self):
+        """Test Requestcommunity form"""
         invalid_data = {'name': 'Bar',
                         'slug': 'foo'}
         form = RequestCommunityForm(data=invalid_data, user=self.user)
         self.assertFalse(form.is_valid())
-
-        data = {'name': 'Bar',
-                'slug': 'foo',
-                'order': '1'}
-        form = RequestCommunityForm(data=data, user=self.user)
+        valid_data = {'name': 'Bar', 'slug': 'bar', 'order': '1',
+                      'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
+                      'community_channel': 'Existing Social Media Channels ',
+                      'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
+                      'is_avail_volunteer': 'Yes', 'count_avail_volunteer': '15',
+                      'content_developer': 'foobar', 'selection_criteria': 'foobarbar',
+                      'is_real_time': 'foofoobar'
+                      }
+        form = RequestCommunityForm(data=valid_data, user=self.user)
         self.assertTrue(form.is_valid())
         form.save()
         self.community_request = RequestCommunity.objects.get()
         self.assertEqual(self.community_request.name, 'Bar')
-        self.assertEqual(self.community_request.slug, 'foo')
+        self.assertEqual(self.community_request.slug, 'bar')
         self.assertEqual(self.community_request.user, self.systers_user)
 
 
@@ -36,19 +42,45 @@ class EditCommunityRequestFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
-        self.community_request = RequestCommunity.objects.create(name="Foo", slug="foo",
-                                                  order=1,
-                                                  user=self.systers_user)
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
     def test_edit_community_form(self):
-        data = {'name': 'Bar',
-                'slug': 'bar',
-                'order': 1,
-                'user': self.user}
-        form = CommunityForm(data=data, instance=self.community_request)
+        """Test editing the request community form"""
+        invalid_data = {'name': 'Bar',
+                        'slug': 'foo'}
+        form = RequestCommunityForm(data=invalid_data, user=self.user)
+        self.assertFalse(form.is_valid())
+        data = {'name': 'Bar', 'slug': 'bar', 'order': '1',
+                'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
+                'community_channel': 'Existing Social Media Channels ',
+                'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
+                'is_avail_volunteer': 'Yes', 'count_avail_volunteer': '15',
+                'content_developer': 'foobar', 'selection_criteria': 'foobarbar',
+                'is_real_time': 'foofoobar'
+                }
+        form = EditCommunityRequestForm(
+            data=data, instance=self.community_request)
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(self.community_request.name, 'Bar')
         self.assertEqual(self.community_request.slug, 'bar')
+        # Test if order of the request exists in Community
+        self.community = Community.objects.create(name="FooBarComm", slug="foobar",
+                                                  order=1,
+                                                  admin=self.systers_user)
+        form = EditCommunityRequestForm(
+            data=data, instance=self.community_request)
+        self.assertFalse(form.is_valid())
+        # Test if slug of the request exists in Community
+        self.community.slug = "bar"
+        self.community.save()
+        form = EditCommunityRequestForm(
+            data=data, instance=self.community_request)
+        self.assertFalse(form.is_valid())
 
 
 class EditCommunityFormTestCase(TestCase):
