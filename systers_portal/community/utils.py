@@ -2,23 +2,13 @@ from django.contrib.auth.models import Group, Permission
 from django.db import transaction
 from guardian.shortcuts import assign_perm
 
-from community.permissions import groups_templates, group_permissions, requestor_group_templates,requestor_group_permissions
-
 
 @transaction.atomic
-def create_request_groups(community_request_name):
-    community_request_groups = []
-    for key, group_name in requestor_group_templates.items():
-        group, created = Group.objects.get_or_create(name=group_name.format(community_request_name))
-        community_request_groups.append(group)
-    return community_request_groups
+def create_groups(community_name, groups_templates):
+    """Create groups for a particular Community or RequestCommunity instance using its name
 
-@transaction.atomic
-def create_groups(community_name):
-    """Create groups for a particular Community instance using its name
-
-    :param community_name: string name of community
-    :return: list of community Group objects
+    :param community_name: string name of community or request community object
+    :return: list of community/request community Group objects
     """
     community_groups = []
     for key, group_name in groups_templates.items():
@@ -30,9 +20,9 @@ def create_groups(community_name):
 
 @transaction.atomic
 def remove_groups(community_name):
-    """Remove groups for a particular Community instance using its name
+    """Remove groups for a particular Community or a RequestCommunity instance using its name
 
-    :param community_name: string name of community
+    :param community_name: string name of community or request community object
     """
     name = "{0}:".format(community_name)
     Group.objects.filter(name__startswith=name).delete()
@@ -67,21 +57,11 @@ def rename_groups(old_community_name, new_community_name):
     return new_community_groups
 
 
-def assign_requestor_permissions(community_request, groups):
-    for key, group_name in requestor_group_templates.items():
-        group = next(
-            g for g in groups if g.name == group_name.format(community_request.name))
-        for perm in requestor_group_permissions[key]:
-            # if perm.endswith('tag') or perm.endswith('resourcetype'):
-            # group.permissions.add(Permission.objects.get(codename=perm))
-            # group.save()
-            # # else:
-            assign_perm(perm, group, community_request)
+def assign_permissions(community, groups, groups_templates, group_permissions):
+    """Assign row-level permissions to community/request community groups and
+       community/request community object
 
-def assign_permissions(community, groups):
-    """Assign row-level permissions to community groups and community object
-
-    :param community: Community object
+    :param community: Community/RequestCommunity object
     :param groups: list of Group objects
     """
     for key, group_name in groups_templates.items():

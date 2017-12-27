@@ -49,8 +49,8 @@ group_permissions = {
     "community_admin": community_admin_permissions
 }
 
-requestor_group_templates = { 
-    "requestor":COMMUNITY_REQUESTOR 
+requestor_group_templates = {
+    "requestor": COMMUNITY_REQUESTOR
 }
 
 requestor_permissions = [
@@ -61,4 +61,3 @@ requestor_permissions = [
 requestor_group_permissions = {
     "requestor": requestor_permissions
 }
-

@@ -16,4 +16,3 @@ class CommunityAdmin(GuardedModelAdmin):
 admin.site.register(RequestCommunity)
 admin.site.register(Community, CommunityAdmin)
 admin.site.register(CommunityPage)
-
