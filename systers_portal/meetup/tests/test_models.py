@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils import timezone
 from cities_light.models import City, Country
 
-from meetup.models import MeetupLocation, Meetup, Rsvp
+from meetup.models import MeetupLocation, Meetup, Rsvp, SupportRequest
 from users.models import SystersUser
 
 
@@ -53,3 +53,20 @@ class RsvpTestCase(MeetupBaseTestCase, TestCase):
 
     def test_str(self):
         self.assertEqual(str(self.rsvp), "foo RSVP for meetup Test Meetup")
+
+
+class SupportRequestTestCase(MeetupBaseTestCase, TestCase):
+    def setUp(self):
+        super(SupportRequestTestCase, self).setUp()
+        self.meetup = Meetup.objects.create(title="Test Meetup", slug="baz",
+                                            date=timezone.now().date(), time=timezone.now().time(),
+                                            venue="FooBar colony",
+                                            description="This is a testing meetup.",
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user)
+        self.support_request = SupportRequest.objects.create(volunteer=self.systers_user,
+                                                             meetup=self.meetup,
+                                                             description="Support Request")
+
+    def test_str(self):
+        self.assertEqual(str(self.support_request), "foo volunteered for meetup Test Meetup")

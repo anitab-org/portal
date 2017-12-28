@@ -7,9 +7,12 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('meetup', '0005_meetuplocation_join_requests'),
-        ('meetup', '0005_auto_20170925_1048'),
+        ('meetup', '0011_auto_20160805_1222'),
     ]
 
     operations = [
+        migrations.AlterUniqueTogether(
+            name='rsvp',
+            unique_together=set([('user', 'meetup')]),
+        ),
     ]
