@@ -16,9 +16,11 @@ class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User)
     country = models.ForeignKey(Country, blank=True, null=True, verbose_name="Country")
-    blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
+    blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog",
+                               help_text="Enter URL starting with http(s)://")
     homepage_url = models.URLField(max_length=255, blank=True,
-                                   verbose_name="Homepage")
+                                   verbose_name="Homepage",
+                                   help_text="Enter URL starting with http(s)://")
     profile_picture = models.ImageField(upload_to='users/pictures/',
                                         blank=True,
                                         null=True,

@@ -24,13 +24,17 @@ class Community(models.Model):
     parent_community = models.ForeignKey('self', blank=True, null=True,
                                          verbose_name="Parent community")
     website = models.URLField(max_length=255, blank=True,
-                              verbose_name="Website")
+                              verbose_name="Website",
+                              help_text="Enter URL starting with http(s)://")
     facebook = models.URLField(max_length=255, blank=True,
-                               verbose_name="Facebook")
+                               verbose_name="Facebook",
+                               help_text="Enter URL starting with http(s)://")
     googleplus = models.URLField(max_length=255, blank=True,
-                                 verbose_name="Google+")
+                                 verbose_name="Google+",
+                                 help_text="Enter URL starting with http(s)://")
     twitter = models.URLField(max_length=255, blank=True,
-                              verbose_name="Twitter")
+                              verbose_name="Twitter",
+                              help_text="Enter URL starting with http(s)://")
     __original_name = None
     __original_admin = None
 
