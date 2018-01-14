@@ -49,6 +49,39 @@ class MeetupLocation(models.Model):
         return self.name
 
 
+class RequestMeetupLocation(models.Model):
+    """Manage details of Meetup Location requests"""
+    name = models.CharField(max_length=255, unique=True, verbose_name="Name of the Meetup Location."
+                            "(Naming convention for Systers meetup location is City+Systers."
+                            "e.g.London Systers, Boston Systers.)")
+    slug = models.SlugField(max_length=150, unique=True,
+                            verbose_name="Slug of the Meetup Location")
+    location = models.ForeignKey(City, verbose_name="Location")
+    description = RichTextField(
+        verbose_name="Description of the Meetup Location")
+    email = models.EmailField(max_length=255, blank=True,
+                              verbose_name="Email of the Meetup Location if any.")
+    user = models.ForeignKey(
+        SystersUser, related_name='createdby', verbose_name="Requested By")
+    approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
+                                    related_name='approvedby', verbose_name="Approved By")
+    date_created = models.DateTimeField(
+        auto_now_add=True, verbose_name="Date Created")
+    is_approved = models.BooleanField(
+        default=False, verbose_name="Is this Approved?")
+
+    def get_verbose_fields(self):
+        """Get verbose names of RequestMeetupLocation object's model fields
+        :return: list of tuples (verbosefieldname, fieldvalue)
+        """
+
+        return [(field.verbose_name, getattr(self, field.name)) for field in
+                RequestMeetupLocation._meta.fields]
+
+    def __str__(self):
+        return self.name
+
+
 class Meetup(models.Model):
     """Manage details of Meetups of MeetupLocations"""
     title = models.CharField(max_length=50, verbose_name="Title",)

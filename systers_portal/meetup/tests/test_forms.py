@@ -9,8 +9,8 @@ from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMember
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
                           EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                           EditSupportRequestForm, AddSupportRequestCommentForm,
-                          EditSupportRequestCommentForm)
-from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
+                          EditSupportRequestCommentForm, RequestMeetupLocationForm)
+from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation
 from users.models import SystersUser
 from common.models import Comment
 
@@ -33,6 +33,24 @@ class MeetupFormTestCaseBase:
                                             meetup_location=self.meetup_location,
                                             created_by=self.systers_user,
                                             last_updated=timezone.now())
+
+
+class RequestMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
+    def test_add_request_meetup_location_form(self):
+        # Testing form with invalid data
+        invalid_data = {'name': 'def', 'location': 'Baz, Bar, AS'}
+        form = AddMeetupLocationForm(data=invalid_data)
+        self.assertFalse(form.is_valid())
+        # Testing form with valid data
+        location_id = self.location.id
+        data = {'name': 'Bar Systers', 'slug': 'bar', 'location': location_id,
+                'description': 'test test test.', 'email': 'abc@def.com'}
+        form = RequestMeetupLocationForm(data=data, user=self.systers_user)
+        self.assertTrue(form.is_valid())
+        form.save()
+
+        new_meetup_location_request = RequestMeetupLocation.objects.get(slug='bar')
+        self.assertTrue(new_meetup_location_request.name, 'Bar Systers')
 
 
 class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):

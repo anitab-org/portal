@@ -4,9 +4,9 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DeleteView, TemplateView, RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.list import ListView
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -15,11 +15,160 @@ from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMember
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
                           EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                           EditSupportRequestForm, AddSupportRequestCommentForm,
-                          EditSupportRequestCommentForm)
+                          EditSupportRequestCommentForm, RequestMeetupLocationForm)
 from meetup.mixins import MeetupLocationMixin
-from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest
+from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation
+from meetup.constants import (OK, SUCCESS_MSG, NAME_ALREADY_EXISTS, NAME_ALREADY_EXISTS_MSG,
+                              SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
+                              LOCATION_ALREADY_EXISTS, LOCATION_ALREADY_EXISTS_MSG)
 from users.models import SystersUser
 from common.models import Comment
+
+
+class RequestMeetupLocationView(LoginRequiredMixin, CreateView):
+    """View to Request a new meetup location"""
+    template_name = "meetup/request_new_meetup_location.html"
+    model = RequestMeetupLocation
+    form_class = RequestMeetupLocationForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        message = "Your request for a new meetup location is successfully submitted. "\
+                  "Please wait until someone reviews your request. "
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return reverse("list_meetup_location")
+
+    def get_form_kwargs(self):
+        """Add request user to the form kwargs.
+        Used to autofill form fields with requestor without
+        explicitly filling them up in the form."""
+        kwargs = super(RequestMeetupLocationView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+
+class NewMeetupLocationRequestsListView(LoginRequiredMixin, StaffuserRequiredMixin, ListView):
+    """List of Meetup Location Requests"""
+    template_name = "meetup/new_meetup_location_requests.html"
+    model = RequestMeetupLocation
+    raise_exception = True
+    paginate_by = 10
+
+    def get_queryset(self, **kwargs):
+        """Set ListView queryset to all the unapproved meetup location requests"""
+        request_meetup_location_list = RequestMeetupLocation.objects.filter(
+            is_approved=False)
+        return request_meetup_location_list
+
+
+class ViewMeetupLocationRequestView(LoginRequiredMixin, StaffuserRequiredMixin,
+                                    FormView):
+    """View the meetup location request"""
+    template_name = "meetup/view_new_meetup_location_request.html"
+    form_class = RequestMeetupLocationForm
+    raise_exception = True
+
+    def get_context_data(self, **kwargs):
+        """Add RequestMeetupLocation object and it's verbose fields to the context."""
+        context = super(ViewMeetupLocationRequestView,
+                        self).get_context_data(**kwargs)
+        self.meetup_location_request = get_object_or_404(
+            RequestMeetupLocation, slug=self.kwargs['slug'])
+        context['meetup_location_request'] = self.meetup_location_request
+        context['meetup_location_request_fields'] = \
+            self.meetup_location_request.get_verbose_fields()
+        return context
+
+    def get_form_kwargs(self):
+        """Add request user to the form kwargs.
+        Used to autofill form fields with requestor without
+        explicitly filling them up in the form."""
+        kwargs = super(ViewMeetupLocationRequestView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+
+class ApproveRequestMeetupLocationView(LoginRequiredMixin, StaffuserRequiredMixin,
+                                       RedirectView):
+    """Approve the new meetup location request"""
+    model = RequestMeetupLocation
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Supply the redirect URL in case of successful approval.
+        * Creates a new RequestMeetupLocation object and copy fields,
+            values from RequestMeetupLocation object
+        * Adds the requestor as the meetup location organizer
+        * Sets the RequestMeetupLocation object's is_approved field to True.
+        """
+        meetup_location_request = get_object_or_404(
+            RequestMeetupLocation, slug=self.kwargs['slug'])
+        new_meetup_location = MeetupLocation()
+        new_meetup_location.name = meetup_location_request.name
+        new_meetup_location.slug = meetup_location_request.slug
+        new_meetup_location.location = meetup_location_request.location
+        new_meetup_location.description = meetup_location_request.description
+        systersuser = get_object_or_404(
+            SystersUser, user=meetup_location_request.user)
+
+        meetup_location_request.approved_by = get_object_or_404(
+            SystersUser, user=self.request.user)
+        meetup_location_request.is_approved = True
+        self.slug_meetup_location_request = meetup_location_request.slug
+        self.name_meetup_location_request = meetup_location_request.name
+        self.location_meetup_location_request = meetup_location_request.location
+        status, message, level = self.process_request()
+        messages.add_message(self.request, level, message)
+        if status == OK:
+            new_meetup_location.save()
+            new_meetup_location.organizers.add(systersuser)
+            meetup_location_request.save()
+            return reverse('about_meetup_location', kwargs={'slug': new_meetup_location.slug})
+        else:
+            return reverse('new_meetup_location_requests')
+
+    def process_request(self):
+        """If an error occurs during the creation of a new meetup location, this method returns the
+        status and message."""
+        self.slug_meetup_location_values = MeetupLocation.objects.all(
+        ).values_list('slug', flat=True)
+        self.name_meetup_location_values = MeetupLocation.objects.all(
+        ).values_list('name', flat=True)
+        self.location_meetup_location_values = MeetupLocation.objects.all(
+        ).values_list('location', flat=True)
+        if self.location_meetup_location_request in self.location_meetup_location_values:
+            STATUS = LOCATION_ALREADY_EXISTS
+            return STATUS, LOCATION_ALREADY_EXISTS_MSG.format(self.location_meetup_location_request
+                                                              ), messages.WARNING
+        elif self.slug_meetup_location_request in self.slug_meetup_location_values:
+            STATUS = SLUG_ALREADY_EXISTS
+            return STATUS, SLUG_ALREADY_EXISTS_MSG.format(self.slug_meetup_location_request),\
+                messages.WARNING
+        elif self.name_meetup_location_request in self.name_meetup_location_values:
+            STATUS = NAME_ALREADY_EXISTS
+            return STATUS, NAME_ALREADY_EXISTS_MSG.format(self.name_meetup_location_request),\
+                messages.WARNING
+        else:
+            STATUS = OK
+        return STATUS, SUCCESS_MSG, messages.INFO
+
+
+class RejectMeetupLocationRequestView(LoginRequiredMixin, StaffuserRequiredMixin, DeleteView):
+    """Reject the new meetup location request Request"""
+    model = RequestMeetupLocation
+    template_name = "meetup/confirm_reject_request_meetup_location.html"
+    raise_exception = True
+
+    def get_success_url(self, *args, **kwargs):
+        """Supply the success URL in case of a successful submit"""
+        messages.add_message(self.request, messages.INFO,
+                             "Meetup Location request successfullly rejected!")
+        meetup_location_request = get_object_or_404(
+            RequestMeetupLocation, slug=self.kwargs['slug'])
+        meetup_location_request.delete()
+        return reverse('new_meetup_location_requests')
 
 
 class MeetupLocationAboutView(MeetupLocationMixin, TemplateView):
