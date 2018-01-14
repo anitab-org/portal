@@ -33,6 +33,8 @@ class UserForm(forms.ModelForm):
 
 class SystersUserForm(forms.ModelForm):
     """Form for SystersUser model"""
+    blog_url = forms.URLField(initial="http://",widget=forms.TextInput(attrs={'placeholder': 'Enter URL'}))
+    homepage_url = forms.URLField(initial="http://",widget=forms.TextInput(attrs={'placeholder': 'Enter URL'}))
     class Meta:
         model = SystersUser
         fields = ('country', 'blog_url', 'homepage_url', 'profile_picture')
