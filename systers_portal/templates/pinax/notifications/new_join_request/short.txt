@@ -1,1 +1,0 @@
-{{ meetup_location }}: {{ notice }}

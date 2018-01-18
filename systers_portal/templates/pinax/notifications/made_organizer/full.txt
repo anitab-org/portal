@@ -1,3 +1,0 @@
-{% url "about_meetup_location" meetup_location.slug as meetup_location_url %}You are now an Organizer of the meetup location {{ meetup_location }}.
-
-To view {{ meetup_location }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_location_url }}

@@ -29,7 +29,6 @@ urlpatterns = [
         name='ckeditor_upload'),
     url(r'^ckeditor/browse/', never_cache(login_required(views.browse)),
         name='ckeditor_browse'),
-    url(r"^notifications/", include("pinax.notifications.urls")),
     url(r'^contact/$', ContactView.as_view(), name='contact'),
     url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
     url(r'^propose/newcommunity/$', NewCommunityProposalView.as_view(),
