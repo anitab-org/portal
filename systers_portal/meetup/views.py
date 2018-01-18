@@ -110,8 +110,7 @@ class ApproveRequestMeetupLocationView(LoginRequiredMixin, StaffuserRequiredMixi
         new_meetup_location.slug = meetup_location_request.slug
         new_meetup_location.location = meetup_location_request.location
         new_meetup_location.description = meetup_location_request.description
-        systersuser = get_object_or_404(
-            SystersUser, user=meetup_location_request.user)
+        systersuser = meetup_location_request.user
 
         meetup_location_request.approved_by = get_object_or_404(
             SystersUser, user=self.request.user)

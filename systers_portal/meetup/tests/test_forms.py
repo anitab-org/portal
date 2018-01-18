@@ -45,7 +45,7 @@ class RequestMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
         location_id = self.location.id
         data = {'name': 'Bar Systers', 'slug': 'bar', 'location': location_id,
                 'description': 'test test test.', 'email': 'abc@def.com'}
-        form = RequestMeetupLocationForm(data=data, user=self.systers_user)
+        form = RequestMeetupLocationForm(data=data, user=self.user)
         self.assertTrue(form.is_valid())
         form.save()
 
