@@ -33,6 +33,9 @@ class MeetupLocation(models.Model):
             ('delete_meetup_location_organizer', 'Delete meetup location organizer'),
             ('approve_meetup_location_joinrequest', 'Approve meetup location join request'),
             ('reject_meetup_location_joinrequest', 'Reject meetup location join request'),
+            ('approve_meetup_location_meetuprequest', 'Approve meetup location meetup request'),
+            ('reject_meetup_location_meetuprequest', 'Reject meetup location meetup request'),
+            ('view_meetup_location_meetuprequest', 'View meetup location meetup request'),
             ('approve_meetup_comment', 'Approve comment for a meetup'),
             ('reject_meetup_comment', 'Reject comment for a meetup'),
             ('add_meetup_rsvp', 'RSVP for a meetup'),
@@ -93,6 +96,31 @@ class Meetup(models.Model):
     meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
     created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
+
+    def __str__(self):
+        return self.title
+
+class RequestMeetup(models.Model):
+    """Manage details of Meetup Requests of MeetupLocations"""
+    title = models.CharField(max_length=50, verbose_name="Title",)
+    slug = models.SlugField(max_length=50, unique=True, verbose_name="Slug")
+    date = models.DateField(verbose_name="Date")
+    time = models.TimeField(verbose_name="Time", blank=True)
+    venue = models.CharField(max_length=512, verbose_name="Venue", blank=True)
+    description = RichTextField(verbose_name="Description")
+    meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
+    created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
+    approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
+                                    related_name='approvedby')
+    date_created = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    def get_verbose_fields(self):
+        """Get verbose names of RequestMeetup object's model fields
+        :return: list of tuples (verbosefieldname, fieldvalue)
+        """
+        return [(field.verbose_name, getattr(self, field.name)) for field in
+                RequestMeetup._meta.fields]
 
     def __str__(self):
         return self.title

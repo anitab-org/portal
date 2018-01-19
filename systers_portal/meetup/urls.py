@@ -16,7 +16,9 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           AddSupportRequestCommentView, EditSupportRequestCommentView,
                           DeleteSupportRequestCommentView, RequestMeetupLocationView,
                           NewMeetupLocationRequestsListView, ViewMeetupLocationRequestView,
-                          RejectMeetupLocationRequestView, ApproveRequestMeetupLocationView)
+                          RejectMeetupLocationRequestView, ApproveRequestMeetupLocationView,
+                          RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
+                          ApproveRequestMeetupView, RejectMeetupRequestView)
 
 
 urlpatterns = [
@@ -41,6 +43,16 @@ urlpatterns = [
         name='new_meetup_location_requests'),
     url(r'^(?P<slug>[\w-]+)/reject-request/$', RejectMeetupLocationRequestView.as_view(),
         name='reject_meetup_location_request'),
+    url(r'^(?P<slug>[\w-]+)/request/$', RequestMeetupView.as_view(),
+        name="request_meetup"),
+    url(r'^(?P<slug>[\w-]+)/view_meetup_requests/$', NewMeetupRequestsListView.as_view(),
+        name="new_meetup_requests"),
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/view_meetup_requests/$', ViewMeetupRequestView.as_view(),
+        name="view_meetup_request"),
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/approve_meetup_request/$', ApproveRequestMeetupView.as_view(),
+        name="approve_meetup_request"),
+    url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/reject_meetup_request/$', RejectMeetupRequestView.as_view(),
+        name="reject_meetup_request"),
     url(r'locations/$', MeetupLocationList.as_view(), name='list_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/sponsors/$', MeetupLocationSponsorsView.as_view(),
         name='sponsors_meetup_location'),
