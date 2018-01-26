@@ -19,15 +19,15 @@ class PermissionsTestCase(TestCase):
     def test_organizer_permissions(self):
         """Test organizer list of permissions"""
         permissions = [
-            "change_meetup",
-            "change_meetuplocation",
             "add_meetup_rsvp",
             "add_supportrequest",
             "change_supportrequest",
             "delete_supportrequest",
             "add_meetup",
+            "change_meetup",
             "delete_meetup",
             "add_meetuplocation",
+            "change_meetuplocation",
             "delete_meetuplocation",
             "add_meetup_location_member",
             "delete_meetup_location_member",
@@ -35,6 +35,9 @@ class PermissionsTestCase(TestCase):
             "delete_meetup_location_organizer",
             "approve_meetup_location_joinrequest",
             "reject_meetup_location_joinrequest",
+            "approve_meetup_location_meetuprequest",
+            "reject_meetup_location_meetuprequest",
+            "view_meetup_location_meetuprequest",
             "approve_meetup_comment",
             "reject_meetup_comment",
             "approve_support_request",

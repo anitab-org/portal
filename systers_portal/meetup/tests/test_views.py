@@ -5,7 +5,8 @@ from django.utils import timezone
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 
-from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation
+from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+                           RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
 
@@ -160,6 +161,203 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertTrue(new_meetup.title, 'BarTest')
         self.assertTrue(new_meetup.created_by, self.systers_user)
         self.assertTrue(new_meetup.meetup_location, self.meetup_location)
+
+
+class RequestMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def test_get_request_meetup_view(self):
+        """Test GET request to request a new meetup"""
+        url = reverse('request_meetup', kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'meetup/request_new_meetup.html')
+
+    def test_post_request_meetup_view(self):
+        """Test POST request to request a new meetup"""
+        url = reverse("request_meetup", kwargs={'slug': 'foo'})
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        date = (timezone.now() + timezone.timedelta(2)).date()
+        time = timezone.now().time()
+        data = {'title': 'BarTest', 'slug': 'bartest', 'date': date, 'time': time,
+                'description': "It's a test meetup."}
+        response = self.client.post(url, data=data, created_by=self.systers_user, 
+                                    meetup_location=self.meetup_location)
+        self.assertEqual(response.status_code, 302)
+        new_meetup_request = RequestMeetup.objects.get(slug='bartest')
+        self.assertTrue(new_meetup_request.title, 'BarTest')
+        self.assertTrue(new_meetup_request.created_by, self.systers_user)
+        self.assertTrue(new_meetup_request.meetup_location, self.meetup_location)
+
+
+class NewMeetupRequestsListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(NewMeetupRequestsListViewTestCase, self).setUp()
+        self.meetup_request1 = RequestMeetup.objects.create(
+            title="Bar Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
+            description="This is a test meetup location request1", created_by=self.systers_user,
+            meetup_location=self.meetup_location)
+        self.meetup_request2 = RequestMeetup.objects.create(
+            title="Foo Talk", slug="foo", date=timezone.now().date(), time=timezone.now().time(),
+            description="This is a test meetup location request2", created_by=self.systers_user,
+            meetup_location=self.meetup_location)
+        self.user2 = User.objects.create(username='foobar',password='foobar',email='foo@test.com')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+
+    def test_view_new_meetup_location_requests_list_view(self):
+        """Test Meetup Requests list view for correct http response and
+        all meetup requests in a list"""
+        url = reverse('new_meetup_requests', kwargs={'slug':'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Testing after logggin in - normal user
+        self.client.login(username='foobar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Testing after logging in - Organizer of the Meetup Location
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "meetup/new_meetup_requests.html")
+        self.assertContains(response, "Foo Talk")
+        self.assertSequenceEqual(RequestMeetup.objects.filter(
+            is_approved=False), [self.meetup_request1, self.meetup_request2])
+        self.assertContains(response, "Requested by")
+
+
+class ViewMeetupRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(ViewMeetupRequestViewTestCase, self).setUp()
+        self.meetup_request = RequestMeetup.objects.create(
+            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
+            description="This is a test meetup location request", created_by=self.systers_user,
+            meetup_location=self.meetup_location)
+        self.user2 = User.objects.create(username='foobar',password='foobar',email='foo@test.com')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+
+    def test_view_meetup_request_view(self):
+        """Test Meetup Request view for correct response"""
+        # Test without logging in
+        url = reverse('view_meetup_request', kwargs={'slug': 'foo','meetup_slug':'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test after logging in - normal user
+        self.client.login(username='foobar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test after logging in - organizer
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'meetup/view_new_meetup_request.html')
+        self.assertEqual(
+            response.context['meetup_request'], self.meetup_request)
+
+
+class ApproveRequestMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(ApproveRequestMeetupViewTestCase, self).setUp()
+        self.meetup_request = RequestMeetup.objects.create(
+            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
+            description="This is a test meetup location request", created_by=self.systers_user,
+            meetup_location=self.meetup_location)
+        self.user2 = User.objects.create(username='foobar',password='foobar',email='foo@test.com')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+
+    def test_approve_request_meetup_view_base(self):
+        url = reverse('approve_meetup_request',
+                      kwargs={'meetup_slug': 'bar','slug':'foo'})
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foobar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if accessed by a Organizer
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('meetup/foo/bar/'))
+        # Test for non existent url
+        nonexistent_url = reverse('approve_meetup_request',
+                                  kwargs={'slug': 'foo','meetup_slug':'carr'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_approve_request_meetup_view_slug(self):
+        """Test if slug already exists in Meetup Location objects, redirect to edit page."""
+        url = reverse('approve_meetup_request',
+                      kwargs={'meetup_slug': 'bar','slug':'foo'})
+        Meetup.objects.create(title='Foo Bar Baz', slug='bar',
+                                            date=timezone.now().date(),
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user,
+                                            last_updated=timezone.now())
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('meetup/foo/view_meetup_requests/'))
+
+
+class RejectMeetupRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(RejectMeetupRequestViewTestCase, self).setUp()
+        self.meetup_request = RequestMeetup.objects.create(
+            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
+            description="This is a test meetup request", created_by=self.systers_user,
+            meetup_location=self.meetup_location)
+        self.user2 = User.objects.create(username='foobar',password='foobar',email='foo@test.com')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+
+    def test_get_reject_request_meetup_view(self):
+        url = reverse('reject_meetup_request', kwargs={'slug': 'foo','meetup_slug':'bar'})
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foobar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if accessed by a superuser
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "meetup/confirm_reject_request_meetup.html")
+        # Test for non existent url
+        nonexistent_url = reverse('reject_meetup_request',
+                                  kwargs={'slug': 'foo','meetup_slug':'barr'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_reject_request_meetup_location_view(self):
+        url = reverse('reject_meetup_request', kwargs={'slug': 'foo','meetup_slug':'bar'})
+        # Test without logging in
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foobar', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if superuser posts
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('view_meetup_requests/'))
+        # Test non existent url
+        nonexistent_url = reverse('reject_meetup_request',
+                                  kwargs={'slug': 'foo','meetup_slug':'barr'})
+        response = self.client.post(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
 
 
 class DeleteMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
