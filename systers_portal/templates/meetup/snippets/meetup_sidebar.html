@@ -6,7 +6,7 @@
     <h4>Meetup Actions</h4>
     <ol class="list-unstyled">
       <li><a href="{% url 'request_meetup' meetup_location.slug %}">Request a Meetup</a></li>
-      {% if perms.meetup.approve_meetup_location_meetuprequest and perms.meetup.approve_meetup_location_meetuprequest %}
+      {% if "view_meetup_location_meetuprequest" in meetup_location_perms %}
       <li><a href="{% url 'new_meetup_requests' meetup_location.slug %}">New Meetup Requests</a></li>
       {% endif %}
       {% if perms.meetup.add_meetup %}

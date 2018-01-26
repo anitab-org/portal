@@ -143,8 +143,7 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         new_meetup.venue = meetup_request.venue
         new_meetup.description = meetup_request.description
         new_meetup.meetup_location = meetup_request.meetup_location
-        systersuser = get_object_or_404(
-            SystersUser, user=meetup_request.created_by)
+        systersuser = meetup_request.created_by
 
         meetup_request.approved_by = get_object_or_404(
             SystersUser, user=self.request.user)
