@@ -23,6 +23,7 @@ class MeetupBaseTestCase():
             description="This is a test meetup location request",
             user=self.systers_user)
 
+
 class MeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
     def test_str(self):
         """Test MeetupLocation object str/unicode representation"""
@@ -53,12 +54,13 @@ class MeetupTestCase(MeetupBaseTestCase, TestCase):
 class RequestMeetupTestCase(MeetupBaseTestCase, TestCase):
     def setUp(self):
         super(RequestMeetupTestCase, self).setUp()
-        self.meetup_request = RequestMeetup.objects.create(title="Test Meetup Request", slug="baz",
-                                            date=timezone.now().date(), time=timezone.now().time(),
-                                            venue="FooBar colony",
-                                            description="This is a testing meetup request.",
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user)
+        self.meetup_request = \
+            RequestMeetup.objects.create(title="Test Meetup Request", slug="baz",
+                                         date=timezone.now().date(), time=timezone.now().time(),
+                                         venue="FooBar colony",
+                                         description="This is a testing meetup request.",
+                                         meetup_location=self.meetup_location,
+                                         created_by=self.systers_user)
 
     def test_str(self):
         """Test Meetup object str/unicode representation"""

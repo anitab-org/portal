@@ -100,6 +100,7 @@ class Meetup(models.Model):
     def __str__(self):
         return self.title
 
+
 class RequestMeetup(models.Model):
     """Manage details of Meetup Requests of MeetupLocations"""
     title = models.CharField(max_length=50, verbose_name="Title",)

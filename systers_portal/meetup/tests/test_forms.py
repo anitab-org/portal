@@ -61,7 +61,7 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         # Testing form with invalid data
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
         form = RequestMeetupForm(data=invalid_data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+                                 meetup_location=self.meetup_location)
         self.assertFalse(form.is_valid())
 
         date = (timezone.now() + timedelta(2)).date()
@@ -69,14 +69,14 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
                 'description': "It's a test meetup."}
         form = RequestMeetupForm(data=data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+                                 meetup_location=self.meetup_location)
         self.assertTrue(form.is_valid())
         form.save()
         new_meetup_request = RequestMeetup.objects.get(slug='foo')
         self.assertTrue(new_meetup_request.title, 'Foo')
         self.assertTrue(new_meetup_request.created_by, self.systers_user)
         self.assertTrue(new_meetup_request.meetup_location, self.meetup_location)
-    
+
     def test_request_meetup_form_with_past_date(self):
         """Test add Meetup form with a date that has passed."""
         date = (timezone.now() - timedelta(2)).date()
