@@ -354,6 +354,19 @@ table.decoration-none  tr a {
   margin-right: 15px;
 }
 
+.text-bottom{
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.upcomingMeetupslist{
+  height: 400px;
+  overflow-y: scroll;
+  line-height: 1em;
+  word-wrap: break-word;
+  margin-bottom: 40px;
+}
+
 /* Meetup Location Members user-cell space
 -------------------------------------------------- */
 .user-cell-wh-100 {

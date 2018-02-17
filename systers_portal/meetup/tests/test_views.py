@@ -48,25 +48,38 @@ class MeetupLocationAboutViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
 class MeetupLocationListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def test_view_meetup_location_list_view(self):
-        """Test Meetup Location list view for correct http response and
-        all meetup locations in a list"""
+        """Test Meetup Location list view for correct http response,
+        all meetup locations in a list and all upcoming meetups"""
         url = reverse('list_meetup_location')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "meetup/list_location.html")
         self.assertContains(response, "Foo Systers")
+        self.assertContains(response, "Foo Bar Baz")
         self.assertContains(response, "google.maps.Map")
+        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['meetup_list']), 1)
 
         self.meetup_location2 = MeetupLocation.objects.create(
             name="Bar Systers", slug="bar", location=self.location,
             description="It's a test meetup location")
+        self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
+                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             meetup_location=self.meetup_location2,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
         url = reverse('list_meetup_location')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "meetup/list_location.html")
         self.assertContains(response, "Foo Systers")
         self.assertContains(response, "Bar Systers")
+        self.assertContains(response, "Foo Bar Baz")
+        self.assertContains(response, "Bar Baz")
         self.assertEqual(len(response.context['object_list']), 2)
+        self.assertEqual(len(response.context['meetup_list']), 2)
         self.assertContains(response, "google.maps.Map")
 
 

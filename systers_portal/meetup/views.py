@@ -38,6 +38,12 @@ class MeetupLocationList(ListView):
     model = MeetupLocation
     paginate_by = 20
 
+    def get_context_data(self, **kwargs):
+        context = super(MeetupLocationList, self).get_context_data(**kwargs)
+        context['meetup_list'] = Meetup.objects.filter(
+            date__gte=datetime.date.today()).order_by('date', 'time')
+        return context
+
 
 class MeetupView(MeetupLocationMixin, DetailView):
     """View details of a meetup, including date, time, venue, description, number of users who
