@@ -9,14 +9,14 @@ from users.models import SystersUser
 
 class SystersUserTestCase(TestCase):
     def setUp(self):
-        User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
 
     def test_create_systers_user(self):
         """Test creation of SystersUser on new User create"""
         self.assertTrue(1, SystersUser.objects.count())
         self.assertEqual(self.systers_user.user,
-                         SystersUser.objects.get().user)
+                         SystersUser.objects.get(user=self.user).user)
 
         self.systers_user.user.save()
         self.assertTrue(1, SystersUser.objects.count())

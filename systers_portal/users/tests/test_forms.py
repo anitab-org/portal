@@ -8,7 +8,7 @@ from users.models import SystersUser
 class UserFormsTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
 
     def test_user_form(self):
         """Test the combined User and SystersUser form"""
@@ -22,5 +22,5 @@ class UserFormsTestCase(TestCase):
         form.save()
         self.assertEqual(self.user.first_name, 'Foo')
         self.assertEqual(self.user.last_name, 'Bar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=self.user)
         self.assertEqual(systers_user.blog_url, 'http://example.com/')

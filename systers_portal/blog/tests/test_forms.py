@@ -11,7 +11,7 @@ from users.models import SystersUser
 class AddNewsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -40,7 +40,7 @@ class AddNewsFormTestCase(TestCase):
 class EditNewsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -72,7 +72,7 @@ class EditNewsFormTestCase(TestCase):
 class AddResourceFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -101,7 +101,7 @@ class AddResourceFormTestCase(TestCase):
 class EditResourceFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -133,7 +133,7 @@ class EditResourceFormTestCase(TestCase):
 class TagFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -159,7 +159,7 @@ class TagFormTestCase(TestCase):
 class ResourceTypeFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

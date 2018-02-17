@@ -1,3 +1,0 @@
-{% url "join_requests_meetup_location" meetup_location.slug as join_requests_url %}{{ systersuser }} has requested to join {{ meetup_location }}.
-
-To view all join requests, click here: {{ default_http_protocol }}://{{ current_site }}{{ join_requests_url }}

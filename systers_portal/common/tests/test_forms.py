@@ -13,6 +13,7 @@ class ModelFormWithHelperTestCase(TestCase):
         class FooForm(ModelFormWithHelper):
             class Meta:
                 model = User
+                fields = "__all__"
 
         self.assertRaises(ImproperlyConfigured, FooForm, {})
 
@@ -21,6 +22,7 @@ class ModelFormWithHelperTestCase(TestCase):
         class FooForm(ModelFormWithHelper):
             class Meta:
                 model = User
+                fields = "__all__"
                 helper_class = FormHelper
 
         form = FooForm()
@@ -29,6 +31,7 @@ class ModelFormWithHelperTestCase(TestCase):
         class BarForm(ModelFormWithHelper):
             class Meta:
                 model = User
+                fields = "__all__"
                 helper_class = SubmitCancelFormHelper
                 helper_cancel_href = "some/url/"
 

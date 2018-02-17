@@ -67,8 +67,8 @@ class UtilsTestCase(TestCase):
 
     def test_assign_permissions(self):
         """Test assignment of permissions to community groups"""
-        User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get(user=self.user)
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              admin=systers_user)
         name = community.name

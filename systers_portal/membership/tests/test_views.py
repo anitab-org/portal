@@ -11,7 +11,7 @@ from users.models import SystersUser
 class CommunityJoinRequestListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -42,7 +42,7 @@ class CommunityJoinRequestListViewTestCase(TestCase):
 class ApproveCommunityJoinRequestViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -64,7 +64,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
                       kwargs={'slug': 'foo', 'pk': join_request.pk})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'community/foo/join_requests/')
+        self.assertRedirects(response, '/community/foo/join_requests/')
         for message in response.context['messages']:
             self.assertEqual(message.tags, "info")
             self.assertTrue(
@@ -84,7 +84,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
                       kwargs={'slug': 'foo', 'pk': join_request.pk})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'community/foo/join_requests/')
+        self.assertRedirects(response, '/community/foo/join_requests/')
         for message in response.context['messages']:
             self.assertEqual(message.tags, "success")
             self.assertTrue(
@@ -108,7 +108,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
                       kwargs={'slug': 'foo', 'pk': join_request.pk})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'community/foo/join_requests/')
+        self.assertRedirects(response, '/community/foo/join_requests/')
         for message in response.context['messages']:
             self.assertEqual(message.tags, "success")
             self.assertTrue(
@@ -123,7 +123,7 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
 class RejectCommunityJoinRequestViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -146,7 +146,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
                       kwargs={'slug': 'foo', 'pk': join_request.pk})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'community/foo/join_requests/')
+        self.assertRedirects(response, '/community/foo/join_requests/')
         for message in response.context['messages']:
             self.assertEqual(message.tags, "info")
             self.assertTrue(
@@ -165,7 +165,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
                       kwargs={'slug': 'foo', 'pk': join_request.pk})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertRedirects(response, 'community/foo/join_requests/')
+        self.assertRedirects(response, '/community/foo/join_requests/')
         for message in response.context['messages']:
             self.assertEqual(message.tags, "info")
             self.assertTrue(
@@ -178,7 +178,7 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
 class RequestJoinCommunityViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -240,7 +240,7 @@ class RequestJoinCommunityViewTestCase(TestCase):
 class CancelCommunityJoinRequestView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -294,7 +294,7 @@ class CancelCommunityJoinRequestView(TestCase):
 class LeaveCommunityViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -344,7 +344,7 @@ class LeaveCommunityViewTestCase(TestCase):
 class TransferOwnershipViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -410,7 +410,7 @@ class TransferOwnershipViewTestCase(TestCase):
 class RemoveCommunityMemberViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

@@ -13,7 +13,7 @@ from users.models import SystersUser
 class ViewCommunityProfileViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -39,7 +39,7 @@ class EditCommunityProfileViewTestCase(TestCase):
         post_delete.connect(remove_community_groups, sender=Community,
                             dispatch_uid="remove_groups")
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -103,7 +103,7 @@ class EditCommunityProfileViewTestCase(TestCase):
 class CommunityLandingViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -126,7 +126,7 @@ class CommunityLandingViewTestCase(TestCase):
 class CommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -234,7 +234,7 @@ class CommunityPageViewTestCase(TestCase):
 class AddCommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -284,7 +284,7 @@ class AddCommunityPageViewTestCase(TestCase):
 class EditCommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -335,7 +335,7 @@ class EditCommunityPageViewTestCase(TestCase):
 class DeleteCommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -373,7 +373,7 @@ class DeleteCommunityPageViewTestCase(TestCase):
 class CommunityUsersViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -429,7 +429,7 @@ class CommunityUsersViewTestCase(TestCase):
 class UserPermissionGroupsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

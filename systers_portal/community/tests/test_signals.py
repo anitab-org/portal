@@ -19,7 +19,7 @@ class SignalsTestCase(TestCase):
         """Test handling of operations required when saving a Community
         object"""
         user1 = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user1)
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              admin=systers_user)
         groups_count = Group.objects.count()
@@ -49,8 +49,8 @@ class SignalsTestCase(TestCase):
 
     def test_remove_community_groups(self):
         """Test the removal of groups when a community is deleted"""
-        User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get(user=self.user)
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              admin=systers_user)
         groups_count = Group.objects.count()

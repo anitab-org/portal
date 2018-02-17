@@ -1,5 +1,0 @@
-{% url "view_meetup" meetup_location.slug meetup.slug as meetup_url %}{% url "view_support_request" meetup_location.slug meetup.slug support_request.pk as support_request_url %}Your support request for the meetup {{ meetup }} has been approved.
-
-To view the support request, click here: {{ default_http_protocol }}://{{ current_site }}{{ support_request_url }}
-
-To view {{ meetup }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_url }}

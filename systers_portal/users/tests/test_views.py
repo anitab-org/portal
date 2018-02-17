@@ -8,9 +8,10 @@ from users.models import SystersUser
 
 
 class UserViewTestCase(TestCase):
+
     def setUp(self):
-        User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.client = Client()
 
     def test_user_view(self):
@@ -94,9 +95,10 @@ class UserViewTestCase(TestCase):
 
 
 class UserProfileViewTestCase(TestCase):
+
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.client = Client()
 
     def test_get_user_profile_view(self):
@@ -172,5 +174,6 @@ class UserProfileViewTestCase(TestCase):
         User.objects.create_user(username='bar', password='foobar')
         bar_profile_url = reverse('user_profile', kwargs={'username': 'bar'})
         response = self.client.get(bar_profile_url)
-        self.assertContains(response, "Edit profile of bar")
+
+        self.assertContains(response, "Edit my profile")
         self.assertContains(response, "/users/bar/")
