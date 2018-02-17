@@ -7,6 +7,13 @@ from users.models import SystersUser
 
 class UserForm(forms.ModelForm):
     """User form combined with SystersUserForm"""
+    first_name = forms.CharField(max_length=20,
+                                 help_text='Maximum characters allowed: 20',
+                                 required=False)
+    last_name = forms.CharField(max_length=20,
+                                help_text='Maximum characters allowed: 20',
+                                required=False)
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name')
