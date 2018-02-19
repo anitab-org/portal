@@ -11,9 +11,6 @@
         {% if perms.meetup.delete_meetuplocation %}
           <li><a href="{% url 'delete_meetup_location' meetup_location.slug %}">Delete Meetup Location</a></li>
         {% endif %}
-        {% if perms.meetup.add_meetuplocation %}
-          <li><a href="{% url 'add_meetup_location' %}">Add New Meetup Location</a></li>
-        {% endif %}
         {% if "add_meetup_location_member" in meetup_location_perms %}
           <li><a href="{% url 'add_member_meetup_location' meetup_location.slug %}">Add New Member</a></li>
         {% endif %}
