@@ -757,7 +757,6 @@ class ApproveRequestMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, T
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        print(response.url)
         self.assertTrue(response.url.endswith('view-requests/'))
 
     def test_approve_request_meetup_location_view_slug(self):
@@ -770,7 +769,6 @@ class ApproveRequestMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, T
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        print(response.url)
         self.assertTrue(response.url.endswith('view-requests/'))
 
     def test_approve_request_meetup_location_view_location(self):
@@ -831,7 +829,6 @@ class RejectMeetupLocationRequestViewTestCase(MeetupLocationViewBaseTestCase, Te
         self.client.login(username='foobar', password='foobar')
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
-        print(response.url)
         self.assertTrue(response.url.endswith('view-requests/'))
         # Test non existent url
         nonexistent_url = reverse('reject_meetup_location_request',

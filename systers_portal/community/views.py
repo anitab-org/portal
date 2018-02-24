@@ -134,8 +134,7 @@ class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,
         for field_name, field_value in fields:
             setattr(new_community, field_name, field_value)
 
-        self.systersuser = get_object_or_404(
-            SystersUser, user=community_request.user)
+        self.systersuser = community_request.user
         new_community.admin = self.systersuser
         self.admin = get_object_or_404(SystersUser, user=self.request.user)
         status, message, level = self.process_request()

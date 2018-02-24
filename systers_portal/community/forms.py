@@ -14,6 +14,12 @@ class AddCommunityForm(ModelFormWithHelper):
     """ Form to create a new Community by admin. """
     class Meta:
         model = Community
+        fields = ('name', 'slug', 'order', 'email', 'mailing_list',
+                  'parent_community', 'website', 'facebook', 'googleplus',
+                  'twitter')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'index' %}"
+
     def __init__(self, *args, **kwargs):
         self.admin = kwargs.pop('admin')
         super(AddCommunityForm, self).__init__(*args, **kwargs)
