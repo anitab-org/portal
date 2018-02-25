@@ -99,6 +99,7 @@ class PermissionsTestCase(TestCase):
             "delete_community_systersuser",
             "approve_community_joinrequest",
             "change_community",
+            "add_community",
         ]
         self.assertCountEqual(community_admin_permissions, permissions)
 

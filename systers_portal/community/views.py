@@ -6,8 +6,9 @@ from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
 from common.mixins import UserDetailsMixin
-from community.forms import (CommunityForm, AddCommunityPageForm,
-                             EditCommunityPageForm, PermissionGroupsForm)
+from community.forms import (EditCommunityForm, AddCommunityPageForm,
+                             EditCommunityPageForm, PermissionGroupsForm,
+                             AddCommunityForm)
 from community.mixins import CommunityMenuMixin
 from community.models import Community, CommunityPage
 from users.models import SystersUser
@@ -49,7 +50,7 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
     """Edit community profile view"""
     template_name = "community/edit_profile.html"
     model = Community
-    form_class = CommunityForm
+    form_class = EditCommunityForm
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
@@ -94,6 +95,33 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         :return: string CommunityPage slug
         """
         return self.kwargs['page_slug']
+
+
+class AddCommunityView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+
+    template_name = "community/add_community.html"
+    model = Community
+    form_class = AddCommunityForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        return reverse("view_community_landing",
+                       kwargs={"slug": self.object.slug})
+
+    def get_form_kwargs(self):
+        """Add admin to the form kwargs.
+        Used to autofill form fields with admin without
+        explicitly filling them up in the form."""
+        kwargs = super(AddCommunityView, self).get_form_kwargs()
+        kwargs.update({'admin': self.systersuser})
+        return kwargs
+
+    def check_permissions(self, request):
+        """Check if the request user has the permissions to add a new community.
+        The permission holds true for superusers."""
+        self.systersuser = get_object_or_404(SystersUser, user=request.user)
+        return request.user.has_perm("add_community")
 
 
 class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
