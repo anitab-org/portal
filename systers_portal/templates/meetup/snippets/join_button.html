@@ -1,5 +1,5 @@
 {% if user.is_authenticated and user.is_active %}
-{% if user in meetup_location.members.all or user in meetup_location.organizers.all %}
+{% if user not in meetup_location.members.all or user not in meetup_location.organizers.all %}
   <div class="sidebar-module mb40">
     <a class="btn btn-success btn-block" href="{% url "join_meetup_location" meetup_location.slug user.username %}" role="button">Join Meetup Location</a>
   </div>
