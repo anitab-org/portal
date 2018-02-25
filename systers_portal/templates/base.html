@@ -62,18 +62,20 @@
               {% endif %}
           </ul>
         </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetups <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                <li {% if url == request.path %}class="active"{% endif %}>         
-                  <a role="menuitem" href="{% url 'list_meetup_location' %}">Meetup Locations</a>
-                </li>
-                {% if user.is_staff %}
-                <li {% if url == request.path %}class="active"{% endif %}>
-                  <a role="menuitem" href="{% url 'add_meetup_location' %}">Add New Meetup Location</a>
-                </li>
-                {% endif %}
-              </ul>
+        <li {% if '/meetup/' in request.path %}class="active"{% endif %} class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetups <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            {% url 'list_meetup_location' as url %}
+            <li {% if url == request.path %}class="active"{% endif %}>
+              <a role="menuitem" href="{{ url }}">Meetup Locations</a>
+            </li>
+            {% if user.is_staff %}
+            {% url 'add_meetup_location' as url %}
+            <li {% if url == request.path %}class="active"{% endif %}>
+              <a role="menuitem" href="{{ url }}">Add New Meetup Location</a>
+            </li>
+            {% endif %}
+          </ul>
         </li>
         <li><a href="http://wiki.systers.org/open-source/doku.php/portal" target="blank_">Wiki</a></li>
         {% url 'contact' as url %}
