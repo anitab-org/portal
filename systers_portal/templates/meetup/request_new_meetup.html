@@ -1,0 +1,46 @@
+{% extends "meetup/base.html" %}
+
+{% block title %}
+  - Request a Meetup
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" type="text/css" href="/static/css/date-time-picker/classic.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/date-time-picker/classic.date.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/date-time-picker/classic.time.css">
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block meetup_location_page_content %}
+  <div class="mt20 mb40"></div>
+  <div class="row ml20">
+    <div class="col-md-12">
+      <h1>Request a meeetup in {{ meetup_location.name }}</h1>
+      <hr/>
+    </div>
+    <div class="col-md-12">
+      <div class="well">
+        {{ form.media }}
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/libs/date-time-picker/picker.js"></script>
+<script src="/static/js/libs/date-time-picker/picker.date.js"></script>
+<script src="/static/js/libs/date-time-picker/picker.time.js"></script>
+<script type="text/javascript">
+  $('.datepicker').pickadate({
+    format: 'yyyy-mm-dd',
+    formatSubmit: 'yyyy-mm-dd',
+  })
+
+  $('.timepicker').pickatime({
+    format: 'HH:i',
+    formatSubmit: 'HH:i',
+  })
+</script>
+
+{% endblock %}
