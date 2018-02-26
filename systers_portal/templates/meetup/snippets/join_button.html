@@ -1,7 +1,17 @@
 {% if user.is_authenticated and user.is_active %}
-{% if user not in meetup_location.members.all or user not in meetup_location.organizers.all %}
+{% if user.systersuser in meetup_location.members.all %}
   <div class="sidebar-module mb40">
+    <a href="{% url "remove_member_meetup_location" meetup_location.slug user.username %}" role="button" class="btn btn-danger btn-block">Leave Meetup Location</a>
+  </div>
+  {% elif user.systersuser in meetup_location.organizers.all %}
+  <div class="sidebar-module mb40">
+    <a href="{% url "remove_organizer_meetup_location" meetup_location.slug user.username %}" role="button" class="btn btn-warning btn-block">Leave as Organizer</a>
+    <br>
+    <a href="{% url "remove_member_meetup_location" meetup_location.slug user.username %}" role="button" class="btn btn-danger btn-block">Leave Meetup Location</a>
+  </div>
+  {% else %}
+	<div class="sidebar-module mb40">
     <a class="btn btn-success btn-block" href="{% url "join_meetup_location" meetup_location.slug user.username %}" role="button">Join Meetup Location</a>
   </div>
   {% endif %}
-{% endif %}
+  {% endif %}
