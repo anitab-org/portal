@@ -231,6 +231,57 @@ class CommunityPageViewTestCase(TestCase):
         self.assertContains(response, "Delete current page")
 
 
+class AddCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+
+    def test_get_add_community_view(self):
+        """Test GET request to add a new community"""
+        url = reverse("add_community")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        admin = User.objects.create_superuser(username='foo-bar',
+                                              email='abcd@gmail.com', password='foobar')
+        self.admin_systers_user = SystersUser.objects.get(user=admin)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_add_community_view(self):
+        """Test POST request to add a new community"""
+        url = reverse("add_community")
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(
+            url, data={"slug": "baz", "name": 'FoobarCommunity'})
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        data = {'name': 'Bar',
+                'slug': 'foo',
+                'order': '1',
+                'admin': self.systers_user}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 403)
+
+        admin = User.objects.create_superuser(username='foo-bar',
+                                              email='abcd@gmail.com', password='foobar')
+        self.admin_systers_user = SystersUser.objects.get(user=admin)
+        self.client.login(username='foo-bar', password='foobar')
+        data = {'name': 'Bar',
+                'slug': 'foo',
+                'order': '1'}
+        response = self.client.post(url, data=data)
+        self.assertEqual(response.status_code, 302)
+
+
 class AddCommunityPageViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')

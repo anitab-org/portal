@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="mt20 mb40">
+    <h2 class="ml15">Unapproved Meetup Location Requests</h2>
+    {% for meetup_location_request in object_list %}
+      <div class="mt20 ml15 box-container box-body">
+        <p>
+          <a href="{% url 'view_meetup_location_request' meetup_location_request.slug %}">{{ meetup_location_request.name}}</a>
+        </p>
+        <p>
+          Requested by 
+          <a href="{% url 'user' meetup_location_request.user.user.username %}">
+            {{ meetup_location_request.user }}
+          </a>
+        </p>
+        
+      </div>
+    {% endfor %}
+    {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}

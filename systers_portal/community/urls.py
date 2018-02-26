@@ -4,9 +4,12 @@ from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ViewCommunityProfileView, CommunityPageView,
                              AddCommunityPageView, EditCommunityPageView,
                              DeleteCommunityPageView, CommunityUsersView,
-                             UserPermissionGroupsView)
+                             UserPermissionGroupsView, AddCommunityView)
 
 urlpatterns = [
+
+    url(r'add_community/$', AddCommunityView.as_view(),
+        name='add_community'),
     url(r'^(?P<slug>[\w-]+)/$', CommunityLandingView.as_view(),
         name='view_community_landing'),
     url(r'^(?P<slug>[\w-]+)/profile/$', ViewCommunityProfileView.as_view(),

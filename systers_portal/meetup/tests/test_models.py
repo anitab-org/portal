@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils import timezone
 from cities_light.models import City, Country
 
-from meetup.models import MeetupLocation, Meetup, Rsvp, SupportRequest
+from meetup.models import MeetupLocation, Meetup, Rsvp, SupportRequest, RequestMeetupLocation
 from users.models import SystersUser
 
 
@@ -12,17 +12,27 @@ class MeetupBaseTestCase():
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Foo', display_name='Foo',
                                             country=country)
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
             description="It's a test location", sponsors="BarBaz")
-        self.user = User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.meetup_location_request = RequestMeetupLocation.objects.create(
+            name="Bar Systers", slug="bar", location=self.location,
+            description="This is a test meetup location request",
+            user=self.systers_user)
 
 
 class MeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
     def test_str(self):
         """Test MeetupLocation object str/unicode representation"""
         self.assertEqual(str(self.meetup_location), "Foo Systers")
+
+
+class RequestMeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
+    def test_str(self):
+        """Test MeetupLocation object str/unicode representation"""
+        self.assertEqual(str(self.meetup_location_request), "Bar Systers")
 
 
 class MeetupTestCase(MeetupBaseTestCase, TestCase):
