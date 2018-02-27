@@ -170,6 +170,22 @@ class AddMeetupLocationForm(ModelFormWithHelper):
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'list_meetup_location' %}"
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(AddMeetupLocationForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add the request user to the meetup location's members,
+           leader and moderators to the instance"""
+        instance = super(AddMeetupLocationForm, self).save(commit=False)
+        systersuser = SystersUser.objects.get(user=self.user)
+        if commit:
+            instance.leader = systersuser
+            instance.save()
+            instance.members.add(systersuser)
+            instance.moderators.add(systersuser)
+        return instance
+
 
 class EditMeetupLocationForm(ModelFormWithHelper):
     """Form to edit Meetup Location"""

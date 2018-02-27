@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 
 from meetup.models import MeetupLocation
-from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR
+from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR, COMMUNITY_LEADER
 from meetup.utils import (create_groups, assign_permissions, remove_groups)
 from users.models import SystersUser
 
@@ -16,6 +16,9 @@ def manage_meetup_location_groups(sender, instance, created, **kwargs):
     if created:
         groups = create_groups(name)
         assign_permissions(instance, groups)
+        community_leader_group = next(
+            g for g in groups if g.name == COMMUNITY_LEADER.format(name))
+        instance.leader.join_group(community_leader_group)
         instance.save()
 
 
@@ -40,8 +43,8 @@ def add_meetup_location_members(sender, **kwargs):
 
 
 @receiver(m2m_changed, sender=MeetupLocation.moderators.through,
-          dispatch_uid="add_organizers")
-def add_meetup_location_organizers(sender, **kwargs):
+          dispatch_uid="add_moderators")
+def add_meetup_location_moderators(sender, **kwargs):
     """Add permissions to a user when she is added as a Meetup Location moderator"""
     instance = kwargs.pop('instance', None)
     action = kwargs.pop('action', None)
@@ -68,8 +71,8 @@ def delete_meetup_location_members(sender, **kwargs):
 
 
 @receiver(m2m_changed, sender=MeetupLocation.moderators.through,
-          dispatch_uid="delete_organizers")
-def delete_meetup_location_organizers(sender, **kwargs):
+          dispatch_uid="delete_moderators")
+def delete_meetup_location_moderators(sender, **kwargs):
     """Delete permissions from a user when she is removed as a Meetup Location moderator"""
     instance = kwargs.pop('instance', None)
     action = kwargs.pop('action', None)

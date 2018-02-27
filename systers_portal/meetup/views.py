@@ -287,7 +287,7 @@ class ApproveRequestMeetupLocationView(LoginRequiredMixin, StaffuserRequiredMixi
         """Supply the redirect URL in case of successful approval.
         * Creates a new RequestMeetupLocation object and copy fields,
             values from RequestMeetupLocation object
-        * Adds the requestor as the meetup location organizer
+        * Adds the requestor as the meetup location moderator
         * Sets the RequestMeetupLocation object's is_approved field to True.
         """
         meetup_location_request = get_object_or_404(
@@ -298,6 +298,7 @@ class ApproveRequestMeetupLocationView(LoginRequiredMixin, StaffuserRequiredMixi
         new_meetup_location.location = meetup_location_request.location
         new_meetup_location.description = meetup_location_request.description
         systersuser = meetup_location_request.user
+        new_meetup_location.leader = systersuser
 
         meetup_location_request.approved_by = get_object_or_404(
             SystersUser, user=self.request.user)
@@ -309,7 +310,8 @@ class ApproveRequestMeetupLocationView(LoginRequiredMixin, StaffuserRequiredMixi
         messages.add_message(self.request, level, message)
         if status == OK:
             new_meetup_location.save()
-            new_meetup_location.organizers.add(systersuser)
+            new_meetup_location.members.add(systersuser)
+            new_meetup_location.moderators.add(systersuser)
             meetup_location_request.save()
             return reverse('about_meetup_location', kwargs={'slug': new_meetup_location.slug})
         else:
@@ -417,11 +419,11 @@ class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
     paginate_by = 50
 
     def get_context_data(self, **kwargs):
-        """Add list of members and organizers to the context"""
+        """Add list of members and moderators to the context"""
         context = super(MeetupLocationMembersView, self).get_context_data(**kwargs)
-        organizer_list = self.meetup_location.organizers.all()
-        context['organizer_list'] = organizer_list
-        context['member_list'] = self.meetup_location.members.exclude(id__in=organizer_list)
+        moderator_list = self.meetup_location.moderators.all()
+        context['moderator_list'] = moderator_list
+        context['member_list'] = self.meetup_location.members.exclude(id__in=moderator_list)
         return context
 
     def get_meetup_location(self):
@@ -577,14 +579,14 @@ class RemoveMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        """Remove the member from 'member' and 'organizer' lists and redirect to the members page
+        """Remove the member from 'member' and 'moderator' lists and redirect to the members page
         of the meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
-        organizers = self.meetup_location.organizers.all()
-        if systersuser in organizers and len(organizers) > 1:
-            self.meetup_location.organizers.remove(systersuser)
-        if systersuser not in self.meetup_location.organizers.all():
+        moderators = self.meetup_location.moderators.all()
+        if systersuser in moderators and len(moderators) > 1:
+            self.meetup_location.moderators.remove(systersuser)
+        if systersuser not in self.meetup_location.moderators.all():
             self.meetup_location.members.remove(systersuser)
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
@@ -625,21 +627,21 @@ class AddMeetupLocationMemberView(FormValidMessageMixin, FormInvalidMessageMixin
         return request.user.has_perm('add_meetup_location_member', self.meetup_location)
 
 
-class RemoveMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMixin,
+class RemoveMeetupLocationModeratorView(LoginRequiredMixin, PermissionRequiredMixin,
                                         MeetupLocationMixin, RedirectView):
-    """Remove the 'organizer' status of a meetup location member"""
+    """Remove the 'moderator' status of a meetup location member"""
     model = MeetupLocation
     permanent = False
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        """Remove the member from the 'organizer' list and redirect to the members page of the
+        """Remove the member from the 'moderator' list and redirect to the members page of the
         meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
-        organizers = self.meetup_location.organizers.all()
-        if systersuser in organizers and len(organizers) > 1:
-            self.meetup_location.organizers.remove(systersuser)
+        moderators = self.meetup_location.moderators.all()
+        if systersuser in moderators and len(moderators) > 1:
+            self.meetup_location.moderators.remove(systersuser)
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
@@ -647,27 +649,27 @@ class RemoveMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMi
         return self.meetup_location
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to remove an organizer from the meetup
+        """Check if the request user has the permission to remove an moderator from the meetup
         location. The permission holds true for superusers."""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
-        return request.user.has_perm('delete_meetup_location_organizer', self.meetup_location)
+        return request.user.has_perm('delete_meetup_location_moderator', self.meetup_location)
 
 
-class MakeMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMixin,
+class MakeMeetupLocationModeratorView(LoginRequiredMixin, PermissionRequiredMixin,
                                       MeetupLocationMixin, RedirectView):
-    """Make a meetup location member an organizer of the location"""
+    """Make a meetup location member an moderator of the location"""
     model = MeetupLocation
     permanent = False
     raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
-        """Add the member to the 'organizer' list and send her a notification email. Redirect to
+        """Add the member to the 'moderator' list and send her a notification email. Redirect to
         the members page of the meetup location"""
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
-        organizers = self.meetup_location.organizers.all()
-        if systersuser not in organizers:
-            self.meetup_location.organizers.add(systersuser)
+        moderators = self.meetup_location.moderators.all()
+        if systersuser not in moderators:
+            self.meetup_location.moderators.add(systersuser)
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
@@ -675,10 +677,10 @@ class MakeMeetupLocationOrganizerView(LoginRequiredMixin, PermissionRequiredMixi
         return self.meetup_location
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to add an organizer to the meetup
+        """Check if the request user has the permission to add an moderator to the meetup
         location. The permission holds true for superusers."""
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
-        return request.user.has_perm('add_meetup_location_organizer', self.meetup_location)
+        return request.user.has_perm('add_meetup_location_moderator', self.meetup_location)
 
 
 class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectView):
@@ -696,7 +698,7 @@ class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectVi
 
         * if the user is not a meetup location member and has not requested to join the location
           before, add the user's join request, display the corresponding message and send a
-          notification to all organizers
+          notification to all moderators
         * if the user is not a meetup location member and has requested to join the location
           before, display the corresponding message
         * if the user is aleady a member of the meetup location, display the corresponding message
@@ -811,11 +813,16 @@ class AddMeetupLocationView(FormValidMessageMixin, FormInvalidMessageMixin, Logi
     raise_exception = True
 
     def get_success_url(self):
-        """Add the request user to the meetup location's members and organizers and redirect to
-        the about page in case of successful addition"""
-        self.object.members.add(self.systersuser)
-        self.object.organizers.add(self.systersuser)
+        """Redirect to the meetup location's about page in case of successful submission"""
         return reverse("about_meetup_location", kwargs={"slug": self.object.slug})
+
+    def get_form_kwargs(self):
+        """Add request user to the form kwargs.
+        Used to autofill form fields with requestor without
+        explicitly filling them up in the form."""
+        kwargs = super(AddMeetupLocationView, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
     def get_meetup_location(self):
         """Add MeetupLocation object to the context"""
