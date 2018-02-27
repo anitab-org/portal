@@ -13,12 +13,14 @@ class MeetupLocation(models.Model):
     location = models.ForeignKey(City, verbose_name="Location")
     description = RichTextField(verbose_name="Description")
     email = models.EmailField(max_length=255, blank=True, verbose_name="Email")
-    organizers = models.ManyToManyField(SystersUser,
-                                        related_name="Organizers",
-                                        verbose_name="Organizers")
+    leader = models.ForeignKey(SystersUser, null=True, blank=True, related_name='community_leader',
+                               verbose_name="Community leader")
+    moderators = models.ManyToManyField(SystersUser,
+                                        related_name="community_moderators",
+                                        verbose_name="Community Moderators")
     members = models.ManyToManyField(SystersUser, blank=True,
-                                     related_name="Members",
-                                     verbose_name="Members")
+                                     related_name="community_members",
+                                     verbose_name="Community Members")
     sponsors = RichTextField(verbose_name="Sponsors", blank=True)
     join_requests = models.ManyToManyField(SystersUser,
                                            related_name="Join_Requests",
@@ -29,8 +31,8 @@ class MeetupLocation(models.Model):
         permissions = (
             ('add_meetup_location_member', 'Add meetup location member'),
             ('delete_meetup_location_member', 'Delete meetup location member'),
-            ('add_meetup_location_organizer', 'Add meetup location organizer'),
-            ('delete_meetup_location_organizer', 'Delete meetup location organizer'),
+            ('add_meetup_location_moderator', 'Add meetup location moderator'),
+            ('delete_meetup_location_moderator', 'Delete meetup location moderator'),
             ('approve_meetup_location_joinrequest', 'Approve meetup location join request'),
             ('reject_meetup_location_joinrequest', 'Reject meetup location join request'),
             ('approve_meetup_location_meetuprequest', 'Approve meetup location meetup request'),
