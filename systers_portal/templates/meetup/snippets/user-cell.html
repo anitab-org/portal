@@ -25,14 +25,14 @@
       Remove
     </a>
   {% endif %}
-  {% if users == "Members" and "add_meetup_location_organizer" in meetup_location_perms %}
-    <a href="{% url "make_organizer_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-primary btn-xs">
-      Make Organizer
+  {% if users == "Members" and "add_meetup_location_moderator" in meetup_location_perms %}
+    <a href="{% url "make_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-primary btn-xs">
+      Make Moderator
     </a>
   {% endif %}
-  {% if users == "Organizers" and "delete_meetup_location_organizer" in meetup_location_perms %}
-    <a href="{% url "remove_organizer_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-warning btn-xs">
-      Remove Organizer
+  {% if users == "Moderators" and "delete_meetup_location_moderator" in meetup_location_perms %}
+    <a href="{% url "remove_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-warning btn-xs">
+      Remove Moderator
     </a>
   {% endif %}
 </div>
