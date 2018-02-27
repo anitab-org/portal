@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404
 
 from meetup.models import MeetupLocation
-from meetup.constants import MEMBER, ORGANIZER
+from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR
 from meetup.utils import (create_groups, assign_permissions, remove_groups)
 from users.models import SystersUser
 
@@ -34,7 +34,7 @@ def add_meetup_location_members(sender, **kwargs):
     pk_set = kwargs.pop('pk_set', None)
     if action == "pre_add":
         systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
-        members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
+        members_group = get_object_or_404(Group, name=COMMUNITY_MEMBER.format(instance.name))
         if not systersuser.is_group_member(members_group.name):
             systersuser.join_group(members_group)
 
@@ -48,7 +48,7 @@ def add_meetup_location_organizers(sender, **kwargs):
     pk_set = kwargs.pop('pk_set', None)
     if action == "pre_add":
         systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
-        organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
+        organizers_group = get_object_or_404(Group, name=COMMUNITY_MODERATOR.format(instance.name))
         if not systersuser.is_group_member(organizers_group.name):
             systersuser.join_group(organizers_group)
 
@@ -62,7 +62,7 @@ def delete_meetup_location_members(sender, **kwargs):
     pk_set = kwargs.pop('pk_set', None)
     if action == "pre_remove":
         systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
-        members_group = get_object_or_404(Group, name=MEMBER.format(instance.name))
+        members_group = get_object_or_404(Group, name=COMMUNITY_MEMBER.format(instance.name))
         if systersuser.is_group_member(members_group.name):
             systersuser.leave_group(members_group)
 
@@ -76,6 +76,6 @@ def delete_meetup_location_organizers(sender, **kwargs):
     pk_set = kwargs.pop('pk_set', None)
     if action == "pre_remove":
         systersuser = SystersUser.objects.get(pk=list(pk_set)[0])
-        organizers_group = get_object_or_404(Group, name=ORGANIZER.format(instance.name))
+        organizers_group = get_object_or_404(Group, name=COMMUNITY_MODERATOR.format(instance.name))
         if systersuser.is_group_member(organizers_group.name):
             systersuser.leave_group(organizers_group)

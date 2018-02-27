@@ -1,7 +1,7 @@
 # user groups
-MEMBER = "{0}: Member"
-ORGANIZER = "{0}: Organizer"
-ADMIN = "{0}: Admin"
+COMMUNITY_MEMBER = "{0}: Community Member"
+COMMUNITY_MODERATOR = "{0}: Community Moderator"
+COMMUNITY_LEADER = "{0}: Community Leader"
 
 # STATUS constants
 LOCATION_ALREADY_EXISTS = "location_already_exists"

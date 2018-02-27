@@ -1,26 +1,22 @@
 from meetup.constants import *
 
-groups_templates = {"member": MEMBER,
-                    "organizer": ORGANIZER}
+groups_templates = {"community_member": COMMUNITY_MEMBER,
+                    "community_moderator": COMMUNITY_MODERATOR,
+                    "community_leader": COMMUNITY_LEADER}
 
-member_permissions = [
+community_member_permissions = [
     "add_meetup_rsvp",
     "add_supportrequest",
     "change_supportrequest",
     "delete_supportrequest"
 ]
 
-organizer_permissions = member_permissions + [
+community_moderator_permissions = community_member_permissions + [
     "add_meetup",
     "change_meetup",
     "delete_meetup",
-    "add_meetuplocation",
-    "change_meetuplocation",
-    "delete_meetuplocation",
     "add_meetup_location_member",
     "delete_meetup_location_member",
-    "add_meetup_location_organizer",
-    "delete_meetup_location_organizer",
     "approve_meetup_location_joinrequest",
     "reject_meetup_location_joinrequest",
     "approve_meetup_location_meetuprequest",
@@ -37,5 +33,14 @@ organizer_permissions = member_permissions + [
     "reject_support_request_comment"
 ]
 
-group_permissions = {"member": member_permissions,
-                     "organizer": organizer_permissions}
+community_leader_permissions = community_moderator_permissions + [
+    "change_meetuplocation",
+    "add_meetuplocation",
+    "add_meetup_location_moderator",
+    "delete_meetup_location_moderator",
+    "delete_meetuplocation",
+]
+
+group_permissions = {"community_member": community_member_permissions,
+                     "community_moderator": community_moderator_permissions,
+                     "community_leader": community_leader_permissions}
