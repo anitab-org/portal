@@ -218,7 +218,7 @@ class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
             self.assertTrue(
                 'Successfully'
                 in message.message)
-        
+
         self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
@@ -632,7 +632,7 @@ class AddMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
         self.client.login(username='foo', password='foobar')
-        
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
@@ -641,7 +641,7 @@ class AddMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -909,7 +909,7 @@ class EditMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -987,7 +987,7 @@ class AddMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1044,7 +1044,7 @@ class EditMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1127,7 +1127,7 @@ class RsvpMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1184,7 +1184,7 @@ class AddSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1233,7 +1233,7 @@ class EditSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1436,7 +1436,7 @@ class AddSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, TestC
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
@@ -1494,7 +1494,7 @@ class EditSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, Test
                 'Successfully'
                 in message.message)
 
-        self.assertEqual(response.status_code, 200)    
+        self.assertEqual(response.status_code, 200)
         for message in response.context['messages']:
             self.assertEqual(message.tags, "error")
             self.assertTrue(
