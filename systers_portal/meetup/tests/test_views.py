@@ -20,10 +20,9 @@ class MeetupLocationViewBaseTestCase(object):
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
         self.meetup_location.members.add(self.systers_user)
-        self.meetup_location.organizers.add(self.systers_user)
-
+        self.meetup_location.moderators.add(self.systers_user)
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
                                             date=timezone.now().date(),
                                             time=timezone.now().time(),
@@ -63,7 +62,7 @@ class MeetupLocationListViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
         self.meetup_location2 = MeetupLocation.objects.create(
             name="Bar Systers", slug="bar", location=self.location,
-            description="It's a test meetup location")
+            description="It's a test meetup location", leader=self.systers_user)
         self.meetup2 = Meetup.objects.create(title='Bar Baz', slug='bazbar',
                                              date=(timezone.now() + timezone.timedelta(2)).date(),
                                              time=timezone.now().time(),
@@ -101,7 +100,7 @@ class MeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
 
         self.meetup_location2 = MeetupLocation.objects.create(
             name="Bar Systers", slug="bar", location=self.location,
-            description="It's a test meetup location")
+            description="It's a test meetup location", leader=self.systers_user)
         incorrect_pair_url = reverse('view_meetup', kwargs={'slug': 'bar',
                                      'meetup_slug': 'foo-bar-baz'})
         response = self.client.get(incorrect_pair_url)
@@ -526,7 +525,7 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
         self.user2 = User.objects.create_user(username='baz', password='bazbar')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.members.add(self.systers_user2)
-        self.meetup_location.organizers.add(self.systers_user2)
+        self.meetup_location.moderators.add(self.systers_user2)
         self.user3 = User.objects.create_user(username='bar', password='barbar')
         self.systers_user3 = SystersUser.objects.get(user=self.user3)
         self.meetup_location.members.add(self.systers_user3)
@@ -536,8 +535,8 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
         Test remove Meetup Location member view for 3 cases:
 
         * removing only a member
-        * removing one of two members who are organizers
-        * removing member who is the only organizer
+        * removing one of two members who are moderators
+        * removing member who is the only moderator
         """
         url = reverse("remove_member_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'bar'})
@@ -563,7 +562,7 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 1)
-        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+        self.assertEqual(len(self.meetup_location.moderators.all()), 1)
 
         url = reverse("remove_member_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'foo'})
@@ -571,7 +570,7 @@ class RemoveMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, Tes
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 1)
-        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+        self.assertEqual(len(self.meetup_location.moderators.all()), 1)
 
 
 class AddMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
@@ -616,76 +615,76 @@ class AddMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, TestCa
         self.assertEqual(response.status_code, 302)
 
 
-class RemoveMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+class RemoveMeetupLocationModeratorViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
-        super(RemoveMeetupLocationOrganizerViewTestCase, self).setUp()
+        super(RemoveMeetupLocationModeratorViewTestCase, self).setUp()
         self.user2 = User.objects.create_user(username='baz', password='bazbar')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.members.add(self.systers_user2)
-        self.meetup_location.organizers.add(self.systers_user2)
+        self.meetup_location.moderators.add(self.systers_user2)
 
-    def test_view_remove_meetup_location_organizer_view(self):
+    def test_view_remove_meetup_location_moderator_view(self):
         """
-        Test remove Meetup Location organizer view for 2 cases:
+        Test remove Meetup Location moderator view for 2 cases:
 
-        * remove one of two organizers
-        * remove the only organizer
+        * remove one of two moderators
+        * remove the only moderator
         """
-        url = reverse("remove_organizer_meetup_location",
+        url = reverse("remove_moderator_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
 
         self.client.login(username='foo', password='foobar')
-        nonexistent_url = reverse("remove_organizer_meetup_location",
+        nonexistent_url = reverse("remove_moderator_meetup_location",
                                   kwargs={'slug': 'foo', 'username': 'barbaz'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
 
-        url = reverse("remove_organizer_meetup_location",
+        url = reverse("remove_moderator_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
-        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+        self.assertEqual(len(self.meetup_location.moderators.all()), 1)
 
-        url = reverse("remove_organizer_meetup_location",
+        url = reverse("remove_moderator_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'foo'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
-        self.assertEqual(len(self.meetup_location.organizers.all()), 1)
+        self.assertEqual(len(self.meetup_location.moderators.all()), 1)
 
 
-class MakeMeetupLocationOrganizerViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+class MakeMeetupLocationModeratorViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
     def setUp(self):
-        super(MakeMeetupLocationOrganizerViewTestCase, self).setUp()
+        super(MakeMeetupLocationModeratorViewTestCase, self).setUp()
         self.user2 = User.objects.create_user(username='baz', password='bazbar')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
         self.meetup_location.members.add(self.systers_user2)
 
-    def test_view_make_meetup_location_organizer_view(self):
-        """Test make Meetup Location organizer view for correct http response"""
-        url = reverse("make_organizer_meetup_location",
+    def test_view_make_meetup_location_moderator_view(self):
+        """Test make Meetup Location moderator view for correct http response"""
+        url = reverse("make_moderator_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
 
         self.client.login(username='foo', password='foobar')
-        nonexistent_url = reverse("make_organizer_meetup_location",
+        nonexistent_url = reverse("make_moderator_meetup_location",
                                   kwargs={'slug': 'foo', 'username': 'barbaz'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
 
-        url = reverse("make_organizer_meetup_location",
+        url = reverse("make_moderator_meetup_location",
                       kwargs={'slug': 'foo', 'username': 'baz'})
         response = self.client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertRedirects(response, '/meetup/foo/members/')
         self.assertEqual(len(self.meetup_location.members.all()), 2)
-        self.assertEqual(len(self.meetup_location.organizers.all()), 2)
+        self.assertEqual(len(self.meetup_location.moderators.all()), 2)
 
 
 class JoinMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
@@ -865,7 +864,7 @@ class AddMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('add_meetup_location')
         data = {'name': 'Bar Systers', 'slug': 'bar', 'location': self.location.id,
                 'description': "It's a new meetup location", 'sponsors': 'BaaBaa'}
-        response = self.client.post(url, data=data)
+        response = self.client.post(url, data=data, user=self.systers_user)
         self.assertEqual(response.status_code, 302)
         new_meetup_location = MeetupLocation.objects.get(slug='bar')
         self.assertTrue(new_meetup_location.name, 'Bar Systers')
@@ -1007,7 +1006,8 @@ class ApproveRequestMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, T
                       kwargs={'slug': 'bar'})
         MeetupLocation.objects.create(
             name="Bar Systers", slug="fooo", location=self.location2,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz",
+            leader=self.staff_systers_user)
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -1019,7 +1019,8 @@ class ApproveRequestMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, T
                       kwargs={'slug': 'bar'})
         MeetupLocation.objects.create(
             name="Fooo Systers", slug="bar", location=self.location2,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz",
+            leader=self.staff_systers_user)
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -1031,7 +1032,8 @@ class ApproveRequestMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, T
                       kwargs={'slug': 'bar'})
         MeetupLocation.objects.create(
             name="Fooo Systers", slug="fooo", location=self.location,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz",
+            leader=self.staff_systers_user)
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -1143,7 +1145,8 @@ class DeleteMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase)
         super(DeleteMeetupLocationViewTestCase, self).setUp()
         self.meetup_location2 = MeetupLocation.objects.create(
             name="Bar Systers", slug="bar", location=self.location,
-            description="It's another test meetup location", sponsors="BarBaz")
+            description="It's another test meetup location", sponsors="BarBaz",
+            leader=self.systers_user)
 
     def test_get_delete_meetup_location_view(self):
         """Test GET to confirm deletion of meetup location"""

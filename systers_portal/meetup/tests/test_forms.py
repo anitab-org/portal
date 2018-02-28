@@ -27,7 +27,7 @@ class MeetupFormTestCaseBase:
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
 
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foobarbaz',
                                             date=timezone.now().date(),
@@ -42,7 +42,7 @@ class RequestMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_request_meetup_location_form(self):
         # Testing form with invalid data
         invalid_data = {'name': 'def', 'location': 'Baz, Bar, AS'}
-        form = AddMeetupLocationForm(data=invalid_data)
+        form = AddMeetupLocationForm(data=invalid_data, user=self.user)
         self.assertFalse(form.is_valid())
         # Testing form with valid data
         location_id = self.location.id
@@ -196,13 +196,13 @@ class AddMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_meetup_location_form(self):
         """Test add Meetup Location form"""
         invalid_data = {'name': 'def', 'location': 'Baz, Bar, AS'}
-        form = AddMeetupLocationForm(data=invalid_data)
+        form = AddMeetupLocationForm(data=invalid_data, user=self.user)
         self.assertFalse(form.is_valid())
 
         location_id = self.location.id
         data = {'name': 'Bar Systers', 'slug': 'bar', 'location': location_id,
                 'description': 'test test test.', 'email': 'abc@def.com', 'sponsors': 'BaaBaa'}
-        form = AddMeetupLocationForm(data=data)
+        form = AddMeetupLocationForm(data=data, user=self.user)
         self.assertTrue(form.is_valid())
         form.save()
 

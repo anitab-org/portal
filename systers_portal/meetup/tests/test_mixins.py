@@ -1,19 +1,24 @@
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.views.generic import TemplateView
 from cities_light.models import City, Country
 
 from meetup.mixins import MeetupLocationMixin
 from meetup.models import MeetupLocation
+from users.models import SystersUser
 
 
 class MeetupLocationMixinTestCase(TestCase):
     def setUp(self):
+        user = User.objects.create_user(username='foo', password='foobar',
+                                        email='user@test.com')
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Foo', display_name='Foo', country=country)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test location", sponsors="BarBaz")
+            description="It's a test location", sponsors="BarBaz", leader=systers_user)
 
     def test_get_context_data_no_meetup_location(self):
         """Test mixin with no meetup_location"""

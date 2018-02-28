@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from meetup.constants import (MEMBER, ORGANIZER, LOCATION_ALREADY_EXISTS_MSG,
+from meetup.constants import (COMMUNITY_MEMBER, COMMUNITY_MODERATOR, LOCATION_ALREADY_EXISTS_MSG,
                               SLUG_ALREADY_EXISTS_MSG, NAME_ALREADY_EXISTS_MSG,
                               LOCATION_ALREADY_EXISTS, SLUG_ALREADY_EXISTS,
                               NAME_ALREADY_EXISTS, OK, SUCCESS_MSG,
@@ -11,15 +11,15 @@ class ConstantsTestCase(TestCase):
     def setUp(self):
         self.bar = "Bar"
 
-    def test_member_constant(self):
-        """Test MEMBER constant value"""
-        member = MEMBER.format(self.bar)
-        self.assertEqual(member, "Bar: Member")
+    def test_community_member_constant(self):
+        """Test COMMUNITY_MEMBER constant value"""
+        member = COMMUNITY_MEMBER.format(self.bar)
+        self.assertEqual(member, "Bar: Community Member")
 
-    def test_organizer_constant(self):
-        """Test ORGANIZER constant value"""
-        organizer = ORGANIZER.format(self.bar)
-        self.assertEqual(organizer, "Bar: Organizer")
+    def test_community_moderator_constant(self):
+        """Test COMMUNITY_MODERATOR constant value"""
+        moderator = COMMUNITY_MODERATOR.format(self.bar)
+        self.assertEqual(moderator, "Bar: Community Moderator")
 
     def test_location_already_exists_msg_constant(self):
         location_already_exists_msg = LOCATION_ALREADY_EXISTS_MSG.format(

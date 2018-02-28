@@ -1,5 +1,5 @@
 from django.test import TestCase
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from guardian.shortcuts import get_perms
 from cities_light.models import City, Country
 
@@ -7,6 +7,7 @@ from meetup.models import MeetupLocation
 from meetup.permissions import groups_templates, group_permissions
 from meetup.utils import (create_groups, assign_permissions, remove_groups,
                           get_groups)
+from users.models import SystersUser
 
 
 class UtilsTestCase(TestCase):
@@ -48,11 +49,14 @@ class UtilsTestCase(TestCase):
 
     def test_assign_permissions(self):
         """Test assignment of permissions to meetup location groups"""
+        user = User.objects.create_user(username='foo', password='foobar',
+                                        email='user@test.com')
+        systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
         meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=location,
-            description="It's a test meetup location", sponsors="BarBaz")
+            description="It's a test meetup location", sponsors="BarBaz", leader=systers_user)
         name = meetup_location.name
         groups = create_groups(name)
         assign_permissions(meetup_location, groups)

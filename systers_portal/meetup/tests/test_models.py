@@ -17,7 +17,7 @@ class MeetupBaseTestCase():
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test location", sponsors="BarBaz")
+            description="It's a test location", sponsors="BarBaz", leader=self.systers_user)
         self.meetup_location_request = RequestMeetupLocation.objects.create(
             name="Bar Systers", slug="bar", location=self.location,
             description="This is a test meetup location request",
