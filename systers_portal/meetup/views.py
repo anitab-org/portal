@@ -3,7 +3,7 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import DeleteView, TemplateView, RedirectView
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.list import ListView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserRequiredMixin
@@ -1394,3 +1394,59 @@ class DeleteSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixi
         self.comment = get_object_or_404(Comment, pk=self.kwargs['comment_pk'])
         systersuser = get_object_or_404(SystersUser, user=request.user)
         return systersuser == self.comment.author
+
+
+class CancelMeetupLocationJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
+                                          RedirectView):
+    """Cancel a join request to a meetup location view"""
+    model = MeetupLocation
+    permanent = False
+    raise_exception = True
+
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to the page the user was previously on"""
+        return self.request.GET.get('current_url')
+
+    def get(self, request, *args, **kwargs):
+        """Attempt to cancel user join request towards a meetup location
+
+        * if a SystersUser is already a member, add a warning message
+        * if there is no pending request, add a warning message
+        """
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        systersuser = get_object_or_404(SystersUser, user=user)
+
+        join_requests = self.get_object().join_requests.all()
+        members = self.get_object().members.all()
+
+        if systersuser not in members and systersuser in join_requests:
+            self.get_object().join_requests.remove(systersuser)
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Your request to join {0} meetup location was canceled.".format(self.get_object())
+            )
+
+        elif systersuser in members:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "You are already a member of {0} meetup location. "
+                "There is no pending join request.".format(
+                    self.get_object()
+                ))
+
+        elif systersuser not in join_requests:
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "There is no pending request to join {0} meetup location.".format(self.get_object())
+            )
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
+        return super(CancelMeetupLocationJoinRequestView, self).get(request, *args,
+                                                                    **kwargs)
