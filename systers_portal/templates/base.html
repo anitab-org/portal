@@ -97,7 +97,7 @@
               <li {% if url == request.path %}class="active"{% endif %}>
                 <a href="{{ url }}">Change password</a>
               </li>
-              {% url 'account_logout' as url %}
+              {% url 'logout' as url %}
               <li {% if url == request.path %}class="active"{% endif %}>
                 <a href="{{ url }}">Logout</a>
               </li>

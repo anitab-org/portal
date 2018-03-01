@@ -6,7 +6,7 @@ from django.views.decorators.cache import never_cache
 from ckeditor_uploader import views
 from django.views.static import serve
 
-from common.views import IndexView
+from common.views import IndexView, Logout
 from common.views import ContactView
 from common.views import AboutUsView
 from common.views import NewCommunityProposalView
@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^meetup/', include('meetup.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^logout/', Logout.as_view(), name='logout'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^ckeditor/upload/', login_required(views),
         name='ckeditor_upload'),
