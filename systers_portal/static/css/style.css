@@ -366,6 +366,20 @@ table.decoration-none  tr a {
   word-wrap: break-word;
   margin-bottom: 40px;
 }
+/* CSS for comment box in discussion area
+--------------------------------------------------*/
+.edit , .delete{
+    background-color: #fff;
+    color: black;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    float: right;
+}
+
+.commentbox .details{
+  text-decoration: none;
+}
 
 /* Meetup Location Members user-cell space
 -------------------------------------------------- */

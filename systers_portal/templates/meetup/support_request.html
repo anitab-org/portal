@@ -38,15 +38,16 @@
     </div>
   {% endif %}
   {% for comment in comments %}
-    <div class="box-container pt25">
-      <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
-      <div class="box-body">
+    <div class="box-container pt25 commentbox">
+      <a href="{{ comment.author.get_absolute_url }}"><strong>{{ comment.author}}</strong></a>
+      <a class="details">commented on {{ comment.date_created}}</a>
+      {% if user == comment.author.user %}
+           <a class="delete" href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+           <a class="edit" href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+      {% endif %}
+        <div class="box-body">
         <p>{{ comment.body }}</p>
       </div>
-      {% if user == comment.author.user %}
-        <a href="{% url 'edit_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">edit</a>
-        <a href="{% url 'delete_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">delete</a>
-      {% endif %}
     </div>
   {% endfor %}
 {% endblock %}
