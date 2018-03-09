@@ -5,10 +5,10 @@ from guardian.shortcuts import assign_perm
 
 @transaction.atomic
 def create_groups(community_name, groups_templates):
-    """Create groups for a particular Community or RequestCommunity instance using its name
+    """Create groups for a particular Community instance using its name
 
-    :param community_name: string name of community or request community object
-    :return: list of community/request community Group objects
+    :param community_name: string name of community object
+    :return: list of community Group objects
     """
     community_groups = []
     for key, group_name in groups_templates.items():
@@ -20,9 +20,9 @@ def create_groups(community_name, groups_templates):
 
 @transaction.atomic
 def remove_groups(community_name):
-    """Remove groups for a particular Community or a RequestCommunity instance using its name
+    """Remove groups for a particular Community instance using its name
 
-    :param community_name: string name of community or request community object
+    :param community_name: string name of community object
     """
     name = "{0}:".format(community_name)
     Group.objects.filter(name__startswith=name).delete()
@@ -58,10 +58,10 @@ def rename_groups(old_community_name, new_community_name):
 
 
 def assign_permissions(community, groups, groups_templates, group_permissions):
-    """Assign row-level permissions to community/request community groups and
-       community/request community object
+    """Assign row-level permissions to community groups and
+       community object
 
-    :param community: Community/RequestCommunity object
+    :param community: Community object
     :param groups: list of Group objects
     """
     for key, group_name in groups_templates.items():

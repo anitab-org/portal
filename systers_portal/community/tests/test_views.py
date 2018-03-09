@@ -5,8 +5,7 @@ from django.test import TestCase
 
 from community.constants import USER_CONTENT_MANAGER
 from community.models import Community, CommunityPage, RequestCommunity
-from community.signals import manage_community_groups, remove_community_groups,\
-    manage_requestor_groups
+from community.signals import manage_community_groups, remove_community_groups
 from membership.models import JoinRequest
 from users.models import SystersUser
 
@@ -61,10 +60,6 @@ class RequestCommunityViewTestCase(TestCase):
 
 class EditCommunityRequestViewTestCase(TestCase):
     def setUp(self):
-        post_save.connect(manage_requestor_groups, sender=RequestCommunity,
-                          dispatch_uid="manage_request_groups")
-        post_delete.connect(remove_community_groups, sender=RequestCommunity,
-                            dispatch_uid="remove_requestor_groups")
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.community_request = RequestCommunity.objects.create(
@@ -140,10 +135,6 @@ class EditCommunityRequestViewTestCase(TestCase):
 
 class ViewCommunityRequestViewTestCase(TestCase):
     def setUp(self):
-        post_save.connect(manage_requestor_groups, sender=RequestCommunity,
-                          dispatch_uid="manage_request_groups")
-        post_delete.connect(remove_community_groups, sender=RequestCommunity,
-                            dispatch_uid="remove_requestor_groups")
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.community_request = RequestCommunity.objects.create(
@@ -234,10 +225,6 @@ class NewCommunityRequestsListViewTestCase(TestCase):
 
 class RejectRequestCommunityViewTestCase(TestCase):
     def setUp(self):
-        post_save.connect(manage_requestor_groups, sender=RequestCommunity,
-                          dispatch_uid="manage_request_groups")
-        post_delete.connect(remove_community_groups, sender=RequestCommunity,
-                            dispatch_uid="remove_requestor_groups")
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.community_request = RequestCommunity.objects.create(
@@ -296,12 +283,9 @@ class RejectRequestCommunityViewTestCase(TestCase):
 
 class ApproveRequestCommunityViewTestCase(TestCase):
     def setUp(self):
-        post_save.connect(manage_requestor_groups, sender=RequestCommunity,
-                          dispatch_uid="manage_request_groups")
-        post_delete.connect(remove_community_groups, sender=RequestCommunity,
-                            dispatch_uid="remove_requestor_groups")
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        self.password = 'foobar'
         self.community_request = RequestCommunity.objects.create(
             name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
             community_channel='Existing Social Media Channels ',
@@ -319,7 +303,7 @@ class ApproveRequestCommunityViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         # Test if accessed by a superuser
         admin = User.objects.create_superuser(
-            username='foo-bar', email='abcd@gmail.com', password='foobar')
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
         SystersUser.objects.get(user=admin)
         self.client.login(username='foo-bar', password='foobar')
         response = self.client.get(url)
@@ -335,7 +319,7 @@ class ApproveRequestCommunityViewTestCase(TestCase):
         # Test if order of request already exists in Community, redirect to edit page.
         url = reverse('approve_community_request', kwargs={'slug': 'foo'})
         admin = User.objects.create_superuser(
-            username='foo-bar', email='abcd@gmail.com', password='foobar')
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
         admin_systers_user = SystersUser.objects.get(user=admin)
         Community.objects.create(name="FooBarComm", slug="foobar",
                                  order=1, admin=admin_systers_user)
@@ -354,7 +338,7 @@ class ApproveRequestCommunityViewTestCase(TestCase):
         """Test if slug already exists in Community, redirect to edit page."""
         url = reverse('approve_community_request', kwargs={'slug': 'foo'})
         admin = User.objects.create_superuser(
-            username='foo-bar', email='abcd@gmail.com', password='foobar')
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
         admin_systers_user = SystersUser.objects.get(user=admin)
         Community.objects.create(name="FooBarComm", slug="foo",
                                  order=2, admin=admin_systers_user)

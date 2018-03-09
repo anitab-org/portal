@@ -1,15 +1,12 @@
 from django.test import TestCase
 
 from community.constants import (CONTENT_CONTRIBUTOR, CONTENT_MANAGER,
-                                 USER_CONTENT_MANAGER, COMMUNITY_ADMIN,
-                                 COMMUNITY_REQUESTOR)
+                                 USER_CONTENT_MANAGER, COMMUNITY_ADMIN)
 from community.permissions import (content_contributor_permissions,
                                    content_manager_permissions,
                                    user_content_manager_permissions,
                                    community_admin_permissions,
-                                   group_permissions, groups_templates,
-                                   requestor_group_templates, requestor_permissions,
-                                   requestor_group_permissions)
+                                   group_permissions, groups_templates)
 
 
 class PermissionsTestCase(TestCase):
@@ -121,19 +118,3 @@ class PermissionsTestCase(TestCase):
         self.assertEqual(groups_templates["user_content_manager"],
                          USER_CONTENT_MANAGER)
         self.assertEqual(groups_templates["community_admin"], COMMUNITY_ADMIN)
-
-    def test_requestor_permissions(self):
-        """Test requestor permissions"""
-        permissions = [
-            "view_community_request",
-            "edit_community_request"
-        ]
-        self.assertCountEqual(requestor_permissions, permissions)
-
-    def test_requestor_group_permissions(self):
-        """Test group permission keys"""
-        self.assertTrue("requestor" in requestor_group_permissions)
-
-    def test_requestor_group_templates(self):
-        """Test group templates values"""
-        self.assertEqual(requestor_group_templates["requestor"], COMMUNITY_REQUESTOR)

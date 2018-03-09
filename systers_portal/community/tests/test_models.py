@@ -4,17 +4,12 @@ from django.test import TestCase
 
 from community.constants import COMMUNITY_ADMIN
 from community.models import Community, CommunityPage, RequestCommunity
-from community.signals import (manage_community_groups, remove_community_groups,
-                               manage_requestor_groups)
+from community.signals import (manage_community_groups, remove_community_groups)
 from users.models import SystersUser
 
 
 class RequestCommunityModelTestCase(TestCase):
     def setUp(self):
-        post_save.disconnect(manage_requestor_groups, sender=RequestCommunity,
-                             dispatch_uid="manage_request_groups")
-        post_delete.disconnect(remove_community_groups, sender=RequestCommunity,
-                               dispatch_uid="remove_requestor_groups")
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.request_community = RequestCommunity.objects.create(

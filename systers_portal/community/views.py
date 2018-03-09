@@ -78,7 +78,9 @@ class ViewCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
         The permission holds true for superusers."""
         self.community_request = get_object_or_404(
             RequestCommunity, slug=self.kwargs['slug'])
-        return self.request.user.has_perm("view_community_request", self.community_request)
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+        return self.systersuser == self.community_request.user or request.user.is_superuser
 
 
 class EditCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
@@ -105,7 +107,9 @@ class EditCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
         The permission holds true for superusers."""
         self.community_request = get_object_or_404(
             RequestCommunity, slug=self.kwargs['slug'])
-        return self.request.user.has_perm('edit_community_request', self.community_request)
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+        return self.systersuser == self.community_request.user or request.user.is_superuser
 
 
 class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,

@@ -6,7 +6,6 @@ groups_templates = {"content_contributor": CONTENT_CONTRIBUTOR,
                     "user_content_manager": USER_CONTENT_MANAGER,
                     "community_admin": COMMUNITY_ADMIN}
 
-
 content_contributor_permissions = [
     "add_tag",
     "change_tag",
@@ -47,17 +46,4 @@ group_permissions = {
     "content_manager": content_manager_permissions,
     "user_content_manager": user_content_manager_permissions,
     "community_admin": community_admin_permissions
-}
-
-requestor_group_templates = {
-    "requestor": COMMUNITY_REQUESTOR
-}
-
-requestor_permissions = [
-    "view_community_request",
-    "edit_community_request"
-]
-
-requestor_group_permissions = {
-    "requestor": requestor_permissions
 }

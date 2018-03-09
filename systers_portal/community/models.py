@@ -200,13 +200,6 @@ class RequestCommunity(models.Model):
     date_created = models.DateTimeField(
         auto_now_add=True, verbose_name="Date created")
 
-    class Meta:
-        verbose_name_plural = "Community requests"
-        permissions = (
-            ('view_community_request', 'View the community request'),
-            ('edit_community_request', 'Edit the community request'),
-        )
-
     def __str__(self):
         return self.name
 
