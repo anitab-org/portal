@@ -3,8 +3,8 @@ from django.test import TestCase
 from meetup.constants import (MEMBER, ORGANIZER, LOCATION_ALREADY_EXISTS_MSG,
                               SLUG_ALREADY_EXISTS_MSG, NAME_ALREADY_EXISTS_MSG,
                               LOCATION_ALREADY_EXISTS, SLUG_ALREADY_EXISTS,
-                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG, ERROR_MSG,
-                              SUCCESS_MEETUP_MSG)
+                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG,
+                              SUCCESS_MEETUP_MSG, ERROR_MSG)
 
 
 class ConstantsTestCase(TestCase):

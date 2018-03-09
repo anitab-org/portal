@@ -112,7 +112,7 @@ class RequestMeetup(models.Model):
     meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
     created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
     approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
-                                    related_name='approvedby')
+                                    related_name='approvedBy')
     date_created = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
 

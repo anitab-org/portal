@@ -18,8 +18,6 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           NewMeetupLocationRequestsListView, ViewMeetupLocationRequestView,
                           RejectMeetupLocationRequestView, ApproveRequestMeetupLocationView,
                           RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
-                          ApproveRequestMeetupView, RejectMeetupRequestView, RequestMeetupView,
-                          NewMeetupRequestsListView, ViewMeetupRequestView,
                           ApproveRequestMeetupView, RejectMeetupRequestView)
 
 
