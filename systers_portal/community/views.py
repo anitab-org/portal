@@ -186,7 +186,7 @@ class RejectRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin, Del
     template_name = "community/confirm_reject_request_community.html"
     raise_exception = True
 
-    def get_success_url(self, *args, **kwargs):
+    def get_success_url(self):
         """Supply the success URL in case of successful submit"""
         messages.add_message(self.request, messages.INFO,
                              "Community request successfullly rejected!")
@@ -212,7 +212,7 @@ class NewCommunityRequestsListView(LoginRequiredMixin, StaffuserRequiredMixin, L
         context['requestor'] = self.systersuser
         return context
 
-    def get_queryset(self, **kwargs):
+    def get_queryset(self):
         """Set ListView queryset to all the unapproved community requests"""
         request_community_list = RequestCommunity.objects.filter(
             is_approved=False)

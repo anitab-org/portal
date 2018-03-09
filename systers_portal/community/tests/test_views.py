@@ -227,6 +227,7 @@ class RejectRequestCommunityViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        self.password = 'foobar'
         self.community_request = RequestCommunity.objects.create(
             name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
             community_channel='Existing Social Media Channels ',
@@ -244,7 +245,7 @@ class RejectRequestCommunityViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         # Test if accessed by a superuser
         admin = User.objects.create_superuser(
-            username='foo-bar', email='abcd@gmail.com', password='foobar')
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
         self.admin_systers_user = SystersUser.objects.get(user=admin)
         self.client.login(username='foo-bar', password='foobar')
         response = self.client.get(url)
@@ -268,7 +269,7 @@ class RejectRequestCommunityViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
         # Test if superuser posts
         admin = User.objects.create_superuser(
-            username='foo-bar', email='abcd@gmail.com', password='foobar')
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
         self.admin_systers_user = SystersUser.objects.get(user=admin)
         self.client.login(username='foo-bar', password='foobar')
         response = self.client.post(url)

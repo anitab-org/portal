@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from community.constants import (CONTENT_CONTRIBUTOR, CONTENT_MANAGER,
                                  USER_CONTENT_MANAGER, COMMUNITY_ADMIN,
-                                 COMMUNITY_REQUESTOR, DEFAULT_COMMUNITY_ACTIVE_PAGE,
+                                 DEFAULT_COMMUNITY_ACTIVE_PAGE,
                                  COMMUNITY_PRESENCE_CHOICES, COMMUNITY_TYPES_CHOICES,
                                  COMMUNITY_CHANNEL_CHOICES, YES_NO_CHOICES,
                                  ORDER_NULL_MSG, ORDER_ALREADY_EXISTS_MSG, SLUG_ALREADY_EXISTS_MSG,
@@ -39,10 +39,6 @@ class ConstantsTestCase(TestCase):
         default_active_community_page = 'news'
         self.assertEqual(default_active_community_page,
                          DEFAULT_COMMUNITY_ACTIVE_PAGE)
-
-    def test_community_requestor_constant(self):
-        community_requestor = COMMUNITY_REQUESTOR.format(self.foo)
-        self.assertEqual(community_requestor, "Foo: Community Requestor")
 
     def test_community_presence_choices_constant(self):
         """Test community presence field choices """
