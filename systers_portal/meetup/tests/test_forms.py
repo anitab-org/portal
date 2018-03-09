@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
@@ -56,7 +57,6 @@ class RequestMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
 
 
 class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
-
     def test_add_request_meetup_form(self):
         # Testing form with invalid data
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
@@ -99,6 +99,7 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['time'],
                         ["Time should not be a time that has already passed."])
+        self.assertRaises(ValidationError, form.clean_time())
 
 
 class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):

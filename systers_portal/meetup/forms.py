@@ -60,7 +60,8 @@ class RequestMeetupForm(ModelFormWithHelper):
         """Check if the date is less than the current date. If so, raise an error."""
         date = self.cleaned_data.get('date')
         if date < timezone.now().date():
-            raise forms.ValidationError("Date should not be before today's date.")
+            raise forms.ValidationError("Date should not be before today's date.",
+                                        code="date_in_past")
         return date
 
     def clean_time(self):
@@ -70,7 +71,8 @@ class RequestMeetupForm(ModelFormWithHelper):
         date = self.cleaned_data.get('date')
         if time:
             if date == timezone.now().date() and time < timezone.now().time():
-                raise forms.ValidationError("Time should not be a time that has already passed.")
+                raise forms.ValidationError("Time should not be a time that has already passed.",
+                                            code="time_in_past")
         return time
 
 

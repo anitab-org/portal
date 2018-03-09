@@ -205,7 +205,9 @@ class NewMeetupRequestsListViewTestCase(MeetupLocationViewBaseTestCase, TestCase
             title="Foo Talk", slug="foo", date=timezone.now().date(), time=timezone.now().time(),
             description="This is a test meetup location request2", created_by=self.systers_user,
             meetup_location=self.meetup_location)
-        self.user2 = User.objects.create(username='foobar', password='foobar', email='foo@test.com')
+        self.password = 'foobar'
+        self.user2 = User.objects.create(username='foobar', password=self.password,
+                                         email='foo@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
 
     def test_view_new_meetup_location_requests_list_view(self):
@@ -237,7 +239,9 @@ class ViewMeetupRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
             title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
             description="This is a test meetup location request", created_by=self.systers_user,
             meetup_location=self.meetup_location)
-        self.user2 = User.objects.create(username='foobar', password='foobar', email='foo@test.com')
+        self.password = 'foobar'
+        self.user2 = User.objects.create(username='foobar', password=self.password,
+                                         email='foo@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
 
     def test_view_meetup_request_view(self):
@@ -267,7 +271,9 @@ class ApproveRequestMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase)
             title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
             description="This is a test meetup location request", created_by=self.systers_user,
             meetup_location=self.meetup_location)
-        self.user2 = User.objects.create(username='foobar', password='foobar', email='foo@test.com')
+        self.password = 'foobar'
+        self.user2 = User.objects.create(username='foobar', password=self.password,
+                                         email='foo@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
 
     def test_approve_request_meetup_view_base(self):
@@ -315,7 +321,9 @@ class RejectMeetupRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
             title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
             description="This is a test meetup request", created_by=self.systers_user,
             meetup_location=self.meetup_location)
-        self.user2 = User.objects.create(username='foobar', password='foobar', email='foo@test.com')
+        self.password = 'foobar'
+        self.user2 = User.objects.create(username='foobar', password=self.password,
+                                         email='foo@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
 
     def test_get_reject_request_meetup_view(self):
