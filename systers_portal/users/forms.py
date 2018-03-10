@@ -47,7 +47,7 @@ class SystersChangePasswordForm(ChangePasswordForm):
     def __init__(self, *args, **kwargs):
         super(SystersChangePasswordForm, self).__init__(*args, **kwargs)
 
-    def clean_password1(self):
-        if self.cleaned_data["password1"] == self.cleaned_data.get("oldpassword", None):
+    def clean_password(self):
+        if self.cleaned_data["newpassword"] == self.cleaned_data.get("oldpassword", None):
             raise ValidationError("New password must differ from the old one.")
-        return self.cleaned_data["password1"]
+        return self.cleaned_data["new_password"]
