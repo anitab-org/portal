@@ -10,7 +10,7 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserR
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-
+from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
                           EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
@@ -20,7 +20,7 @@ from meetup.mixins import MeetupLocationMixin
 from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation
 from meetup.constants import (OK, SUCCESS_MSG, NAME_ALREADY_EXISTS, NAME_ALREADY_EXISTS_MSG,
                               SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
-                              LOCATION_ALREADY_EXISTS, LOCATION_ALREADY_EXISTS_MSG)
+                              LOCATION_ALREADY_EXISTS, LOCATION_ALREADY_EXISTS_MSG, ERROR_MSG)
 from users.models import SystersUser
 from common.models import Comment
 
@@ -243,12 +243,15 @@ class MeetupLocationMembersView(MeetupLocationMixin, DetailView):
         return self.meetup_location
 
 
-class AddMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin, CreateView):
+class AddMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                    PermissionRequiredMixin, MeetupLocationMixin, CreateView):
     """Add new meetup"""
     template_name = "meetup/add_meetup.html"
     model = Meetup
     form_class = AddMeetupForm
     raise_exception = True
+    form_valid_message = (u"Meetup added Successfully")
+    form_invalid_message = ERROR_MSG
 
     def get_success_url(self):
         """Redirect to meetup view page in case of successful submit"""
@@ -300,12 +303,15 @@ class DeleteMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocati
         return request.user.has_perm('meetup.delete_meetup')
 
 
-class EditMeetupView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class EditMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                     PermissionRequiredMixin, UpdateView):
     """Edit an existing meetup"""
     template_name = "meetup/edit_meetup.html"
     model = Meetup
     slug_url_kwarg = "meetup_slug"
     form_class = EditMeetupForm
+    form_valid_message = (u"Meetup edited Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -406,12 +412,15 @@ class RemoveMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin
         return request.user.has_perm('delete_meetup_location_member', self.meetup_location)
 
 
-class AddMeetupLocationMemberView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
-                                  UpdateView):
+class AddMeetupLocationMemberView(FormValidMessageMixin, FormInvalidMessageMixin,
+                                  LoginRequiredMixin, PermissionRequiredMixin,
+                                  MeetupLocationMixin, UpdateView):
     """Add new member to meetup location"""
     template_name = "meetup/add_member.html"
     model = MeetupLocation
     form_class = AddMeetupLocationMemberForm
+    form_valid_message = (u"Member added Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -523,7 +532,7 @@ class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectVi
             messages.add_message(request, messages.WARNING, msg.format(self.meetup_location))
         elif systersuser in members:
             msg = "You are already a member of meetup location {0}."
-            messages.add_message(request, messages.WARNING, msg.format(self.meetup_location))
+            messages.add_message(self.request, messages.WARNING, msg.format(self.meetup_location))
         return super(JoinMeetupLocationView, self).get(request, *args, **kwargs)
 
     def get_meetup_location(self):
@@ -562,6 +571,7 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequire
         systersuser = get_object_or_404(SystersUser, user=user)
         self.meetup_location.members.add(systersuser)
         self.meetup_location.join_requests.remove(systersuser)
+        messages.success(self.request, 'Join request Approved.')
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
@@ -587,6 +597,7 @@ class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequired
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         systersuser = get_object_or_404(SystersUser, user=user)
         self.meetup_location.join_requests.remove(systersuser)
+        messages.warning(self.request, 'Join Request Deleted.')
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
@@ -600,13 +611,16 @@ class RejectMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequired
         return request.user.has_perm('reject_meetup_location_joinrequest', self.meetup_location)
 
 
-class AddMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
+class AddMeetupLocationView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                            PermissionRequiredMixin, MeetupLocationMixin,
                             CreateView):
     """Add new meetup location"""
     template_name = "meetup/add_meetup_location.html"
     model = MeetupLocation
     slug_url_kwarg = "slug"
     form_class = AddMeetupLocationForm
+    form_valid_message = (u"Meetup added Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -627,12 +641,15 @@ class AddMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
         return request.user.has_perm('meetup.add_meetuplocation')
 
 
-class EditMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
+class EditMeetupLocationView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                             PermissionRequiredMixin, MeetupLocationMixin,
                              UpdateView):
     """Edit an existing meetup location"""
     template_name = "meetup/edit_meetup_location.html"
     model = MeetupLocation
     form_class = EditMeetupLocationForm
+    form_valid_message = (u"Meetup Location Editted Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -673,11 +690,14 @@ class DeleteMeetupLocationView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         return request.user.has_perm('meetup.delete_meetuplocation')
 
 
-class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
+class AddMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                           MeetupLocationMixin, CreateView):
     """Add a comment to a Meetup"""
     template_name = "meetup/add_comment.html"
     model = Comment
     form_class = AddMeetupCommentForm
+    form_valid_message = (u"Comment added Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -706,13 +726,16 @@ class AddMeetupCommentView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
         return self.meetup_location
 
 
-class EditMeetupCommentView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
+class EditMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                            PermissionRequiredMixin, MeetupLocationMixin,
                             UpdateView):
     """Edit a meetup's comment"""
     template_name = "meetup/edit_comment.html"
     model = Comment
     pk_url_kwarg = "comment_pk"
     form_class = EditMeetupCommentForm
+    form_valid_message = (u"Comment edited Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -771,11 +794,14 @@ class DeleteMeetupCommentView(LoginRequiredMixin, PermissionRequiredMixin, Meetu
         return systersuser == self.comment.author
 
 
-class RsvpMeetupView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin, CreateView):
+class RsvpMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                     PermissionRequiredMixin, MeetupLocationMixin, CreateView):
     """RSVP for a meetup"""
     template_name = "meetup/rsvp_meetup.html"
     model = Rsvp
     form_class = RsvpForm
+    form_valid_message = (u"Success")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -835,12 +861,15 @@ class RsvpGoingView(LoginRequiredMixin, MeetupLocationMixin, ListView):
         return self.meetup_location
 
 
-class AddSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
+class AddSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin,
+                            LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
                             CreateView):
     """Add a Support Request for a meetup"""
     template_name = "meetup/add_support_request.html"
     model = SupportRequest
     form_class = AddSupportRequestForm
+    form_valid_message = (u"Support Request submitted Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -874,12 +903,15 @@ class AddSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, MeetupL
         return request.user.has_perm('meetup.add_supportrequest')
 
 
-class EditSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, MeetupLocationMixin,
+class EditSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                             PermissionRequiredMixin, MeetupLocationMixin,
                              UpdateView):
     """Edit an existing support request"""
     template_name = "meetup/edit_support_request.html"
     model = SupportRequest
     form_class = EditSupportRequestForm
+    form_valid_message = (u"Support Request edited Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -916,6 +948,7 @@ class DeleteSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meet
     def get_success_url(self):
         """Redirect to the meetup view page in case of successful submission"""
         self.get_meetup_location()
+        messages.success(self.request, 'Support Request Deleted.')
         return reverse("view_meetup", kwargs={"slug": self.meetup_location.slug,
                        "meetup_slug": self.object.meetup.slug})
 
@@ -1056,12 +1089,15 @@ class RejectSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         return request.user.has_perm('reject_support_request', self.meetup_location)
 
 
-class AddSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
+class AddSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMixin,
+                                   LoginRequiredMixin, PermissionRequiredMixin,
                                    MeetupLocationMixin, CreateView):
     """Add a comment to a Support Request"""
     template_name = "meetup/add_comment.html"
     model = Comment
     form_class = AddSupportRequestCommentForm
+    form_valid_message = (u"Comment added Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):
@@ -1097,13 +1133,16 @@ class AddSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
         return request.user.has_perm('add_support_request_comment', self.meetup_location)
 
 
-class EditSupportRequestCommentView(LoginRequiredMixin, PermissionRequiredMixin,
+class EditSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMixin,
+                                    LoginRequiredMixin, PermissionRequiredMixin,
                                     MeetupLocationMixin, UpdateView):
     """Edit a support request's comment"""
     template_name = "meetup/edit_comment.html"
     model = Comment
     pk_url_kwarg = "comment_pk"
     form_class = EditSupportRequestCommentForm
+    form_valid_message = (u"Comment edited Successfully")
+    form_invalid_message = ERROR_MSG
     raise_exception = True
 
     def get_success_url(self):

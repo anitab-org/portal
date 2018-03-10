@@ -129,6 +129,18 @@ class AddMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_meetup.html')
 
     def test_post_add_meetup_view(self):
@@ -198,10 +210,21 @@ class EditMeetupView(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse("edit_meetup", kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
-
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/edit_meetup.html')
 
     def test_post_edit_meetup_view(self):
@@ -359,6 +382,19 @@ class AddMeetupLocationMemberViewTestCase(MeetupLocationViewBaseTestCase, TestCa
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_member.html')
 
     def test_post_add_meetup_location_member_view(self):
@@ -595,10 +631,22 @@ class AddMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('add_meetup_location')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
-
         self.client.login(username='foo', password='foobar')
+
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_meetup_location.html')
 
     def test_post_add_meetup_location_view(self):
@@ -853,7 +901,20 @@ class EditMeetupLocationViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.assertEqual(response.status_code, 404)
 
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/edit_meetup_location.html')
 
     def test_post_edit_meetup_view(self):
@@ -920,6 +981,18 @@ class AddMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         url = reverse('add_meetup_comment', kwargs={'slug': 'foo', 'meetup_slug': 'foo-bar-baz'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_comment.html')
 
     def test_post_add_meetup_comment_view(self):
@@ -965,6 +1038,18 @@ class EditMeetupCommentViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
                       'comment_pk': self.comment.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/edit_comment.html')
 
     def test_post_edit_meetup_comment_view(self):
@@ -1036,6 +1121,18 @@ class RsvpMeetupViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/rsvp_meetup.html')
 
     def test_post_rsvp_meetup_view(self):
@@ -1081,6 +1178,18 @@ class AddSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_support_request.html')
 
     def test_post_add_support_request_view(self):
@@ -1118,6 +1227,18 @@ class EditSupportRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/edit_support_request.html')
 
     def test_post_edit_support_request_view(self):
@@ -1309,6 +1430,18 @@ class AddSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, TestC
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/add_comment.html')
 
     def test_post_add_support_request_comment_view(self):
@@ -1355,6 +1488,18 @@ class EditSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, Test
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                'Successfully'
+                in message.message)
+
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "error")
+            self.assertTrue(
+                'Something went wrong. Please try again'
+                in message.message)
         self.assertTemplateUsed(response, 'meetup/edit_comment.html')
 
     def test_post_edit_support_request_comment_view(self):
