@@ -3,7 +3,7 @@ from django.test import TestCase
 from meetup.constants import (MEMBER, ORGANIZER, LOCATION_ALREADY_EXISTS_MSG,
                               SLUG_ALREADY_EXISTS_MSG, NAME_ALREADY_EXISTS_MSG,
                               LOCATION_ALREADY_EXISTS, SLUG_ALREADY_EXISTS,
-                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG)
+                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG, ERROR_MSG)
 
 
 class ConstantsTestCase(TestCase):
@@ -38,7 +38,11 @@ class ConstantsTestCase(TestCase):
 
     def test_success_msg_constant(self):
         success_msg = SUCCESS_MSG
-        self.assertEqual(success_msg, "Meeup Location created successfully!")
+        self.assertEqual(success_msg, "Meetup Location created successfully!")
+
+    def test_error_msg_constant(self):
+        error_msg = ERROR_MSG
+        self.assertEqual(error_msg, "Something went wrong. Please try again")
 
     def test_ok_constant(self):
         ok_constant = OK
