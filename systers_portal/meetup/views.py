@@ -310,7 +310,7 @@ class EditMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequir
     model = Meetup
     slug_url_kwarg = "meetup_slug"
     form_class = EditMeetupForm
-    form_valid_message = (u"Meetup editted Successfully")
+    form_valid_message = (u"Meetup edited Successfully")
     form_invalid_message = ERROR_MSG
     raise_exception = True
 
@@ -734,7 +734,7 @@ class EditMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, Logi
     model = Comment
     pk_url_kwarg = "comment_pk"
     form_class = EditMeetupCommentForm
-    form_valid_message = (u"Comment editted Successfully")
+    form_valid_message = (u"Comment edited Successfully")
     form_invalid_message = ERROR_MSG
     raise_exception = True
 
@@ -910,7 +910,7 @@ class EditSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin, Log
     template_name = "meetup/edit_support_request.html"
     model = SupportRequest
     form_class = EditSupportRequestForm
-    form_valid_message = (u"Support Request editted Successfully")
+    form_valid_message = (u"Support Request edited Successfully")
     form_invalid_message = ERROR_MSG
     raise_exception = True
 
@@ -1141,7 +1141,7 @@ class EditSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMix
     model = Comment
     pk_url_kwarg = "comment_pk"
     form_class = EditSupportRequestCommentForm
-    form_valid_message = (u"Comment editted Successfully")
+    form_valid_message = (u"Comment edited Successfully")
     form_invalid_message = ERROR_MSG
     raise_exception = True
 
