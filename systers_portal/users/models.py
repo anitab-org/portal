@@ -14,7 +14,7 @@ from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
 
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='systersuser')
     country = models.ForeignKey(Country, blank=True, null=True, verbose_name="Country")
     blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
     homepage_url = models.URLField(max_length=255, blank=True,
