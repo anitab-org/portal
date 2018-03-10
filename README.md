@@ -14,10 +14,9 @@ If you are an Outreachy Applicant, start with reading [this](https://github.com/
 Setup for developers
 --------------------
 
-1. Make sure you have installed Python 3.4 or 3.5 or 3.6(preferably latest minor release),
-   [pip3](https://pip.pypa.io/en/latest/) and [virtualenv](http://www.virtualenv.org/en/latest/).
-1. If working behind a proxy, make sure your environment variables are properly set up. If 
-   you still get an error due to proxy, use "-E" flag along with "sudo" to export all the 
+1. Make sure you have installed Python 3.6, [pip3](https://pip.pypa.io/en/latest/) and [virtualenv](http://www.virtualenv.org/en/latest/).
+1. If working behind a proxy, make sure your environment variables are properly set up. If
+   you still get an error due to proxy, use "-E" flag along with "sudo" to export all the
    environment variables.
 1. Make sure you have python3-dev installed on your operating system. For Debian, you would additionally require libpq-dev.
    Install by using `sudo apt-get install libpq-dev python3-dev`
