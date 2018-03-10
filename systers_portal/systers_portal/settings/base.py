@@ -127,6 +127,7 @@ MEDIA_URL = "/media/"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_FORMS = {'change_password': 'users.forms.SystersChangePasswordForm'}
 
 # Ckeditor configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
