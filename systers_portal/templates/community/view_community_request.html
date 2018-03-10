@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>{{ community_request.name }}</h2>
+  <div class="row">
+  <div class="col-md-9">
+   <table class="table table-hover table-custom">
+        <tbody>
+        {% for field,value in community_request_fields %}
+          <tr class="profile-row">
+            <td>{{ field }}</td>
+            <td>{{ value }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+  {% if not community_request.is_approved %}
+      <div class="col-md-3 mt20 pt25">
+        <a href="{% url 'edit_community_request' community_request.slug %}">
+          Edit community request 
+        </a>
+      </div>
+  </div>
+    {% if user.is_staff %}
+      <div class="row">
+        <div class="col-md-3">
+          <a href="{% url 'approve_community_request' community_request.slug %}"
+             role="button" class="btn btn-primary btn-sm">Approve</a>
+        </div>
+        <div class="col-md-9">
+          <a href="{% url 'reject_community_request' community_request.slug %}"
+             role="button" class="btn btn-warning btn-sm">Reject</a>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}

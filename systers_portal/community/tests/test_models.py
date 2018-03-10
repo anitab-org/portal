@@ -3,9 +3,36 @@ from django.db.models.signals import post_save, post_delete
 from django.test import TestCase
 
 from community.constants import COMMUNITY_ADMIN
-from community.models import Community, CommunityPage
-from community.signals import manage_community_groups, remove_community_groups
+from community.models import Community, CommunityPage, RequestCommunity
+from community.signals import (manage_community_groups, remove_community_groups)
 from users.models import SystersUser
+
+
+class RequestCommunityModelTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.request_community = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_str(self):
+        """Test RequestCommunity object string representation"""
+        self.assertEqual(str(self.request_community), "Foo")
+
+    def test_get_fields(self):
+        """Test getting RequestCommunity fields"""
+        fields = self.request_community.get_fields()
+        self.assertTrue(len(fields), 28)
+        self.assertTrue(fields[1], ('name', 'Foo'))
+
+    def test_get_verbose_fields(self):
+        """Test getting RequestCommunity verbose fields"""
+        fields = self.request_community.get_fields()
+        self.assertTrue(len(fields), 28)
+        self.assertTrue(fields[1], ('Proposed Community Name', 'Foo'))
 
 
 class CommunityModelTestCase(TestCase):

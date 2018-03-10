@@ -1,10 +1,11 @@
 from django import forms
+from django.forms import ValidationError
 from django.contrib.auth.models import Group
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from community.constants import COMMUNITY_ADMIN
-from community.models import Community, CommunityPage
+from community.constants import COMMUNITY_ADMIN, COMMUNITY_PRESENCE_CHOICES
+from community.models import Community, CommunityPage, RequestCommunity
 from community.utils import get_groups
 from users.models import SystersUser
 
@@ -30,6 +31,114 @@ class AddCommunityForm(ModelFormWithHelper):
         if commit:
             instance.save()
         return instance
+
+
+class RequestCommunityForm(ModelFormWithHelper):
+    """Form to request a new Community"""
+    def __init__(self, *args, **kwargs):
+        """Makes some fields required and modifies a field to use widget"""
+        self.user = kwargs.pop('user')
+        super(RequestCommunityForm, self).__init__(*args, **kwargs)
+        self.fields['social_presence'] = forms.MultipleChoiceField(
+            choices=COMMUNITY_PRESENCE_CHOICES, label="Check off all \
+            the social media accounts you can manage for your proposed community:",
+            required=False, widget=forms.CheckboxSelectMultiple)
+        self.fields['email'].required = True
+        self.fields['demographic_target_count'].required = True
+        self.fields['purpose'].required = True
+        self.fields['content_developer'].required = True
+        self.fields['selection_criteria'].required = True
+        self.fields['is_real_time'].required = True
+
+    class Meta:
+        model = RequestCommunity
+        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order',
+                  'type_community', 'other_community_type', 'parent_community',
+                  'community_channel', 'mailing_list', 'website', 'facebook',
+                  'googleplus', 'twitter', 'social_presence', 'other_account',
+                  'demographic_target_count',
+                  'purpose', 'is_avail_volunteer', 'count_avail_volunteer', 'content_developer',
+                  'selection_criteria', 'is_real_time')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'index' %}"
+
+    def clean_social_presence(self):
+        """Converts the checkbox input into char to save it to the instance's field."""
+        social_presence = ', '.join(
+            map(str, self.cleaned_data['social_presence']))
+        return social_presence
+
+    def save(self, commit=True):
+        """Override save to add user to the instance"""
+        instance = super(RequestCommunityForm, self).save(commit=False)
+        instance.user = SystersUser.objects.get(user=self.user)
+        if commit:
+            instance.save()
+        return instance
+
+
+class EditCommunityRequestForm(ModelFormWithHelper):
+    """Form to edit a community request"""
+
+    def __init__(self, *args, **kwargs):
+        """Makes some fields required and modifies a field to use widget"""
+        super(EditCommunityRequestForm, self).__init__(*args, **kwargs)
+        self.fields['social_presence'] = forms.MultipleChoiceField(
+            choices=COMMUNITY_PRESENCE_CHOICES, label="Check off all \
+            the social media accounts you can manage for your proposed community:",
+            required=False, widget=forms.CheckboxSelectMultiple)
+        self.fields['email'].required = True
+        self.fields['demographic_target_count'].required = True
+        self.fields['purpose'].required = True
+        self.fields['content_developer'].required = True
+        self.fields['selection_criteria'].required = True
+        self.fields['is_real_time'].required = True
+
+    class Meta:
+        model = RequestCommunity
+        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order',
+                  'type_community', 'other_community_type', 'parent_community',
+                  'community_channel', 'mailing_list', 'website', 'facebook',
+                  'googleplus', 'twitter', 'social_presence', 'other_account',
+                  'demographic_target_count',
+                  'purpose', 'is_avail_volunteer', 'count_avail_volunteer', 'content_developer',
+                  'selection_criteria', 'is_real_time')
+        widgets = {'social_presence': forms.CheckboxSelectMultiple}
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_request' community_request.slug %}"
+
+    def clean_social_presence(self):
+        """Converts the checkbox input into char to save it to the instance's field."""
+        social_presence = ', '.join(
+            map(str, self.cleaned_data['social_presence']))
+        return social_presence
+
+    def clean_slug(self):
+        """Checks if the slug exists in the Community objects' slug"""
+        slug = self.cleaned_data['slug']
+        slug_community_values = Community.objects.all().values_list('order', flat=True)
+        if slug in slug_community_values:
+            msg = "Slug by this value already exists. Please choose a different slug\
+                   other than {0}!"
+            string_slug_values = ', '.join(map(str, slug_community_values))
+            raise ValidationError(msg.format(string_slug_values))
+        else:
+            return slug
+
+    def clean_order(self):
+        """Checks if the order exists in the Community objects' order"""
+        order = self.cleaned_data['order']
+        order_community_values = list(
+            Community.objects.all().values_list('order', flat=True))
+        order_community_values.sort()
+        if order is None:
+            raise ValidationError("Order must not be None.")
+        elif order in order_community_values:
+            msg = "Choose order value other than {0}"
+            string_order_values = ', '.join(map(str, order_community_values))
+            raise ValidationError(msg.format(string_order_values))
+        else:
+            return order
 
 
 class EditCommunityForm(ModelFormWithHelper):

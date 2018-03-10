@@ -4,7 +4,7 @@ from django.db.models.signals import post_save, post_delete
 
 from community.constants import COMMUNITY_ADMIN
 from community.models import Community
-from community.signals import manage_community_groups, remove_community_groups
+from community.signals import (manage_community_groups, remove_community_groups)
 from users.models import SystersUser
 
 

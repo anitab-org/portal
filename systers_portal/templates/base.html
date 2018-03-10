@@ -40,7 +40,6 @@
         <li {% if url == request.path %}class="active"{% endif %}>
           <a href="{{ url }}">About Us</a>
         </li>
-        {% url 'new-community-proposal' as url %}
         <li class="dropdown {% if '/community/' in request.path or url == request.path %}active{% endif %}">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Communities <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
@@ -49,14 +48,24 @@
                 <a role="menuitem" href="{{ community.get_absolute_url }}">{{ community.name }}</a>
               </li>
             {% endfor %}
+              {% if user.is_authenticated and user.is_active %}
+              {% url 'request_community' as url %}
               <li {% if url == request.path %}class="active"{% endif %}role="presentation">
                 <a role="menuitem" href="{{ url }}">
-                  New Community Proposal
-                </a>
+                  Request a new community</a>
               </li>
+              {% endif %}
               {% if user.is_authenticated and user.is_active and user.is_staff %}
+              {% url 'unapproved_community_requests' as url %}
               <li {% if url == request.path %}class="active"{% endif %}role="presentation">
-                <a role="menuitem" href="{% url 'add_community' %}">
+                <a role="menuitem" href="{{ url }}">
+                  View community requests </a>          
+              </li>
+              {% endif %}
+              {% if user.is_authenticated and user.is_active and user.is_staff %}
+              {% url 'add_community' as url %}
+              <li {% if url == request.path %}class="active"{% endif %}role="presentation">
+                <a role="menuitem" href="{{ url }}">
                   Add a new community</a>
               </li>
               {% endif %}

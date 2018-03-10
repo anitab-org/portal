@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from community.models import Community
 from community.utils import create_groups
+from community.permissions import groups_templates
 from membership.models import JoinRequest
 from users.models import SystersUser
 
@@ -42,7 +43,7 @@ class SystersUserTestCase(TestCase):
         name = "Baz"
         self.systers_user.leave_groups(name)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
-        create_groups(name)
+        create_groups(name, groups_templates)
         content_manager_group = Group.objects.get(name="Baz: Content Manager")
         self.systers_user.join_group(content_manager_group)
         self.assertSequenceEqual(self.systers_user.user.groups.all(),
@@ -50,7 +51,7 @@ class SystersUserTestCase(TestCase):
         self.systers_user.leave_groups(name)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
         other_name = "Foo"
-        create_groups(other_name)
+        create_groups(other_name, groups_templates)
         admin_group = Group.objects.get(name="Foo: Community Admin")
         self.systers_user.join_group(admin_group)
         self.systers_user.join_group(content_manager_group)
@@ -81,7 +82,7 @@ class SystersUserTestCase(TestCase):
 
     def test_get_member_groups(self):
         """Test getting groups of which the user is a member"""
-        groups = create_groups("Bar")
+        groups = create_groups("Bar", groups_templates)
         self.assertEqual(self.systers_user.get_member_groups(groups), [])
         first_group = groups[0]
         self.systers_user.join_group(first_group)

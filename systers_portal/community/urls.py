@@ -4,12 +4,27 @@ from community.views import (CommunityLandingView, EditCommunityProfileView,
                              ViewCommunityProfileView, CommunityPageView,
                              AddCommunityPageView, EditCommunityPageView,
                              DeleteCommunityPageView, CommunityUsersView,
-                             UserPermissionGroupsView, AddCommunityView)
+                             UserPermissionGroupsView, RequestCommunityView,
+                             NewCommunityRequestsListView, ApproveRequestCommunityView,
+                             RejectRequestCommunityView, ViewCommunityRequestView,
+                             EditCommunityRequestView, AddCommunityView)
+
 
 urlpatterns = [
-
     url(r'add_community/$', AddCommunityView.as_view(),
         name='add_community'),
+    url(r'request_community/$', RequestCommunityView.as_view(),
+        name='request_community'),
+    url(r'community_requests', NewCommunityRequestsListView.as_view(),
+        name='unapproved_community_requests'),
+    url(r'^(?P<slug>[\w-]+)/edit_request/$', EditCommunityRequestView.as_view(),
+        name='edit_community_request'),
+    url(r'^(?P<slug>[\w-]+)/view_request/$', ViewCommunityRequestView.as_view(),
+        name='view_community_request'),
+    url(r'^(?P<slug>[\w-]+)/approve/$', ApproveRequestCommunityView.as_view(),
+        name='approve_community_request'),
+    url(r'(?P<slug>[\w-]+)/reject/$', RejectRequestCommunityView.as_view(),
+        name='reject_community_request'),
     url(r'^(?P<slug>[\w-]+)/$', CommunityLandingView.as_view(),
         name='view_community_landing'),
     url(r'^(?P<slug>[\w-]+)/profile/$', ViewCommunityProfileView.as_view(),

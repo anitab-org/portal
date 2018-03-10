@@ -4,10 +4,349 @@ from django.db.models.signals import post_save, post_delete
 from django.test import TestCase
 
 from community.constants import USER_CONTENT_MANAGER
-from community.models import Community, CommunityPage
+from community.models import Community, CommunityPage, RequestCommunity
 from community.signals import manage_community_groups, remove_community_groups
 from membership.models import JoinRequest
 from users.models import SystersUser
+
+
+class RequestCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+
+    def test_get_request_community_view(self):
+        url = reverse('request_community')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "community/request_community.html")
+        self.assertContains(response, "Request a new community")
+
+    def test_post_request_community_view(self):
+        url = reverse('request_community')
+        # Test without log in, no data
+        response = self.client.post(url, data={})
+        self.assertEqual(response.status_code, 403)
+        # Test with login, invalid data
+        self.client.login(username='foo', password='foobar')
+        invalid_data = {'name': 'Bar',
+                        'slug': 'foo',
+                        'order': '1',
+                        'user': self.systers_user}
+        response = self.client.post(url, data=invalid_data)
+        self.assertEqual(response.status_code, 200)
+        # Test with login but valid data
+        self.client.login(username='foo', password='foobar')
+        valid_data = {'name': 'Bar', 'slug': 'foo', 'order': '1', 'user': self.systers_user,
+                      'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
+                      'community_channel': 'Existing Social Media Channels ',
+                      'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
+                      'is_avail_volunteer': 'Yes', 'count_avail_volunteer': '15',
+                      'content_developer': 'foobar', 'selection_criteria': 'foobarbar',
+                      'is_real_time': 'foofoobar'
+                      }
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 302)
+        # Test for showing the user's community requests once requested
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your Community requests")
+        self.assertContains(response, "Bar")
+
+
+class EditCommunityRequestViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_get_edit_community_request_view(self):
+        url = reverse('edit_community_request', kwargs={'slug': 'foo'})
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test once logged in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'community/edit_community_request.html')
+        self.assertContains(response, "Edit Foo")
+        # Test if a new user other than requestor accesses the url
+        new_user = User.objects.create_user(username='bar', password='foobar')
+        SystersUser.objects.get(user=new_user)
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if a superuser accesses the url
+        new_user.is_superuser = True
+        new_user.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        # Test if the url doesn't exist
+        nonexistent_url = reverse('edit_community_request',
+                                  kwargs={'slug': 'bar'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_edit_community_request_view(self):
+        url = reverse('edit_community_request', kwargs={'slug': 'foo'})
+        # Test without logging in,and posting data
+        valid_data = {'name': 'Bar', 'slug': 'bar', 'order': '1', 'user': self.systers_user,
+                      'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
+                      'community_channel': 'Existing Social Media Channels ',
+                      'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
+                      'is_avail_volunteer': 'Yes', 'count_avail_volunteer': '15',
+                      'content_developer': 'foobar', 'selection_criteria': 'foobarbar',
+                      'is_real_time': 'foofoobar'
+                      }
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 403)
+        # Test with logging in, posting data, redirected to viewing the request
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/bar/view_request/'))
+        # Test for non existent url, slug changed to bar.
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 404)
+        # Test if a user other than requestor posts the data
+        url = reverse('edit_community_request', kwargs={'slug': 'bar'})
+        user = User.objects.create_user(username='bar', password='foobar')
+        SystersUser.objects.get(user=user)
+        self.client.login(username='bar', password='foobar')
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 403)
+        # Test if a superuser posts the data
+        user.is_superuser = True
+        user.save()
+        response = self.client.post(url, data=valid_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/bar/view_request/'))
+
+
+class ViewCommunityRequestViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_view_community_request_view(self):
+        """Test view community profile view"""
+        url = reverse('view_community_request', kwargs={'slug': 'foo'})
+        # Test for accessing the url without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test for accessing the url after logging in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "community/view_community_request.html")
+        self.assertContains(response, "Foo")
+        self.assertContains(response, "Edit community request")
+        # Approved request cannot be edited
+        self.community_request.is_approved = True
+        self.community_request.save()
+        response = self.client.get(url)
+        self.assertNotContains(response, "Edit community request")
+        # Test if a user other than requestor accesses the url
+        new_user = User.objects.create_user(username='bar', password='foobar')
+        SystersUser.objects.get(user=new_user)
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if a superuser accesses the url, approved requests cannot be edited
+        new_user.is_superuser = True
+        new_user.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "community/view_community_request.html")
+        self.assertContains(response, "Foo")
+        self.assertNotContains(response, "Edit community request")
+        # Test if a superuser accesses the url, unapproved requests can be edited
+        self.community_request.is_approved = False
+        self.community_request.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Foo")
+        self.assertContains(response, "Edit community request")
+        # Test for non existent url
+        nonexistent_url = reverse('view_community_profile',
+                                  kwargs={'slug': 'bar'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+
+class NewCommunityRequestsListViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_new_community_requests_list_view(self):
+        url = reverse('unapproved_community_requests')
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if accessed by a superuser
+        self.user.is_staff = True
+        self.user.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "community/new_community_requests.html")
+        self.assertContains(response, "Foo")
+        self.assertSequenceEqual(RequestCommunity.objects.filter(
+            is_approved=False), [self.community_request])
+        self.assertContains(response, "Requested by")
+
+
+class RejectRequestCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.password = 'foobar'
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_get_reject_request_community_view(self):
+        url = reverse('reject_community_request', kwargs={'slug': 'foo'})
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if accessed by a superuser
+        admin = User.objects.create_superuser(
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
+        self.admin_systers_user = SystersUser.objects.get(user=admin)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, "community/confirm_reject_request_community.html")
+        # Test for non existent url
+        nonexistent_url = reverse('reject_community_request',
+                                  kwargs={'slug': 'bar'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_reject_request_community_view(self):
+        url = reverse('reject_community_request', kwargs={'slug': 'foo'})
+        # Test without logging in
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foo', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if superuser posts
+        admin = User.objects.create_superuser(
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
+        self.admin_systers_user = SystersUser.objects.get(user=admin)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('community/community_requests'))
+        # Test non existent url
+        nonexistent_url = reverse(
+            "reject_community_request", kwargs={'slug': 'bar'})
+        response = self.client.post(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+
+class ApproveRequestCommunityViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.password = 'foobar'
+        self.community_request = RequestCommunity.objects.create(
+            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
+            community_channel='Existing Social Media Channels ',
+            is_avail_volunteer='Yes', count_avail_volunteer=0,
+            user=self.systers_user)
+
+    def test_approve_request_community_view_base(self):
+        url = reverse('approve_community_request', kwargs={'slug': 'foo'})
+        # Test without logging in
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test logging in, normal user
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        # Test if accessed by a superuser
+        admin = User.objects.create_superuser(
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
+        SystersUser.objects.get(user=admin)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/foo/'))
+        # Test for non existent url
+        nonexistent_url = reverse('approve_community_request',
+                                  kwargs={'slug': 'bar'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_approve_request_community_view_order(self):
+        # Test if order of request already exists in Community, redirect to edit page.
+        url = reverse('approve_community_request', kwargs={'slug': 'foo'})
+        admin = User.objects.create_superuser(
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
+        admin_systers_user = SystersUser.objects.get(user=admin)
+        Community.objects.create(name="FooBarComm", slug="foobar",
+                                 order=1, admin=admin_systers_user)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/foo/edit_request/'))
+        # Test if order is None
+        self.community_request.order = None
+        self.community_request.save()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/foo/edit_request/'))
+
+    def test_approve_request_community_view_slug(self):
+        """Test if slug already exists in Community, redirect to edit page."""
+        url = reverse('approve_community_request', kwargs={'slug': 'foo'})
+        admin = User.objects.create_superuser(
+            username='foo-bar', email='abcd@gmail.com', password=self.password)
+        admin_systers_user = SystersUser.objects.get(user=admin)
+        Community.objects.create(name="FooBarComm", slug="foo",
+                                 order=2, admin=admin_systers_user)
+        self.client.login(username='foo-bar', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/community/foo/edit_request/'))
 
 
 class ViewCommunityProfileViewTestCase(TestCase):
