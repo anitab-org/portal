@@ -366,6 +366,17 @@ table.decoration-none  tr a {
   word-wrap: break-word;
   margin-bottom: 40px;
 }
+/* Commentbox CSS
+------------------------------------------------- */
+.comment-box{
+  border: 0px;
+  background-color: white;
+  color: #555555;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.0em;
+  line-height: 1.0em;
+/*  webkit-text-size-adjust: 100%;*/
+}
 
 /* Meetup Location Members user-cell space
 -------------------------------------------------- */
