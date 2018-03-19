@@ -9,7 +9,6 @@
             <th>#</th>
             <th>User</th>
             <th>Email address</th>
-            <th>Date</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -19,7 +18,6 @@
               <th>{{ forloop.counter }}</th>
               <td><a href="{{ join_request.user.get_absolute_url }}">{{ join_request.user }}</a></td>
               <td><a href="mailto:{{ join_request.user.email }}">{{ join_request.user.email }}</a></td>
-              <td>{{ join_request.date_created }}</td>
               <td>
                 <a href="{% url 'approve_join_request_meetup_location' meetup_location.slug join_request.user.username %}"
                    role="button" class="btn btn-primary btn-sm">Approve</a>
