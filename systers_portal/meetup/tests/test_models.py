@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.utils import timezone
 from cities_light.models import City, Country
 
-from meetup.models import MeetupLocation, Meetup, Rsvp, SupportRequest, RequestMeetupLocation
+from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+                           RequestMeetup)
 from users.models import SystersUser
 
 
@@ -48,6 +49,27 @@ class MeetupTestCase(MeetupBaseTestCase, TestCase):
     def test_str(self):
         """Test Meetup object str/unicode representation"""
         self.assertEqual(str(self.meetup), "Test Meetup")
+
+
+class RequestMeetupTestCase(MeetupBaseTestCase, TestCase):
+    def setUp(self):
+        super(RequestMeetupTestCase, self).setUp()
+        self.meetup_request = \
+            RequestMeetup.objects.create(title="Test Meetup Request", slug="baz",
+                                         date=timezone.now().date(), time=timezone.now().time(),
+                                         venue="FooBar colony",
+                                         description="This is a testing meetup request.",
+                                         meetup_location=self.meetup_location,
+                                         created_by=self.systers_user)
+
+    def test_str(self):
+        """Test Meetup object str/unicode representation"""
+        self.assertEqual(str(self.meetup_request), "Test Meetup Request")
+
+    def test_get_verbose_fields(self):
+        fields = self.meetup_request.get_verbose_fields()
+        self.assertEqual(len(fields), 12)
+        self.assertTrue(fields[1], ('Title', 'Test Meetup Request'))
 
 
 class RsvpTestCase(MeetupBaseTestCase, TestCase):

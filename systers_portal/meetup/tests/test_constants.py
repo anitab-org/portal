@@ -3,7 +3,8 @@ from django.test import TestCase
 from meetup.constants import (MEMBER, ORGANIZER, LOCATION_ALREADY_EXISTS_MSG,
                               SLUG_ALREADY_EXISTS_MSG, NAME_ALREADY_EXISTS_MSG,
                               LOCATION_ALREADY_EXISTS, SLUG_ALREADY_EXISTS,
-                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG, ERROR_MSG)
+                              NAME_ALREADY_EXISTS, OK, SUCCESS_MSG,
+                              SUCCESS_MEETUP_MSG, ERROR_MSG)
 
 
 class ConstantsTestCase(TestCase):
@@ -44,6 +45,10 @@ class ConstantsTestCase(TestCase):
         error_msg = ERROR_MSG
         self.assertEqual(error_msg, "Something went wrong. Please try again")
 
+    def test_slug_already_exists_constant(self):
+        slug_already_exists_constant = SLUG_ALREADY_EXISTS
+        self.assertEqual(slug_already_exists_constant, "slug_already_exists")
+
     def test_ok_constant(self):
         ok_constant = OK
         self.assertEqual(ok_constant, "success")
@@ -57,6 +62,6 @@ class ConstantsTestCase(TestCase):
         name_already_exists_constant = NAME_ALREADY_EXISTS
         self.assertEqual(name_already_exists_constant, "name_already_exists")
 
-    def test_slug_already_exists_constant(self):
-        slug_already_exists_constant = SLUG_ALREADY_EXISTS
-        self.assertEqual(slug_already_exists_constant, "slug_already_exists")
+    def test_success_meetup_msg_constant(self):
+        success_meetup_msg_constant = SUCCESS_MEETUP_MSG
+        self.assertEqual(success_meetup_msg_constant, "Meetup sucessfully created!")

@@ -15,3 +15,6 @@ SLUG_ALREADY_EXISTS_MSG = "Slug {0} already exists, please choose a different sl
 NAME_ALREADY_EXISTS_MSG = "Name {0} already exists, please choose a different name."
 SUCCESS_MSG = "Meetup Location created successfully!"
 ERROR_MSG = "Something went wrong. Please try again"
+
+# messages for the approval of a meetup request
+SUCCESS_MEETUP_MSG = "Meetup sucessfully created!"

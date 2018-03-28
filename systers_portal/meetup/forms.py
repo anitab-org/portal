@@ -5,7 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from meetup.models import Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation
+from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+                           RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
 
@@ -29,6 +30,50 @@ class RequestMeetupLocationForm(ModelFormWithHelper):
         if commit:
             instance.save()
         return instance
+
+
+class RequestMeetupForm(ModelFormWithHelper):
+    """ Form to create a new Meetup Request. """
+    class Meta:
+        model = RequestMeetup
+        fields = ('title', 'slug', 'date', 'time', 'venue', 'description')
+        widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
+                   'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('created_by')
+        self.meetup_location = kwargs.pop('meetup_location')
+        super(RequestMeetupForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add admin to the instance"""
+        instance = super(RequestMeetupForm, self).save(commit=False)
+        instance.created_by = SystersUser.objects.get(user=self.user)
+        instance.meetup_location = self.meetup_location
+        if commit:
+            instance.save()
+        return instance
+
+    def clean_date(self):
+        """Check if the date is less than the current date. If so, raise an error."""
+        date = self.cleaned_data.get('date')
+        if date < timezone.now().date():
+            raise forms.ValidationError("Date should not be before today's date.",
+                                        code="date_in_past")
+        return date
+
+    def clean_time(self):
+        """Check that if the date is the current date, the time is not the current time. If so,
+        raise an error."""
+        time = self.cleaned_data.get('time')
+        date = self.cleaned_data.get('date')
+        if time:
+            if date == timezone.now().date() and time < timezone.now().time():
+                raise forms.ValidationError("Time should not be a time that has already passed.",
+                                            code="time_in_past")
+        return time
 
 
 class AddMeetupForm(ModelFormWithHelper):
