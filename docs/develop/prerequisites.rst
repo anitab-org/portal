@@ -5,7 +5,7 @@ Before diving into development, please take a minute to check if you have all
 the necessary tools and skills to get started. You should be familiar with the
 following:
 
-* Unix environment (GNU/Linux, OS X, etc)
+* Windows\Unix environment (GNU/Linux, OS X, etc) 
 * Git version control system: committing, pushing, pulling, branching
 * Python programming language
 * Django framework
@@ -26,6 +26,11 @@ with constant updates, friendly X Window System and comes with Python pre-instal
 From the developer's perspective you should be comfortable using a terminal.
 Theoretically is it possible to stick with Windows OS, though none or very little
 assistance will be provided for OS specific issues.
+
+Windows System
+--------------
+
+If you are not familiar with any unix system and want to get started on windows that's fine.
 
 Git
 ---
