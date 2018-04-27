@@ -1768,3 +1768,63 @@ class DeleteSupportRequestCommentViewTestCase(MeetupLocationViewBaseTestCase, Te
         self.assertEqual(response.status_code, 302)
         comments = Comment.objects.all()
         self.assertEqual(len(comments), 0)
+
+
+class CancelMeetupLocationJoinRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
+    def setUp(self):
+        super(CancelMeetupLocationJoinRequestViewTestCase, self).setUp()
+        self.password = 'foobar'
+        self.meetup_location.members.remove(self.systers_user)
+
+    def test_cancel_meetup_location_join_request(self):
+        """Test GET request to cancel a join request to a meetup location"""
+        current_url = reverse("about_meetup_location", kwargs={'slug': 'foo'})
+        self.data = {
+            'current_url': current_url,
+            'username': self.user.username
+        }
+        self.url = reverse("cancel_meetup_location_join_request", kwargs={
+            'slug': self.meetup_location.slug,
+            'username': self.user.username
+        })
+        response = self.client.get(self.url, {'current_url': current_url})
+        self.assertEqual(response.status_code, 403)
+
+        user = User.objects.create_user(username='bar', password=self.password)
+        self.client.login(username=user.username, password=self.password)
+        nonexistent_meetup_location_url = reverse("about_meetup_location", kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_meetup_location_url, {
+            'current_url': nonexistent_meetup_location_url,
+            'username': self.user.username
+        })
+        self.assertEqual(response.status_code, 404)
+
+        self.check_message_in_response(
+            'warning',
+            'There is no pending request to join Foo Systers meetup location.',
+            200
+        )
+
+        self.meetup_location.join_requests.add(self.systers_user)
+        self.assertEqual(self.meetup_location.join_requests.all().count(), 1)
+        self.check_message_in_response(
+            'success',
+            'Your request to join Foo Systers meetup location was canceled.',
+            200
+        )
+        self.assertEqual(self.meetup_location.join_requests.all().count(), 0)
+
+        self.meetup_location.members.add(self.systers_user)
+        self.check_message_in_response(
+            'warning',
+            'You are already a member of Foo Systers meetup location. '
+            'There is no pending join request.',
+            200
+        )
+
+    def check_message_in_response(self, _message_tag=None, _message=None, status_code=None):
+        response = self.client.get(self.url, self.data, follow=True)
+        self.assertEqual(response.status_code, status_code)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, _message_tag)
+            self.assertTrue(_message in message.message)

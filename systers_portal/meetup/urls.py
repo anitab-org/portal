@@ -18,7 +18,8 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           NewMeetupLocationRequestsListView, ViewMeetupLocationRequestView,
                           RejectMeetupLocationRequestView, ApproveRequestMeetupLocationView,
                           RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
-                          ApproveRequestMeetupView, RejectMeetupRequestView)
+                          ApproveRequestMeetupView, RejectMeetupRequestView,
+                          CancelMeetupLocationJoinRequestView)
 
 
 urlpatterns = [
@@ -69,6 +70,9 @@ urlpatterns = [
         name='make_organizer_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/join/(?P<username>[\w.@+-]+)/$', JoinMeetupLocationView.as_view(),
         name='join_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/cancel/(?P<username>[\w.@+-]+)/$',
+        CancelMeetupLocationJoinRequestView.as_view(),
+        name='cancel_meetup_location_join_request'),
     url(r'^(?P<slug>[\w-]+)/join_requests/$', MeetupLocationJoinRequestsView.as_view(),
         name='join_requests_meetup_location'),
     url(r'^(?P<slug>[\w-]+)/join_requests/approve/(?P<username>[\w.@+-]+)/$',
