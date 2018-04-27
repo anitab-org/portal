@@ -42,6 +42,10 @@ Setup for developers
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON DATABASE systersdb to <the name>;
     ```
+1. Copy the example dev file:
+  ```bash
+  $ cp systers_portal/settings/dev.example.py systers_portal/settings/dev.py
+  ```
 1. Fill in the database details in `systers_portal/settings/dev.py`.
 1. Run `export SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
   should be 40 characters long, unique and unpredictable. Optionally to set the

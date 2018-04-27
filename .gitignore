@@ -6,9 +6,11 @@
 *.pyc
 local_settings.py
 
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
+systers_portal/systers_portal/settings/dev.py
 
 
 
