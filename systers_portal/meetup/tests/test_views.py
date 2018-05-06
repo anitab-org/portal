@@ -253,7 +253,7 @@ class ViewMeetupRequestViewTestCase(MeetupLocationViewBaseTestCase, TestCase):
         self.client.login(username='foobar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
-        # Test after logging in - organizer
+        # Test after logging in - moderator
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

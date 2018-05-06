@@ -49,7 +49,8 @@ class UtilsTestCase(TestCase):
 
     def test_assign_permissions(self):
         """Test assignment of permissions to meetup location groups"""
-        user = User.objects.create_user(username='foo', password='foobar',
+        self.password = "foobar"
+        user = User.objects.create_user(username='foo', password=self.password,
                                         email='user@test.com')
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')

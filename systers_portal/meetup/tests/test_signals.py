@@ -27,10 +27,11 @@ class SignalsTestCase(TestCase):
         m2m_changed.connect(delete_meetup_location_moderators,
                             sender=MeetupLocation.moderators.through,
                             dispatch_uid="delete_moderators")
+        self.password = "foobar"
 
     def test_manage_meetup_location_groups(self):
         """Test addition of groups when saving a Meetup Location object"""
-        user = User.objects.create_user(username='foo', password='foobar',
+        user = User.objects.create_user(username='foo', password=self.password,
                                         email='user@test.com')
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
@@ -43,7 +44,7 @@ class SignalsTestCase(TestCase):
 
     def test_remove_community_groups(self):
         """Test the removal of groups when a Meetup Location is deleted"""
-        user = User.objects.create_user(username='foo', password='foobar',
+        user = User.objects.create_user(username='foo', password=self.password,
                                         email='user@test.com')
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
@@ -60,9 +61,9 @@ class SignalsTestCase(TestCase):
     def test_add_meetup_location_members(self):
         """Test addition of permissions to a user when she is made a meetup location member"""
 
-        user = User.objects.create(username='foo', password='foobar')
+        user = User.objects.create(username='foo', password=self.password)
         systers_user = SystersUser.objects.get(user=user)
-        user2 = User.objects.create(username='foobar', password='foobar')
+        user2 = User.objects.create(username='foobar', password=self.password)
         systers_user2 = SystersUser.objects.get(user=user2)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
@@ -75,9 +76,9 @@ class SignalsTestCase(TestCase):
 
     def test_add_meetup_location_moderators(self):
         """Test addition of permissions to a user when she is made a meetup location moderator"""
-        user = User.objects.create(username='foo', password='foobar')
+        user = User.objects.create(username='foo', password=self.password)
         systers_user = SystersUser.objects.get(user=user)
-        user2 = User.objects.create(username='foobar', password='foobar')
+        user2 = User.objects.create(username='foobar', password=self.password)
         systers_user2 = SystersUser.objects.get(user=user2)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
@@ -91,9 +92,9 @@ class SignalsTestCase(TestCase):
     def test_delete_meetup_location_members(self):
         """Test removal of permissions from a user when she is removed as a meetup location
         member"""
-        user2 = User.objects.create(username='foobar', password='foobar')
+        user2 = User.objects.create(username='foobar', password=self.password)
         systers_user2 = SystersUser.objects.get(user=user2)
-        user = User.objects.create(username='foo', password='foobar')
+        user = User.objects.create(username='foo', password=self.password)
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)
@@ -109,9 +110,9 @@ class SignalsTestCase(TestCase):
     def test_delete_meetup_location_moderators(self):
         """Test removal of permissions from a user when she is removed as a meetup location
         moderator"""
-        user2 = User.objects.create(username='foobar', password='foobar')
+        user2 = User.objects.create(username='foobar', password=self.password)
         systers_user2 = SystersUser.objects.get(user=user2)
-        user = User.objects.create(username='foo', password='foobar')
+        user = User.objects.create(username='foo', password=self.password)
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')
         location = City.objects.create(name='Baz', display_name='Baz', country=country)

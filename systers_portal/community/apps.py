@@ -5,5 +5,4 @@ class CommunityConfig(AppConfig):
     name = 'community'
 
     def ready(self):
-        import community.signals
-        assert community.signals
+        import community.signals  # noqa # pylint: disable=unused-variable

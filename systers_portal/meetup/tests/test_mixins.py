@@ -11,7 +11,8 @@ from users.models import SystersUser
 
 class MeetupLocationMixinTestCase(TestCase):
     def setUp(self):
-        user = User.objects.create_user(username='foo', password='foobar',
+        self.password = "foobar"
+        user = User.objects.create_user(username='foo', password=self.password,
                                         email='user@test.com')
         systers_user = SystersUser.objects.get(user=user)
         country = Country.objects.create(name='Bar', continent='AS')

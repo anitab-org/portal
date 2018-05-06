@@ -130,7 +130,7 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         """Supply the redirect URL in case of successful approval.
         * Creates a new RequestMeetup object and copy fields,
             values from RequestMeetup object
-        * Adds the requestor as the meetup location organizer
+        * Adds the requestor as the meetup location moderator
         * Sets the RequestMeetup object's is_approved field to True.
         """
         meetup_request = get_object_or_404(
@@ -151,11 +151,11 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         self.slug_meetup_request = meetup_request.slug
         status, message, level = self.process_request()
         messages.add_message(self.request, level, message)
-        organizers = self.meetup_location.organizers.all()
+        moderators = self.meetup_location.moderators.all()
         if status == OK:
             new_meetup.save()
-            if systersuser not in organizers:
-                self.meetup_location.organizers.add(systersuser)
+            if systersuser not in moderators:
+                self.meetup_location.moderators.add(systersuser)
             meetup_request.save()
             return reverse('view_meetup', kwargs={'slug': self.meetup_location.slug,
                            'meetup_slug': new_meetup.slug})
