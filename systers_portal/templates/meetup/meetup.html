@@ -46,7 +46,7 @@
     <div class="box-container pt25">
       <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
       <div class="box-body">
-        <p>{{ comment.body }}</p>
+        <pre class="comment-box">{{ comment.body }}</pre>
       </div>
       {% if user == comment.author.user %}
         <a href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}">edit</a>
