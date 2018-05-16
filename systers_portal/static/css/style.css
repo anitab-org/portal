@@ -120,13 +120,25 @@ body > .container {
   box-shadow: none;
 }
 
+.jumbotron-custom .index-head{
+  color: #8d2165;
+  font-family: Cairo;
+}
+
+.lead{
+  color: #575757;
+  font-family: Cairo;
+}
+
 .featurette-divider {
   margin: 4em 0;
 }
 
 .featurette-heading {
   font-weight: 300;
+  color: #F89728;
   line-height: 1;
+  font-family: Cairo;
   letter-spacing: -1px;
   margin-top: 0;
   font-size: 3.5em;
@@ -147,10 +159,16 @@ body > .container {
 -------------------------------------------------- */
 .contact-text,
 .about-us-text {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Montserrat;
   font-size: 1.2em;
+  color: #575757;  
   line-height: 1.8em;
   margin: 20px 0;
+}
+
+.aboutus-head{
+  color: #8d2165;
+  font-family: Cairo;
 }
 
 .contact-icon {
