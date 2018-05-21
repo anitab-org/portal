@@ -143,14 +143,19 @@ body > .container, body > .container-fluid {
 }
 
 
-/* Common: about us
+/* Common: about us, contact
 -------------------------------------------------- */
 .contact-text,
 .about-us-text {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Monserrat;
   font-size: 1.2em;
   line-height: 1.8em;
   margin: 20px 0;
+}
+
+.contact-head {
+  font-family: Cairo;
+  color: #8d2165;
 }
 
 .contact-icon {
