@@ -169,6 +169,38 @@ body > .container, body > .container-fluid {
   border: 0;
 }
 
+/* Community: new community request form
+---------------------------------------------------*/
+.request-form-head {
+  color: #8d2165;
+  font-family: 'Cairo';
+}
+
+.form-control {
+  background-color: #d1e9d9;
+}
+.option {
+  color: white;
+
+}
+
+.well {
+  position: relative;
+  background-color: white;
+  border: none;
+  box-shadow: none;
+  width: auto; 
+  font-family: Cairo;
+}
+
+.ml15{
+  font-family: Cairo;
+}
+
+.control-label {
+  color: #101820;
+}
+
 /* social icons contact page
 ---------------------------------------------------*/
 .facebook_icon {
