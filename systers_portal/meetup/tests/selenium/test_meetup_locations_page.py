@@ -4,7 +4,7 @@ from common.tests.selenium.base import SeleniumTestCase
 class TestMeetupLocationsPage(SeleniumTestCase):
 
     def test_can_goto_meetuplocations_page(self):
-        self.browser.get('{0}{1}'.format(self.live_server_url, '/meetup/locations/'))
+        self.browser.get('{}{}'.format(self.live_server_url, '/meetup/locations/'))
         self.assertTrue('Meetup Locations' in self.browser.title)
 
     def test_can_choose_meetup_locations(self):
@@ -15,9 +15,10 @@ class TestMeetupLocationsPage(SeleniumTestCase):
         for menu_item in menu.find_elements_by_tag_name('li'):
             if menu_item.text == 'MEETUP LOCATIONS':
                 menu_item.click()
+                break
         self.assertTrue('Meetup Locations' in self.browser.title)
 
     def test_can_choose_location(self):
-        self.browser.get('{0}{1}'.format(self.live_server_url, '/meetup/locations/'))
+        self.browser.get('{}{}'.format(self.live_server_url, '/meetup/locations/'))
         self.browser.find_element_by_xpath("//a[contains(text(),'Foo Systers')]").click()
         self.assertTrue('Foo Systers' in self.browser.title)
