@@ -9,8 +9,9 @@ from django.conf import settings
 from django.contrib.auth import (SESSION_KEY, BACKEND_SESSION_KEY,
                                  HASH_SESSION_KEY)
 from django.contrib.sessions.backends.db import SessionStore
+from allauth.account.models import EmailAddress
 import json
-import os
+from os import getcwd
 
 browsers = {
     'firefox': webdriver.Firefox,
@@ -38,13 +39,14 @@ class SeleniumTestCase(StaticLiveServerTestCase):
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(
             name='Foo', display_name='Foo', country=country)
-        with open('{0}{1}'.format(
-                  os.getcwd(),
+        with open('{}{}'.format(getcwd(),
                   '/systers_portal/common/tests/selenium/credentials.json')
                   ) as json_data:
             credentials = json.load(json_data)
-        self.user = User.objects.create(
-            username=credentials['username'], password=credentials['password'])
+        self.user = User()
+        self.user.username = credentials['username']
+        self.user.set_password(credentials['password'])
+        self.user.save()
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers",
@@ -70,7 +72,7 @@ class SeleniumTestCase(StaticLiveServerTestCase):
             created_by=self.systers_user)
 
     def create_session_cookie(self):
-        # Then create the authenticated session using the new user credentials
+        """Create a pre-authenticated authenticated cookie using user credentials"""
         session = SessionStore()
         session[SESSION_KEY] = self.user.pk
         session[BACKEND_SESSION_KEY] = settings.AUTHENTICATION_BACKENDS[0]
@@ -85,3 +87,16 @@ class SeleniumTestCase(StaticLiveServerTestCase):
             'path': '/',
         }
         return cookie
+
+    def verify_user(self):
+        """Verify instance user account using django-allauth constructs"""
+        account_emailaddresse = EmailAddress()
+        account_emailaddresse.email = 'foo@systers.org'
+        account_emailaddresse.verified = True
+        account_emailaddresse.user_id = self.user.id
+        account_emailaddresse.save()
+
+    def make_admin(self):
+        self.user.is_superuser = True
+        self.user.save()
+        self.verify_user()

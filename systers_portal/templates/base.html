@@ -106,7 +106,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right text-uppercase">
         {% if user.is_authenticated and user.is_active %}
-          <li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}">
+          <li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}" id="user-dropdown">
             <a href="#" class="dropdown-toggle"
                data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
