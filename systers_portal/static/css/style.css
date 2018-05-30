@@ -161,7 +161,7 @@ body > .container, body > .container-fluid {
 }
 
 
-/* Common: about us
+/* Common: about us, contact
 -------------------------------------------------- */
 .contact-text,
 .about-us-text {
@@ -172,12 +172,13 @@ body > .container, body > .container-fluid {
   margin: 20px 0;
 }
 
+
 .about-us-head{
   font-family: Cairo;
   color: #8d2165;
 }
 
-.contact-us-head{
+.contact-head {
   font-family: Cairo;
   color: #8d2165;
 }
@@ -196,6 +197,38 @@ body > .container, body > .container-fluid {
   bottom: 0;
   top: 0;
   border: 0;
+}
+
+/* Community: new community request form
+---------------------------------------------------*/
+.request-form-head {
+  color: #8d2165;
+  font-family: 'Cairo';
+}
+
+.form-control {
+  background-color: #d1e9d9;
+}
+.option {
+  color: white;
+
+}
+
+.well {
+  position: relative;
+  background-color: white;
+  border: none;
+  box-shadow: none;
+  width: auto; 
+  font-family: Cairo;
+}
+
+.ml15{
+  font-family: Cairo;
+}
+
+.control-label {
+  color: #101820;
 }
 
 /* social icons contact page

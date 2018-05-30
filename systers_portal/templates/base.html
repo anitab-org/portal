@@ -71,7 +71,7 @@
               {% endif %}
           </ul>
         </li>
-        <li {% if '/meetup/' in request.path %}class="active"{% endif %} class="dropdown">
+        <li {% if '/meetup/' in request.path %}class="active"{% endif %} class="dropdown" id="meetup-dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetups <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% url 'list_meetup_location' as url %}

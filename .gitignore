@@ -102,3 +102,7 @@ local/
 
 # Documentation build
 _build
+
+# pytest
+
+.pytest_cache
