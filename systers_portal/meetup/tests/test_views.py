@@ -9,6 +9,8 @@ from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, Request
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
+from rest_framework.test import APITestCase
+import json
 
 
 class MeetupLocationViewBaseTestCase(object):
@@ -1831,3 +1833,42 @@ class CancelMeetupLocationJoinRequestViewTestCase(MeetupLocationViewBaseTestCase
         for message in response.context['messages']:
             self.assertEqual(message.tags, _message_tag)
             self.assertTrue(_message in message.message)
+
+
+class VmsApi(APITestCase, TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar',
+                                             email='user@test.com')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
+        self.meetup_location = MeetupLocation.objects.create(
+            name="Foo Systers", slug="foo", location=self.location,
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
+        # a meetup after the posted date
+        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
+                                            date='2018-06-16',
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            venue='Foo Systers',
+                                            meetup_location=self.meetup_location,
+                                            created_by=self.systers_user,
+                                            last_updated=timezone.now())
+        # a meetup before the posted date
+        self.meetup2 = Meetup.objects.create(title='Foo Baz', slug='foobar',
+                                             date='2018-06-12',
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             venue='Foo Systers',
+                                             meetup_location=self.meetup_location,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+
+    def test_api_for_vms(self):
+        """Test POST request to provide meetup data after the specified date"""
+        url = reverse('vms_api')
+        data = {'date': '2018-06-13'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(json.loads(response.content), [{u'event_name': u'Foo Bar Baz',
+                                                         u'venue': u'Foo Systers',
+                                                         u'start_date': u'2018-06-16'}])

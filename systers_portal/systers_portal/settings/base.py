@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'meetup',
     'membership',
     'users',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (
