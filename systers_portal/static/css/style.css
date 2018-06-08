@@ -117,7 +117,13 @@ body > .container, body > .container-fluid {
   background-color: #fff;
   text-align: center;
   border: 0;
+  color: #575757;
   box-shadow: none;
+}
+
+.jumbotron-custom .index-head {
+  font-family: Cairo;
+  color: #8d2165;
 }
 
 .featurette-divider {
@@ -126,10 +132,22 @@ body > .container, body > .container-fluid {
 
 .featurette-heading {
   font-weight: 300;
+  font-family: Cairo;
+  color:#F89728;
   line-height: 1;
   letter-spacing: -1px;
   margin-top: 0;
   font-size: 3.5em;
+}
+
+.lead {
+  color: #575757;
+  font-family: Monserrat;
+}
+
+.btn {
+  background-color: #005c88 ;
+  border-color: #005c88;
 }
 
 @media screen and (max-width: 991px) {
@@ -149,8 +167,15 @@ body > .container, body > .container-fluid {
 .about-us-text {
   font-family: Monserrat;
   font-size: 1.2em;
+  color: #575757;
   line-height: 1.8em;
   margin: 20px 0;
+}
+
+
+.about-us-head{
+  font-family: Cairo;
+  color: #8d2165;
 }
 
 .contact-head {
