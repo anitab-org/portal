@@ -2,13 +2,10 @@ from common.tests.selenium.base import SeleniumTestCase
 
 
 class TestMeetupLocationAdminPage(SeleniumTestCase):
-
-    def test_can_add_new_meetup(self):
-        self.browser.get(self.live_server_url)
-        self.browser.add_cookie(self.create_session_cookie())
-        self.browser.refresh()
-        self.browser.get('{}{}'.format(self.live_server_url, '/meetup/add'))
-        self.assertTrue(True)
+    """
+    Extended automated visual tests for admin actions in meetup app,
+    test_can_create_meetup removed as its covered in test_admin_actions under common tests.
+    """
 
     def test_can_delete_meetup(self):
         self.browser.get(self.live_server_url)

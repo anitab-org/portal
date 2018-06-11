@@ -2,6 +2,9 @@ from common.tests.selenium.base import SeleniumTestCase
 
 
 class TestMeetupLocationsPage(SeleniumTestCase):
+    """
+    Automated visual tests for meetup locations page.
+    """
 
     def test_can_goto_meetuplocations_page(self):
         self.browser.get('{}{}'.format(self.live_server_url, '/meetup/locations/'))

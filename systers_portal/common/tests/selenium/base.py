@@ -97,6 +97,7 @@ class SeleniumTestCase(StaticLiveServerTestCase):
         account_emailaddresse.save()
 
     def make_admin(self):
+        self.user.is_staff = True
         self.user.is_superuser = True
         self.user.save()
         self.verify_user()
