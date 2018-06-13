@@ -133,7 +133,7 @@ production at the moment. It may be configured to do so in the future.
 1. Install [docker-compose](http://docs.docker.com/compose/install/).
    Note: fig has been deprecated. Docker-compose replaces fig.
 1. Create a new directory on your local system.
-1. Enter `git clone git@github.com:systers/portal.git` to clone the Systers
+1. Enter `git clone https://github.com/systers/portal.git` to clone the Systers
    Portal repository. After the clone is done, change directory (cd) to the
    `portal` directory.
 1. Run `docker-compose build`. This pulls the Docker images required to run the
