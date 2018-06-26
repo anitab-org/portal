@@ -26,6 +26,8 @@ from meetup.constants import (OK, SUCCESS_MSG, NAME_ALREADY_EXISTS, NAME_ALREADY
                               SUCCESS_MEETUP_MSG)
 from users.models import SystersUser
 from common.models import Comment
+from django.http import JsonResponse
+from rest_framework.views import APIView
 
 
 class RequestMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
@@ -1457,3 +1459,33 @@ class CancelMeetupLocationJoinRequestView(LoginRequiredMixin, SingleObjectMixin,
             # TODO: configure logging and log the unknown status
         return super(CancelMeetupLocationJoinRequestView, self).get(request, *args,
                                                                     **kwargs)
+
+
+class ApiForVmsView(APIView):
+
+    @classmethod
+    def return_meetup_data(self, meetups):
+        """function to return all or filtered meetup data"""
+        meetup_list = list()
+        for meetup in meetups:
+            meetup_data = {}
+            meetup_data['event_name'] = meetup.title
+            meetup_data['start_date'] = meetup.date
+            meetup_data['venue'] = meetup.venue
+            meetup_list.append(meetup_data)
+        return JsonResponse(meetup_list, safe=False)
+
+    @classmethod
+    def get(self, request):
+        # fetching all meetups
+        meetups = Meetup.objects.all().order_by('date')
+        apiforvmsview = ApiForVmsView()
+        return(apiforvmsview.return_meetup_data(meetups))
+
+    @classmethod
+    def post(self, request):
+        date = request.data['date']
+        # fetching all meetups whose start date is greater than or equal to the date posted
+        meetups = Meetup.objects.filter(date__gte=date).order_by('date')
+        apiforvmsview = ApiForVmsView()
+        return(apiforvmsview.return_meetup_data(meetups))

@@ -19,7 +19,7 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           RejectMeetupLocationRequestView, ApproveRequestMeetupLocationView,
                           RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
                           ApproveRequestMeetupView, RejectMeetupRequestView,
-                          CancelMeetupLocationJoinRequestView)
+                          CancelMeetupLocationJoinRequestView, ApiForVmsView)
 
 
 urlpatterns = [
@@ -135,4 +135,5 @@ urlpatterns = [
         DeleteSupportRequestCommentView.as_view(),
         name="delete_support_request_comment"),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),
+    url(r'^api/v1/request_meetup_data/$', ApiForVmsView.as_view(), name='vms_api'),
 ]
