@@ -28,6 +28,7 @@ Development of Systers Portal
    develop/architecture
    develop/communities
    develop/groups_and_permissions
+   develop/api_to_communicate_with_vms
 
 
 Indices and tables
