@@ -210,6 +210,12 @@ body > .container-fluid {
   border-color: #005c88;
 }
 
+.btn-default {
+  background-color: #e2e2e2;
+  border-color: #dadada;
+  color: #555555;
+  padding: 8px 12px 7px;  
+}
 
 @media screen and (max-width: 991px) {
   .featurette img.img-responsive {
