@@ -40,7 +40,7 @@
         <li {% if url == request.path %}class="active"{% endif %}>
           <a href="{{ url }}">About Us</a>
         </li>
-        <li class="dropdown {% if '/community/' in request.path or url == request.path %}active{% endif %}">
+        <li class="dropdown {% if '/community/' in request.path or url == request.path %}active{% endif %}" id="community-dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Communities <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for community in communities %}
