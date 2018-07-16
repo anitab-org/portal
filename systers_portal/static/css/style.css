@@ -194,6 +194,109 @@ body > .container, body > .container-fluid {
   margin: 0 5px;
 }
 
+/* Meetup: Meetup List
+---------------------------------------------------*/
+.meetup-list-head {
+  font-family: "Cairo";
+  color: #8d2165;
+}
+
+.meetup-list-subhead {
+  font-size: 24px;
+  margin-bottom: 45px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.search-options {
+  font-family: Cairo;  
+  font-size: 15px;
+  margin: 0 4px 0 0;
+  color: #888b8d;
+  border: none;
+  display: inline-block;
+}
+
+.search-btn {
+  color: white;
+  font-family: Cairo;
+  font-size: 18px;
+  background-color: #54BCEB;
+  text-transform: uppercase;
+  border: none;
+}
+
+.search-form {
+  display: inline;
+}
+
+.filter-form {
+  display: inline;
+  float: right;
+}
+
+/* Meetup: Upcoming Meetups List
+---------------------------------------------------*/
+input {
+  border: 0;
+  background-color: #f5f5f5;
+}
+
+.fake-border {
+  font-style: italic;
+  width: auto;
+  font-family: 'Cairo';
+  background-color: #f5f5f5;
+  display: inline;
+  border: 1px solid #f5f5f5;
+  margin: 0 10px 0 10px;
+}
+
+#date input {
+  line-height: 22.5px;
+  width: 11%;
+}
+
+.glyphicon {
+  margin-left: 3px;
+}
+
+.hidden {
+  display: none;
+}
+
+.filter-list {
+  background-color: #f5f5f5;
+  border: 0;
+  font-size: 14px;
+}
+
+.search-options {
+  width: 100%;
+}
+
+.glyphicon glyphicon-search glyphicon-map-marker {
+  color: #4fb4e0;
+}
+
+#filters {
+  float: right;
+  width: 30%; 
+}
+
+#meetup-location-input,#location-input {
+  width: 15%;
+  font-style: italic;
+  font-family: 'Cairo';
+  background-color: #f5f5f5;
+  display: inline;
+  border: 1px solid #f5f5f5;
+}
+
+#location-input {
+  width: 50%;
+}
+
 /* Common: new community proposal form
 ---------------------------------------------------*/
 #google-embed-form{

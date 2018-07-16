@@ -78,6 +78,10 @@
             <li {% if url == request.path %}class="active"{% endif %}>
               <a role="menuitem" href="{{ url }}">Meetup Locations</a>
             </li>
+            {% url 'all_upcoming_meetups' as url %}
+            <li {% if url == request.path %}class="active"{% endif %}>
+              <a role="menuitem" href="{{ url }}">Meetup List</a>
+            </li>
             {% if user.is_authenticated and user.is_active %}
             {% url 'request_meetup_location' as url %}
             <li {% if url == request.path %}class="active"{% endif %}role="presentation">
@@ -166,6 +170,7 @@
 <script src="{% static 'js/libs/jquery-1.11.1.min.js' %}"></script>
 <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/choose_profile_pic.js' %}"></script>
+<script src="{% static 'js/search_menu.js' %}"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>
