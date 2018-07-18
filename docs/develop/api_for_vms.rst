@@ -16,8 +16,8 @@ in the ascending order of their dates will be returned :
 .. image:: ../_static/GET_request.png
    :align: center
 
-In case of a ``POST`` request, a list containing the details of all meetups
-greater than or equal to the posted date will be returned :
+In case of a ``POST`` request,a list containing the details of all meetups 
+occurring after the date value sent in the request object will be returned :
 
 .. image:: ../_static/POST_request.png
    :align: center
