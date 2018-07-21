@@ -49,8 +49,7 @@ body {
 
 /* Container styles
 -------------------------------------------------- */
-body > .container, body > .container-fluid {
-  padding: 60px 15px 0;
+body > .container-fluid {
 }
 
 /* Custom alert messages
@@ -109,6 +108,67 @@ body > .container, body > .container-fluid {
 
 .message-error a {
   color: #843534;
+}
+
+/* Navbar style
+-------------------------------------------------- */
+.navbar-default {
+  background-color: #fff;
+  position: relative;
+}
+
+.navbar {
+  border-width: 0 1px 1px 1px;
+  font-size: 16px;
+  font-weight: bolder;
+  font-family: 'Cairo';
+}
+
+#lower-nav {
+  margin-top: 65px;
+  border-top: .1em solid #54bceb;
+  width: 60%;
+}
+
+#lower-nav>li>a {
+  color: #101820;
+}
+
+#upper-nav>li>a {
+  color: white;
+  height: 40px;
+  font-size: 14px;
+  padding-top: 11px;
+}
+
+#upper-nav {
+  position: absolute;
+  right: 130px;
+  top:20px;
+  font-size: 16px;
+  font-weight: bolder;
+  font-family: 'Cairo'; 
+}
+
+#line {
+  width: 70%;
+  z-index: 2;
+  height: 4px; 
+}
+
+#systers-logo {
+  height: 80px;
+  width: 350px;
+  margin: 10px;
+}
+
+#log-btn {
+  background-color: #47bca0; 
+}
+
+#signup-btn {
+  background-color: #8d2165;
+  right: 20%;
 }
 
 /* Index page styles

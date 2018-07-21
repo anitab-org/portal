@@ -32,10 +32,10 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="{% url 'index' %}">Systers</a>
+      <a class="navbar-brand" href="{% url 'index' %}"><img id= 'systers-logo' src="{% static 'img/logo.png' %}"></a>
     </div>
     <div class="collapse navbar-collapse">
-      <ul class="nav navbar-nav text-uppercase">
+      <ul class="nav navbar-nav text-uppercase" id='lower-nav'>
         {% url 'about-us' as url %}
         <li {% if url == request.path %}class="active"{% endif %}>
           <a href="{{ url }}">About Us</a>
@@ -104,7 +104,7 @@
         {% url 'contact' as url %}
         <li {% if url == request.path %}class="active"{% endif %}><a href="{{ url }}">Contact</a></li>
       </ul>
-      <ul class="nav navbar-nav navbar-right text-uppercase">
+      <ul class="nav navbar-nav text-uppercase" id="upper-nav">
         {% if user.is_authenticated and user.is_active %}
           <li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}" id="user-dropdown">
             <a href="#" class="dropdown-toggle"
@@ -122,18 +122,18 @@
               </li>
               {% url 'logout' as url %}
               <li {% if url == request.path %}class="active"{% endif %}>
-                <a href="{{ url }}">Logout</a>
+                <a id="log-btn" href="{{ url }}">Logout</a>
               </li>
             </ul>
           </li>
         {% else %}
           {% url 'account_signup' as url %}
           <li {% if url == request.path %}class="active"{% endif %}>
-            <a href="{{ url }}">Sign up</a>
+            <a id="signup-btn" href="{{ url }}">Sign up</a>
           </li>
           {% url 'account_login' as url %}
           <li {% if url == request.path %}class="active"{% endif %}>
-            <a href="{{ url }}">Login</a>
+            <a id="log-btn" href="{{ url }}">Login</a>
           </li>
         {% endif %}
       </ul>
