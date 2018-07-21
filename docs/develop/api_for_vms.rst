@@ -8,7 +8,7 @@ there are three fields of meetups which are sent to VMS via the API::
 2. Start Date - The date from which the event would start.
 3. Venue - The location of the event.
 
-Users can send in a ``GET`` or a ``POST`` request to the specified `https://localhost/meetup/api/v1/request_meetup_data/ <https://localhost/meetup/api/v1/request_meetup_data/>`_ to access the meetup data.
+Users can send in a ``GET`` or a ``POST`` request to `https://localhost/meetup/api/v1/request_meetup_data/ <https://localhost/meetup/api/v1/request_meetup_data/>`_ to access the meetup data.
 
 In case of a ``GET`` request, a list containing the details of all meetups
 in the ascending order of their dates will be returned :
