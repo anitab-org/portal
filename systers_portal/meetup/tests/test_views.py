@@ -1853,7 +1853,8 @@ class ApiForVmsViewTestCase(APITestCase, TestCase):
                                             venue='Foo Systers',
                                             meetup_location=self.meetup_location,
                                             created_by=self.systers_user,
-                                            last_updated=timezone.now())
+                                            last_updated=timezone.now(),
+                                            end_date='2018-12-16')
         # a meetup before the posted date
         self.meetup2 = Meetup.objects.create(title='Foo Baz', slug='foobar',
                                              date='2018-06-12',
@@ -1862,24 +1863,42 @@ class ApiForVmsViewTestCase(APITestCase, TestCase):
                                              venue='Foo Systers',
                                              meetup_location=self.meetup_location,
                                              created_by=self.systers_user,
-                                             last_updated=timezone.now())
+                                             last_updated=timezone.now(),
+                                             end_date='2018-12-16')
 
     def test_api_for_vms_get(self):
         """Test GET request to provide data of all meetups"""
         url = reverse('vms_api')
         response = self.client.get(url)
-        self.assertEqual(json.loads(response.content), [{u'event_name': u'Foo Baz',
-                                                         u'venue': u'Foo Systers',
-                                                         u'start_date': u'2018-06-12'},
-                                                        {u'event_name': u'Foo Bar Baz',
-                                                         u'venue': u'Foo Systers',
-                                                         u'start_date': u'2018-06-16'}])
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         [{u'event_name': u'Foo Baz',
+                           u'venue': u'Foo Systers',
+                           u'start_date': u'2018-06-12',
+                           u'end_date': u'2018-12-16',
+                           u'meetup_id': 37,
+                           u'description': u'This is new test Meetup'},
+                          {u'event_name': u'Foo Bar Baz',
+                           u'venue': u'Foo Systers',
+                           u'start_date': u'2018-06-16',
+                           u'end_date': u'2018-12-16',
+                           u'meetup_id': 36,
+                           u'description': u'This is test Meetup'}])
 
     def test_api_for_vms_post(self):
         """Test POST request to provide data of meetups after the specified date"""
         url = reverse('vms_api')
-        data = {'date': '2018-06-13'}
+        data = {'meetup_id': 38}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(json.loads(response.content), [{u'event_name': u'Foo Bar Baz',
-                                                         u'venue': u'Foo Systers',
-                                                         u'start_date': u'2018-06-16'}])
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         [{u'event_name': u'Foo Baz',
+                           u'venue': u'Foo Systers',
+                           u'start_date': u'2018-06-12',
+                           u'end_date': u'2018-12-16',
+                           u'meetup_id': 39,
+                           u'description': u'This is new test Meetup'},
+                          {u'event_name': u'Foo Bar Baz',
+                           u'venue': u'Foo Systers',
+                           u'start_date': u'2018-06-16',
+                           u'end_date': u'2018-12-16',
+                           u'meetup_id': 38,
+                           u'description': u'This is test Meetup'}])
