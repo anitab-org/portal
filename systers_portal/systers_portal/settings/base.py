@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'membership',
     'users',
     'rest_framework',
+    'pinax.notifications',
 )
 
 MIDDLEWARE_CLASSES = (
