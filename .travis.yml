@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 language: python
 env:
   - MOZ_HEADLESS=1
@@ -15,6 +15,7 @@ before_install:
 install:
   - "pip install -r requirements/dev.txt"
   - pip install coveralls==0.4.4
+  - sudo apt-get install python-gdal
 before_script:
   - export SECRET_KEY=foobarbaz
   - psql -c "CREATE DATABASE systersdb;" -U postgres
