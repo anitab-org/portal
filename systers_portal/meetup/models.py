@@ -93,6 +93,7 @@ class Meetup(models.Model):
     slug = models.SlugField(max_length=50, unique=True, verbose_name="Slug")
     date = models.DateField(verbose_name="Date")
     time = models.TimeField(verbose_name="Time", blank=True)
+    end_time = models.TimeField(verbose_name="End Time", null=True)
     venue = models.CharField(max_length=512, verbose_name="Venue", blank=True)
     description = RichTextField(verbose_name="Description")
     meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
