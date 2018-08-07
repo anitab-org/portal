@@ -32,6 +32,7 @@ Setup for developers (Unix)
      $ virtualenv venv --python=/path/to/python3
      $ source venv/bin/activate
      $ pip install -r requirements/dev.txt
+     $ sudo apt-get install python-gdal
      ```
 1. Create `systersdb` database, where `systersdb` might be any suitable name.
     ```
