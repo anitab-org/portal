@@ -110,7 +110,7 @@
       </ul>
       <ul class="nav navbar-nav text-uppercase" id="upper-nav">
         {% if user.is_authenticated and user.is_active %}
-          <li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}" id="user-dropdown">
+          <p><li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}" id="user-dropdown"></li>
             <a href="#" class="dropdown-toggle"
                data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
@@ -118,7 +118,7 @@
                 <a href="{% url 'user' user.username %}">Profile</a>
               </li>
               {% if user.is_staff %}
-                <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
+              <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
               {% endif %}
               {% url 'account_change_password' as url %}
               <li {% if url == request.path %}class="active"{% endif %}>
@@ -129,7 +129,7 @@
                 <a id="log-btn" href="{{ url }}">Logout</a>
               </li>
             </ul>
-          </li>
+          </p>
         {% else %}
           {% url 'account_signup' as url %}
           <li {% if url == request.path %}class="active"{% endif %}>

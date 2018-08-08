@@ -6,7 +6,10 @@ there are three fields of meetups which are sent to VMS via the API::
 
 1. Event Name - Title of the event going to be held.
 2. Start Date - The date from which the event would start.
-3. Venue - The location of the event.
+3. End Date - The date on which the event would end.
+4. Description - The description of the event.
+5. Meetup Id - The unique Id of the meetup.
+6. Venue - The location of the event.
 
 Users can send in a ``GET`` or a ``POST`` request to `https://localhost/meetup/api/v1/request_meetup_data/ <https://localhost/meetup/api/v1/request_meetup_data/>`_ to access the meetup data.
 
@@ -17,7 +20,7 @@ in the ascending order of their dates will be returned :
    :align: center
 
 In case of a ``POST`` request,a list containing the details of all meetups 
-occurring after the date value sent in the request object will be returned :
+occurring after the ID value sent in the request object will be returned :
 
 .. image:: ../_static/POST_request.png
    :align: center
@@ -34,19 +37,23 @@ Details of the API
 4. Request Body::
 
       {
-        "Date” : “date after which all meetups are required (yyyy-mm-dd)”
+        "Meetup-Id” : “id after which all meetups are required”
       }
 
 5. Response Body - Success::
 
       {
+        ""
         “Event Name/Title” : “ --------”
         “Start Date” : “-----------”
+        "End Date" : "-------------"
+        "Description" : "----------"
+        "Meetup Id" : "-------------"
         “Venue” : “------------------”
       }
 
 6. Response Body - Error::
 
       {
-        "message": "Please input a proper date"
+        "message": "Please send a proper request"
       }
