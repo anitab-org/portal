@@ -1469,9 +1469,13 @@ class ApiForVmsView(APIView):
         meetup_list = list()
         for meetup in meetups:
             meetup_data = {}
+            meetup_data['meetup_id'] = meetup.pk
             meetup_data['event_name'] = meetup.title
             meetup_data['start_date'] = meetup.date
             meetup_data['venue'] = meetup.venue
+            meetup_data['end_date'] = meetup.end_date
+            meetup_data['description'] = meetup.description
+
             meetup_list.append(meetup_data)
         return JsonResponse(meetup_list, safe=False)
 
@@ -1484,8 +1488,8 @@ class ApiForVmsView(APIView):
 
     @classmethod
     def post(self, request):
-        date = request.data['date']
-        # fetching all meetups whose start date is greater than or equal to the date posted
-        meetups = Meetup.objects.filter(date__gte=date).order_by('date')
+        ID = request.data['meetup_id']
+        # fetching all meetups whose id is greater than or equal to the date posted
+        meetups = Meetup.objects.filter(pk__gte=ID).order_by('date')
         apiforvmsview = ApiForVmsView()
         return(apiforvmsview.return_meetup_data(meetups))
