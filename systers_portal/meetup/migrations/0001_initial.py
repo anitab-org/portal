@@ -15,7 +15,6 @@ class Migration(migrations.Migration):
         ('cities_light', '0006_compensate_for_0003_bytestring_bug'),
         ('users', '0001_squashed_0003_auto_20160207_1550'),
         ('cities_light', '0006_compensate_for_0003_bytestring_bug'),
-
     ]
 
     operations = [
