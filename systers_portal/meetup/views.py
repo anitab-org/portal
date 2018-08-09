@@ -11,6 +11,8 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserR
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.http import JsonResponse
+from pinax.notifications import models as notification
 from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
@@ -27,7 +29,6 @@ from meetup.constants import (OK, SUCCESS_MSG, NAME_ALREADY_EXISTS, NAME_ALREADY
                               SUCCESS_MEETUP_MSG)
 from users.models import SystersUser
 from common.models import Comment
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 from cities_light.models import City
@@ -693,6 +694,7 @@ class MakeMeetupLocationModeratorView(LoginRequiredMixin, PermissionRequiredMixi
         moderators = self.meetup_location.moderators.all()
         if systersuser not in moderators:
             self.meetup_location.moderators.add(systersuser)
+            notification.send([user], 'made_moderator', {'meetup_location': self.meetup_location})
         return reverse('members_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
     def get_meetup_location(self):
@@ -731,12 +733,16 @@ class JoinMeetupLocationView(LoginRequiredMixin, MeetupLocationMixin, RedirectVi
 
         join_requests = self.meetup_location.join_requests.all()
         members = self.meetup_location.members.all()
+        moderators = [systers_user.user for systers_user in self.meetup_location.moderators.all()]
 
         if systersuser not in join_requests and systersuser not in members:
             self.meetup_location.join_requests.add(systersuser)
             msg = "Your request to join meetup location {0} has been sent. In a short while " \
                   "someone will review your request."
             messages.add_message(request, messages.SUCCESS, msg.format(self.meetup_location))
+            notification.send(moderators, 'new_join_request',
+                              {'meetup_location': self.meetup_location,
+                               'systersuser': systersuser})
         elif systersuser in join_requests:
             msg = "You have already requested to join meetup location {0}. Please wait until " \
                   "someone reviews your request."
@@ -782,6 +788,8 @@ class ApproveMeetupLocationJoinRequestView(LoginRequiredMixin, PermissionRequire
         systersuser = get_object_or_404(SystersUser, user=user)
         self.meetup_location.members.add(systersuser)
         self.meetup_location.join_requests.remove(systersuser)
+        notification.send([user], 'joined_meetup_location',
+                          {'meetup_location': self.meetup_location})
         messages.success(self.request, 'Join request Approved.')
         return reverse('join_requests_meetup_location', kwargs={'slug': self.meetup_location.slug})
 
@@ -1267,6 +1275,9 @@ class ApproveSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Mee
         support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         support_request.is_approved = True
         support_request.save()
+        notification.send([support_request.volunteer.user], 'support_request_approved',
+                          {'meetup_location': self.meetup_location, 'meetup': self.meetup,
+                           'support_request': support_request})
         return reverse('unapproved_support_requests', kwargs={'slug': self.meetup_location.slug,
                        'meetup_slug': self.meetup.slug})
 

@@ -1,0 +1,5 @@
+{% url "about_meetup_location" meetup_location.slug as meetup_location_url %}{% url "view_meetup_request" meetup_location.slug meetup_request.slug as meetup_request_url %}Meetup location {{ meetup_location }} has a new meetup request: {{ meetup_request }}.
+
+To view {{ meetup_request }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_request_url }}
+
+To view {{ meetup_location }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_location_url }}
