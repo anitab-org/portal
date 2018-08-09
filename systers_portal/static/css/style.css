@@ -171,6 +171,12 @@ body > .container-fluid {
   right: 20%;
 }
 
+.auth-img {
+  width: 40px;
+  height: 30px;
+  padding-left: 10px;
+}
+
 /* Index page styles
 -------------------------------------------------- */
 .jumbotron-custom {

@@ -127,6 +127,7 @@ MEDIA_URL = "/media/"
 # Django-allauth settings
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_FORMS = {'change_password': 'users.forms.SystersChangePasswordForm'}
