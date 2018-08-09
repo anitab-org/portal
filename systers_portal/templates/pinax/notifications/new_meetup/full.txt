@@ -1,0 +1,5 @@
+{% url "about_meetup_location" meetup_location.slug as meetup_location_url %}{% url "view_meetup" meetup_location.slug meetup.slug as meetup_url %}Meetup location {{ meetup_location }} has a new meetup: {{ meetup }}.
+
+To view {{ meetup }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_url }}
+
+To view {{ meetup_location }}, click here: {{ default_http_protocol }}://{{ current_site }}{{ meetup_location_url }}

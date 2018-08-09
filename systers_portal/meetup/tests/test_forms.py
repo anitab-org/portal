@@ -5,6 +5,7 @@ from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
+from django.core import mail
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
                           AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
@@ -28,6 +29,8 @@ class MeetupFormTestCaseBase:
         self.meetup_location = MeetupLocation.objects.create(
             name="Foo Systers", slug="foo", location=self.location,
             description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
+        self.meetup_location.members.add(self.systers_user)
+        self.meetup_location.moderators.add(self.systers_user)
 
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foobarbaz',
                                             date=timezone.now().date(),
@@ -76,6 +79,9 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertTrue(new_meetup_request.title, 'Foo')
         self.assertTrue(new_meetup_request.created_by, self.systers_user)
         self.assertTrue(new_meetup_request.meetup_location, self.meetup_location)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user.email, mail.outbox[0].to)
+        self.assertIn('New Meetup Request', mail.outbox[0].subject)
 
     def test_request_meetup_form_with_past_date(self):
         """Test add Meetup form with a date that has passed."""
@@ -103,6 +109,14 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
 
 
 class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
+    def setUp(self):
+        super(AddMeetupFormTestCase, self).setUp()
+        self.password = 'bazbar'
+        self.user2 = User.objects.create_user(username='baz', password=self.password,
+                                              email='user2@test.com')
+        self.systers_user2 = SystersUser.objects.get(user=self.user2)
+        self.meetup_location.members.add(self.systers_user2)
+
     def test_add_meetup_form(self):
         """Test add Meetup form"""
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
@@ -122,6 +136,11 @@ class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertTrue(new_meetup.title, 'Foo')
         self.assertTrue(new_meetup.created_by, self.systers_user)
         self.assertTrue(new_meetup.meetup_location, self.meetup_location)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertIn(self.user.email, mail.outbox[0].to)
+        self.assertIn('New Meetup', mail.outbox[0].subject)
+        self.assertIn(self.user2.email, mail.outbox[1].to)
+        self.assertIn('New Meetup', mail.outbox[1].subject)
 
     def test_add_meetup_form_with_past_date(self):
         """Test add Meetup form with a date that has passed."""
@@ -172,7 +191,8 @@ class EditMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
 class AddMeetupLocationMemberFormTestCase(MeetupFormTestCaseBase, TestCase):
     def setUp(self):
         super(AddMeetupLocationMemberFormTestCase, self).setUp()
-        self.user2 = User.objects.create_user(username='baz', password='bazbar')
+        self.user2 = User.objects.create_user(username='baz', password='bazbar',
+                                              email='user2@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
 
     def test_add_meetup_location_member_form(self):
@@ -190,6 +210,9 @@ class AddMeetupLocationMemberFormTestCase(MeetupFormTestCaseBase, TestCase):
 
         members = self.meetup_location.members.all()
         self.assertTrue(self.systers_user2 in members)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user2.email, mail.outbox[0].to)
+        self.assertIn('Joined Meetup Location', mail.outbox[0].subject)
 
 
 class AddMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
@@ -294,6 +317,9 @@ class AddSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(support_requests[0].description, 'This is a test description')
         self.assertEqual(support_requests[0].volunteer, self.systers_user)
         self.assertEqual(support_requests[0].meetup, self.meetup)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(self.user.email, mail.outbox[0].to)
+        self.assertIn('New Support Request', mail.outbox[0].subject)
 
 
 class EditSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):

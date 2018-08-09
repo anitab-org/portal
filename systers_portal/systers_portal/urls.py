@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
     url(r'^propose/newcommunity/$', NewCommunityProposalView.as_view(),
         name='new-community-proposal'),
+    url(r'^notifications/', include('pinax.notifications.urls')),
 ]
 
 if settings.DEBUG:

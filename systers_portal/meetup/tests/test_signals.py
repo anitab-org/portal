@@ -1,13 +1,15 @@
 from django.test import TestCase
 from django.contrib.auth.models import Group, User
-from django.db.models.signals import post_save, post_delete, m2m_changed
+from django.db.models.signals import post_save, post_delete, m2m_changed, post_migrate
 from cities_light.models import City, Country
+from pinax.notifications.models import NoticeType
 
 from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR
 from meetup.models import MeetupLocation
 from meetup.signals import (manage_meetup_location_groups, remove_meetup_location_groups,
                             add_meetup_location_members, add_meetup_location_moderators,
-                            delete_meetup_location_members, delete_meetup_location_moderators)
+                            delete_meetup_location_members, delete_meetup_location_moderators,
+                            create_notice_types)
 from users.models import SystersUser
 
 
@@ -27,6 +29,7 @@ class SignalsTestCase(TestCase):
         m2m_changed.connect(delete_meetup_location_moderators,
                             sender=MeetupLocation.moderators.through,
                             dispatch_uid="delete_moderators")
+        post_migrate.connect(create_notice_types, dispatch_uid="create_notice_types")
         self.password = "foobar"
 
     def test_manage_meetup_location_groups(self):
@@ -124,3 +127,22 @@ class SignalsTestCase(TestCase):
         self.assertEqual(user.groups.get(), moderators_group)
         meetup_location.moderators.remove(systers_user)
         self.assertEqual(len(user.groups.all()), 0)
+
+    def test_create_notice_types(self):
+        """Test creation of notice types"""
+        notice_types = NoticeType.objects.all()
+        self.assertEqual(len(notice_types), 7)
+        new_join_request = NoticeType.objects.get(label="new_join_request")
+        self.assertEqual(new_join_request.display, "New Join Request")
+        joined_meetup_location = NoticeType.objects.get(label="joined_meetup_location")
+        self.assertEqual(joined_meetup_location.display, "Joined Meetup Location")
+        made_moderator = NoticeType.objects.get(label="made_moderator")
+        self.assertEqual(made_moderator.display, "Made moderator")
+        new_meetup = NoticeType.objects.get(label="new_meetup")
+        self.assertEqual(new_meetup.display, "New Meetup")
+        new_support_request = NoticeType.objects.get(label="new_support_request")
+        self.assertEqual(new_support_request.display, "New Support Request")
+        support_request_approved = NoticeType.objects.get(label="support_request_approved")
+        self.assertEqual(support_request_approved.display, "Support Request Approved")
+        new_meetup_request = NoticeType.objects.get(label="new_meetup_request")
+        self.assertEqual(new_meetup_request.display, "New Meetup Request")
