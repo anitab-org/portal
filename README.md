@@ -24,7 +24,7 @@ Setup for developers (Unix)
    Postgres, [Django Girls'](http://djangogirls.org) ebook,
    [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
    The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/en/optional_postgresql_installation/README.md).
-1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
+1. Clone the repo - `git clone https://github.com/systers/portal.git` and cd into
   the `portal` directory. If working behind a proxy, follow the instructions [here](https://cms-sw.github.io/tutorial-proxy.html).
 1. Create a virtual environment with Python 3 and install dependencies:
 
@@ -77,7 +77,7 @@ Setup for developers (Windows)
 - Select install location and hit install
 1. Run `pip install virtualenv` using windows command line
 1. You would have to install PostgreSQL. Download from [official location](https://www.postgresql.org/download/windows/) or alternative location, you could lookup some PostgreSQL tutorials online if you are completely blank on this. 
-1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into the `portal` directory. Use git CMD or git Bash(unix-like terminal) to do so.
+1. Clone the repo - `git clone https://github.com/systers/portal.git` and cd into the `portal` directory. Use git CMD or git Bash(unix-like terminal) to do so.
 1. Create a virtual environment with Python 3 and install dependencies, using CMD :
  
      ```bash
@@ -134,7 +134,7 @@ production at the moment. It may be configured to do so in the future.
 1. Install [docker-compose](http://docs.docker.com/compose/install/).
    Note: fig has been deprecated. Docker-compose replaces fig.
 1. Create a new directory on your local system.
-1. Enter `git clone git@github.com:systers/portal.git` to clone the Systers
+1. Enter `git clone https://github.com/systers/portal.git` to clone the Systers
    Portal repository. After the clone is done, change directory (cd) to the
    `portal` directory.
 1. Run `docker-compose build`. This pulls the Docker images required to run the
