@@ -2092,15 +2092,36 @@ class UpcomingMeetupsSearchViewTestCase(MeetupLocationViewBaseTestCase, TestCase
                            'meetup_slug': 'foobar',
                            'distance': '',
                            'unit': ''}]})
-
-        data8 = {}
+        data8 = {'date': '2018-06-12'}
         response = self.client.post(url, data8, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
                          {'search_results':
-                         [{'date': '2018-09-16',
-                           'meetup': 'Foo Bar Baz',
+                         [{'date': '2018-06-12',
+                           'meetup': 'Foo Baz',
                            'location': 'Foo Systers',
                            'location_slug': 'foo',
-                           'meetup_slug': 'foo-bar-baz',
+                           'meetup_slug': 'foobar',
+                           'distance': '',
+                           'unit': ''}]})
+        data9 = {'date': '2018-06-13'}
+        response = self.client.post(url, data9, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results':
+                         [{'date': '2018-06-13',
+                           'meetup': 'Foob Baz',
+                           'location': 'Foo Systers1',
+                           'location_slug': 'foob',
+                           'meetup_slug': 'foobarbaz',
+                           'distance': '',
+                           'unit': ''}]})
+        data10 = {'keyword': 'test', 'date': '2018-06-13'}
+        response = self.client.post(url, data10, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results':
+                         [{'date': '2018-06-13',
+                           'meetup': 'Foob Baz',
+                           'location': 'Foo Systers1',
+                           'location_slug': 'foob',
+                           'meetup_slug': 'foobarbaz',
                            'distance': '',
                            'unit': ''}]})

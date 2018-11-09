@@ -54,6 +54,18 @@ class EditCommunityRequestFormTestCase(TestCase):
                         'slug': 'foo'}
         form = RequestCommunityForm(data=invalid_data, user=self.user)
         self.assertFalse(form.is_valid())
+        # Test if order is set to none
+        order_none_data = {'name': 'Bar', 'slug': 'bar', 'order': '',
+                           'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
+                           'community_channel': 'Existing Social Media Channels ',
+                           'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
+                           'is_avail_volunteer': 'Yes', 'count_avail_volunteer': '15',
+                           'content_developer': 'foobar', 'selection_criteria': 'foobarbar',
+                           'is_real_time': 'foofoobar'
+                           }
+        form = EditCommunityRequestForm(
+            data=order_none_data, instance=self.community_request)
+        self.assertFalse(form.is_valid())
         data = {'name': 'Bar', 'slug': 'bar', 'order': '1',
                 'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
                 'community_channel': 'Existing Social Media Channels ',
@@ -76,8 +88,9 @@ class EditCommunityRequestFormTestCase(TestCase):
             data=data, instance=self.community_request)
         self.assertFalse(form.is_valid())
         # Test if slug of the request exists in Community
-        self.community.slug = "bar"
-        self.community.save()
+        self.community = Community.objects.create(name="FooBarComm", slug="bar",
+                                                  order=2,
+                                                  admin=self.systers_user)
         form = EditCommunityRequestForm(
             data=data, instance=self.community_request)
         self.assertFalse(form.is_valid())
