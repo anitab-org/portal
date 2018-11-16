@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from allauth.account.forms import ChangePasswordForm
+from django.core.exceptions import ValidationError
 
 from common.helpers import SubmitCancelFormHelper
 from users.models import SystersUser
@@ -36,3 +38,16 @@ class SystersUserForm(forms.ModelForm):
     class Meta:
         model = SystersUser
         fields = ('country', 'blog_url', 'homepage_url', 'profile_picture')
+
+
+class SystersChangePasswordForm(ChangePasswordForm):
+    # The clean_password1() method which checks that new password differs from the old one
+    # is added to allauth ChangePasswordForm class.
+    # So ChangePasswordForm class is derived.
+    def __init__(self, *args, **kwargs):
+        super(SystersChangePasswordForm, self).__init__(*args, **kwargs)
+
+    def clean_password(self):
+        if self.cleaned_data["newpassword"] == self.cleaned_data.get("oldpassword", None):
+            raise ValidationError("New password must differ from the old one.")
+        return self.cleaned_data["new_password"]

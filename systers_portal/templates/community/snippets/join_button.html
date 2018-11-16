@@ -12,16 +12,16 @@
         {% if join_request %}
           {# user requested to join the community and the request is not yet approved #}
           {% if not join_request.is_approved %}
-            <a href="{% url "cancel_community_join_request" community.slug %}"
+            <a href="{% url "cancel_community_join_request" community.slug %}?current_url={{request.path}}"
                role="button" class="btn btn-warning btn-block">Cancel request</a>
           {# user was a community member #}
           {% elif not is_member and join_request.is_approved %}
-            <a href="{% url "request_join_community" community.slug %}"
+            <a href="{% url "request_join_community" community.slug %}?current_url={{request.path}}"
                role="button" class="btn btn-success btn-block">Join Community</a>
           {% endif %}
         {% else %}
           {# user is not a member of the community #}
-          <a href="{% url "request_join_community" community.slug %}"
+          <a href="{% url "request_join_community" community.slug %}?current_url={{request.path}}"
              role="button" class="btn btn-success btn-block">Join Community</a>
         {% endif %}
       {% endif %}

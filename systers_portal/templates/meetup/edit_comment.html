@@ -1,0 +1,23 @@
+{% extends "meetup/base.html" %}
+
+{% block title %}
+  Edit comment
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block meetup_location_page_content %}
+  <div class="mt20 mb40"></div>
+  <div class="row ml20">
+    <div class="col-md-12">
+      <h2>Edit comment</h2>
+      <hr/>
+    </div>
+    <div class="col-md-12">
+      <div class="well">
+        {{ form.media }}
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

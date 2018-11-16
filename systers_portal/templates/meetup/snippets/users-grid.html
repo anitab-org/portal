@@ -1,0 +1,16 @@
+<div class="row mt20">
+  <h2 class="ml15"> {{ users }} </h2>
+  <div class="col-xs-3">
+    {% for systersuser in user_list %}
+      {% include "meetup/snippets/user-cell.html" with systersuser=systersuser %}
+      </div>
+      {% if forloop.counter|divisibleby:4 %}
+        </div>
+        <div class="row mt40">
+        <div class="col-xs-3">
+      {% else %}
+        <div class="col-xs-3">
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

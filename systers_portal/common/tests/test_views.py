@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
+from django.contrib.auth.models import User
 
 
 class CommonViewsTestCase(TestCase):
@@ -26,3 +27,18 @@ class CommonViewsTestCase(TestCase):
         response = self.client.get(about_us_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'common/about_us.html')
+
+    def test_login_logout(self):
+        """Test Login and logout functionality"""
+        # Create a temporary user
+        u = User.objects.create_user('admin', 'admin@admin.com', 'Qwerty@123')
+        # Check response code on get request for login
+        response = self.client.get(reverse('account_login'))
+        self.assertEqual(response.status_code, 200)
+        # Log in the user
+        self.client.login(username=u.username, password=u.password)
+        # Check response code for logout
+        response = self.client.get(reverse('logout'))
+        self.assertEqual(response.status_code, 302)
+        # Log out the user
+        self.client.logout()

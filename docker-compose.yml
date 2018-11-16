@@ -1,0 +1,14 @@
+db:
+  image: postgres:9.4
+web:
+  build: .
+  command: python systers_portal/manage.py runserver 0.0.0.0:8000
+  volumes:
+    - .:/usr/src/portal
+  ports:
+    - "8000:8000"
+  links:
+    - db
+  environment:
+    - DJANGO_SETTINGS_MODULE=systers_portal.settings.docker
+

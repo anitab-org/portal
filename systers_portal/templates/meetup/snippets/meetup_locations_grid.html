@@ -1,0 +1,18 @@
+<div class="row box-body">
+  <div class="col-xs-12 col-md-6">
+    {% for location in object_list %}
+      <a href="{% url "about_meetup_location" location.slug %}">{{ location }}</a>
+      </div>
+      {% if forloop.counter|divisibleby:2 %}
+        </div>
+        <div class="row box-body">
+          <div class="col-xs-12 col-md-6">
+      {% else %}
+        <div class="col-xs-12 col-md-6">
+      {% endif %}
+    {% endfor %}
+    <div class="text-center">
+      {% include "blog/snippets/pagination.html" %}
+    </div>
+  </div>
+</div>

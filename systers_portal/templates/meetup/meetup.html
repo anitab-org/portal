@@ -1,0 +1,57 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <h2 id="meetup-title">{{ meetup.title }}</h2>
+  <div class="box-container box-body pt25">
+    <p> 
+      <b> Date: </b> {{ meetup.date }}
+      &nbsp; &nbsp; 
+      <b>Time: </b> {{ meetup.time|time:"H:i" }}
+    </p>
+    <p>
+      <b> Venue: </b> {{ meetup.venue }}
+    </p>
+    <hr>
+    {{ meetup.description|safe }} <br/>
+    <hr>
+    <table class="table table-hover decoration-none">
+      <thead>
+        <tr>
+          <th>Coming</th>
+          <th>Not Coming</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ coming_no }}</td>
+          <td>{{ not_coming_no }}</td>
+        </tr>
+      </tbody>
+    </table> 
+    <hr>
+    {% include 'meetup/snippets/share_buttons.html' %}
+    <p>
+      <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
+    </p>
+  </div>
+  <h3>Discussion Area</h3>
+  {% if not comments %}
+    <div class="box-container box-body pt25">
+      <p>
+        <i>There are no comments yet.</i>
+      </p>
+    </div>
+  {% endif %}
+  {% for comment in comments %}
+    <div class="box-container pt25">
+      <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
+      <div class="box-body">
+        <pre class="comment-box">{{ comment.body }}</pre>
+      </div>
+      {% if user == comment.author.user %}
+        <a href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}">edit</a>
+        <a href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}">delete</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endblock %}

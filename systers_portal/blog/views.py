@@ -9,7 +9,7 @@ from common.mixins import UserDetailsMixin
 from community.mixins import CommunityMenuMixin
 from community.models import Community
 from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
-                        EditResourceForm, TagForm)
+                        EditResourceForm, TagForm, ResourceTypeForm)
 from blog.mixins import ResourceTypesMixin
 from blog.models import News, Resource, ResourceType, Tag
 
@@ -56,8 +56,10 @@ class CommunityNewsView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context["community"] = self.object
 
         news_slug = self.kwargs['news_slug']
-        context['post'] = get_object_or_404(News, slug=news_slug)
+        context['post'] = get_object_or_404(News, community=self.object,
+                                            slug=news_slug)
         context["post_type"] = "news"
+        context["share_message"] = self.object.name + " @systers_org " + context['post'].title
         return context
 
     def get_community(self):
@@ -223,7 +225,8 @@ class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context["community"] = self.object
 
         resource_slug = self.kwargs['resource_slug']
-        context["post"] = get_object_or_404(Resource, slug=resource_slug)
+        context["post"] = get_object_or_404(Resource, community=self.object,
+                                            slug=resource_slug)
         context["post_type"] = "resource"
         return context
 
@@ -360,4 +363,29 @@ class AddTagView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         context['community'] = get_object_or_404(Community,
                                                  slug=self.kwargs['slug'])
         context['tag_type'] = "tag"
+        return context
+
+
+class AddResourceTypeView(LoginRequiredMixin, PermissionRequiredMixin,
+                          CreateView):
+    """Create a new Resource Type"""
+    template_name = "blog/tag_type.html"
+    model = ResourceType
+    form_class = ResourceTypeForm
+    permission_required = "blog.add_resourcetype"
+    raise_exception = True
+    # TODO: add `redirect_unauthenticated_users = True` when django-braces will
+    # reach version 1.5
+
+    def get_success_url(self):
+        """Redirect to previous page"""
+        return reverse("view_community_resource_list",
+                       kwargs={'slug': self.kwargs['slug']})
+
+    def get_context_data(self, **kwargs):
+        """Add Community object to the context"""
+        context = super(AddResourceTypeView, self).get_context_data(**kwargs)
+        context['community'] = get_object_or_404(Community,
+                                                 slug=self.kwargs['slug'])
+        context['tag_type'] = "Resource Type"
         return context

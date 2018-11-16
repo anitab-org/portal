@@ -1,0 +1,26 @@
+{% load guardian_tags %}
+
+{% if user.is_authenticated and user.is_active %}
+  {% get_obj_perms user for meetup_location as "meetup_location_perms" %}
+    <div class="sidebar-module mb40">
+      <h4>Meetup Location Actions</h4>
+      <ol class="list-unstyled">
+        <li><a href="{% url 'request_meetup_location' %}">Request a New Meetup Location</a></li>
+        {% if user.is_staff %}
+        <li><a href="{% url 'new_meetup_location_requests' %}">New Meetup Location Requests</a></li>
+        {% endif %}
+        {% if perms.meetup.change_meetuplocation %}
+          <li><a href="{% url 'edit_meetup_location' meetup_location.slug %}">Edit Meetup Location</a></li>
+        {% endif %}
+        {% if perms.meetup.delete_meetuplocation %}
+          <li><a href="{% url 'delete_meetup_location' meetup_location.slug %}">Delete Meetup Location</a></li>
+        {% endif %}
+        {% if "add_meetup_location_member" in meetup_location_perms %}
+          <li><a href="{% url 'add_member_meetup_location' meetup_location.slug %}">Add New Member</a></li>
+        {% endif %}
+        {% if "approve_meetup_location_joinrequest" in meetup_location_perms %}
+          <li><a href="{% url 'join_requests_meetup_location' meetup_location.slug %}">Show Join Requests</a></li>
+        {% endif %}
+      </ol>
+    </div>
+{% endif %}

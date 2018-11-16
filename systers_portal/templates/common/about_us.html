@@ -2,11 +2,14 @@
 {% load staticfiles %}
 
 {% block content %}
-  <div class="container col-md-8 col-md-offset-2">
-    <h1>About Systers</h1>
+<div class="container-fluid mt40">
+  <div class="col-md-8 col-md-offset-2 col-lg-10 col-lg-offset-1">
+    <h1 class="about-us-head">About Systers</h1>
     <hr>
-    <img class="img-responsive" src="{% static 'img/about_systers.jpg' %}"
-           alt="Systers Communities">
+    <img class="img-responsive col-md-12 col-lg-12" src="{% static 'img/about_systers.jpg' %}"
+    alt="Systers Communities">
+  </div>
+  <div class="col-md-8 col-md-offset-2 col-lg-10 col-lg-offset-1">
     <p class="about-us-text">
       It’s important to know that you are not alone. Systers is a forum for all women involved in the technical aspects of computing. 
       The list has over 4,000 members from at least 54 countries around the world. We welcome the participation of women technologists of
@@ -19,6 +22,7 @@
       communities are also offered where Systers can identify themselves culturally to share and offer support in challenges within
       their communities.
     </p>
-    <div class="mt40"></div>
   </div>
+  <div class="mt40"></div>
+</div>
 {% endblock %}

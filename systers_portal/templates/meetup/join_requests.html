@@ -1,0 +1,35 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <div class="mt20 mb40">
+    <h2 class="ml15">Join Requests</h2>
+      <table class="table table-hover decoration-none">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Email address</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for join_request in requests %}
+            <tr>
+              <th>{{ forloop.counter }}</th>
+              <td><a href="{{ join_request.user.get_absolute_url }}">{{ join_request.user }}</a></td>
+              <td><a href="mailto:{{ join_request.user.email }}">{{ join_request.user.email }}</a></td>
+              <td>{{ join_request.date_created }}</td>
+              <td>
+                <a href="{% url 'approve_join_request_meetup_location' meetup_location.slug join_request.user.username %}"
+                   role="button" class="btn btn-primary btn-sm">Approve</a>
+                <a href="{% url 'reject_join_request_meetup_location' meetup_location.slug join_request.user.username %}"
+                   role="button" class="btn btn-warning btn-sm">Reject</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}

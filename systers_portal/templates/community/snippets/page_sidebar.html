@@ -7,11 +7,13 @@
       <h4>Page Actions</h4>
       <ol class="list-unstyled">
         <li><a href="{% url 'add_community_page' community.slug %}">Add page</a></li>
-        {% if "change_community_page" in community_perms %}
-          <li><a href="{% url 'edit_community_page' community.slug page.slug %}">Edit current page</a></li>
-        {% endif %}
-        {% if "delete_community_page" in community_perms %}
-          <li><a href="{% url 'delete_community_page' community.slug page.slug %}">Delete current page</a></li>
+        {% if active_page != 'news' and active_page != 'resources' %}
+          {% if "change_community_page" in community_perms %}
+            <li><a href="{% url 'edit_community_page' community.slug page.slug %}">Edit current page</a></li>
+          {% endif %}
+          {% if "delete_community_page" in community_perms %}
+            <li><a href="{% url 'delete_community_page' community.slug page.slug %}">Delete current page</a></li>
+          {% endif %}
         {% endif %}
       </ol>
     </div>

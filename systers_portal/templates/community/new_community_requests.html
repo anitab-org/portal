@@ -1,0 +1,21 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="mt20 mb40">
+    <h2 class="ml15">Unapproved Community Requests</h2>
+    {% for community_request in object_list %}
+      <div class="mt20 ml15 box-container box-body">
+        <p>
+          <a href="{% url 'view_community_request' community_request.slug %}">{{ community_request.name}}</a>
+        </p>
+        <p>
+          Requested by 
+          <a href="{% url 'user' requestor.user.username %}">{{ requestor }}</a>
+        </p>
+        
+      </div>
+    {% endfor %}
+    {% include "blog/snippets/pagination.html" %}
+  </div>
+{% endblock %}

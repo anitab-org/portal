@@ -4,6 +4,10 @@
   margin-top: 40px;
 }
 
+.mt20 {
+  margin-top: 20px;
+}
+
 .mb40 {
   margin-bottom: 40px;
 }
@@ -14,6 +18,10 @@
 
 .mr4 {
   margin-right: 4px;
+}
+
+.ml15 {
+  margin-left: 15px;
 }
 
 /* Sticky footer styles
@@ -41,8 +49,7 @@ body {
 
 /* Container styles
 -------------------------------------------------- */
-body > .container {
-  padding: 60px 15px 0;
+body > .container-fluid {
 }
 
 /* Custom alert messages
@@ -103,13 +110,86 @@ body > .container {
   color: #843534;
 }
 
+/* Navbar style
+-------------------------------------------------- */
+.navbar-default {
+  background-color: #fff;
+  position: relative;
+}
+
+.navbar {
+  border-width: 0 1px 1px 1px;
+  font-size: 16px;
+  font-weight: bolder;
+  font-family: 'Cairo';
+}
+
+#lower-nav {
+  margin-top: 65px;
+  border-top: .1em solid #54bceb;
+  width: 60%;
+}
+
+#lower-nav>li>a {
+  color: #101820;
+}
+
+#upper-nav>li>a {
+  color: white;
+  height: 40px;
+  font-size: 14px;
+  padding-top: 11px;
+}
+
+#upper-nav {
+  position: absolute;
+  right: 130px;
+  top:20px;
+  font-size: 16px;
+  font-weight: bolder;
+  font-family: 'Cairo'; 
+}
+
+#line {
+  width: 70%;
+  z-index: 2;
+  height: 4px; 
+}
+
+#systers-logo {
+  height: 80px;
+  width: 350px;
+  margin: 10px;
+}
+
+#log-btn {
+  background-color: #47bca0; 
+}
+
+#signup-btn {
+  background-color: #8d2165;
+  right: 20%;
+}
+
+.auth-img {
+  width: 40px;
+  height: 30px;
+  padding-left: 10px;
+}
+
 /* Index page styles
 -------------------------------------------------- */
 .jumbotron-custom {
   background-color: #fff;
   text-align: center;
   border: 0;
+  color: #575757;
   box-shadow: none;
+}
+
+.jumbotron-custom .index-head {
+  font-family: Cairo;
+  color: #8d2165;
 }
 
 .featurette-divider {
@@ -118,10 +198,29 @@ body > .container {
 
 .featurette-heading {
   font-weight: 300;
+  font-family: Cairo;
+  color:#F89728;
   line-height: 1;
   letter-spacing: -1px;
   margin-top: 0;
   font-size: 3.5em;
+}
+
+.lead {
+  color: #575757;
+  font-family: Monserrat;
+}
+
+.btn {
+  background-color: #005c88 ;
+  border-color: #005c88;
+}
+
+.btn-default {
+  background-color: #e2e2e2;
+  border-color: #dadada;
+  color: #555555;
+  padding: 8px 12px 7px;  
 }
 
 @media screen and (max-width: 991px) {
@@ -135,26 +234,241 @@ body > .container {
 }
 
 
-/* Common: about us
+/* Common: about us, contact
 -------------------------------------------------- */
-.contact-text, 
+.contact-text,
 .about-us-text {
-  font-family: Georgia, "Times New Roman", Times, serif;
+  font-family: Monserrat;
   font-size: 1.2em;
+  color: #575757;
   line-height: 1.8em;
   margin: 20px 0;
+}
+
+
+.about-us-head{
+  font-family: Cairo;
+  color: #8d2165;
+}
+
+.contact-head {
+  font-family: Cairo;
+  color: #8d2165;
 }
 
 .contact-icon {
   margin: 0 5px;
 }
 
-.contact-social a {
-  color: #888888;
+/* Meetup: Meetup List
+---------------------------------------------------*/
+.meetup-list-head {
+  font-family: "Cairo";
+  color: #8d2165;
 }
 
-.contact-social a:hover {
-  color: #444444;
+.meetup-list-subhead {
+  font-size: 24px;
+  margin-bottom: 45px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.search-options {
+  font-family: Cairo;  
+  font-size: 15px;
+  margin: 0 4px 0 0;
+  color: #888b8d;
+  border: none;
+  display: inline-block;
+}
+
+.search-btn {
+  color: white;
+  font-family: Cairo;
+  font-size: 18px;
+  background-color: #54BCEB;
+  text-transform: uppercase;
+  border: none;
+}
+
+.search-form {
+  display: inline;
+}
+
+.filter-form {
+  display: inline;
+  float: right;
+}
+
+/* Meetup: Upcoming Meetups List
+---------------------------------------------------*/
+input {
+  border: 0;
+  background-color: #f5f5f5;
+}
+
+.fake-border {
+  font-style: italic;
+  width: auto;
+  font-family: 'Cairo';
+  background-color: #f5f5f5;
+  display: inline;
+  border: 1px solid #f5f5f5;
+  margin: 0 10px 0 10px;
+}
+
+#date input {
+  line-height: 22.5px;
+  width: 11%;
+}
+
+.glyphicon {
+  margin-left: 3px;
+}
+
+.hidden {
+  display: none;
+}
+
+.filter-list {
+  background-color: #f5f5f5;
+  border: 0;
+  font-size: 14px;
+}
+
+.search-options {
+  width: 100%;
+}
+
+.glyphicon glyphicon-search glyphicon-map-marker {
+  color: #4fb4e0;
+}
+
+#filters {
+  float: right;
+  width: 30%; 
+}
+
+#meetup-location-input,#location-input {
+  width: 15%;
+  font-style: italic;
+  font-family: 'Cairo';
+  background-color: #f5f5f5;
+  display: inline;
+  border: 1px solid #f5f5f5;
+}
+
+#location-input {
+  width: 50%;
+}
+
+/* Common: new community proposal form
+---------------------------------------------------*/
+#google-embed-form{
+  overflow: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  border: 0;
+}
+
+/* Community: new community request form
+---------------------------------------------------*/
+.request-form-head {
+  color: #8d2165;
+  font-family: 'Cairo';
+}
+
+.form-control {
+  background-color: #d1e9d9;
+}
+.option {
+  color: white;
+
+}
+
+.well {
+  position: relative;
+  background-color: white;
+  border: none;
+  box-shadow: none;
+  width: auto; 
+  font-family: Cairo;
+}
+
+.ml15{
+  font-family: Cairo;
+}
+
+.control-label {
+  color: #101820;
+}
+
+/* social icons contact page
+---------------------------------------------------*/
+.facebook_icon {
+  color: #3b5998;
+}
+
+.twitter_icon {
+ color: #55acee;
+}
+
+.github_icon {
+  color: #333333;
+}
+
+.linkedin_icon {
+  color: #0077b5;
+}
+
+/* log-in page social buttons
+----------------------------*/
+
+.facebook_button,
+.facebook_button:hover,
+.twitter_button,
+.twitter_button:hover,
+.github_button,
+.github_button:hover,
+.google_button,
+.google_button:hover {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+  display: block;
+}
+
+.facebook_button,
+.facebook_button:hover {
+  background-color: #3b5998;
+  color: #3b5998;
+}
+
+.twitter_button,
+.twitter_button:hover {
+  background-color:  #55acee;
+  color: #55acee;
+}
+
+.github_button,
+.github_button:hover {
+  background-color: #333333;
+  color: #333333;
+}
+
+.google_button,
+.google_button:hover {
+  background-color: #dc4e41;
+  color: #dc4e41;
+}
+
+.social_button_text,
+.social_button_text:hover {
+  color: #ffffff;
 }
 
 /* Sign in, Sign up
@@ -170,18 +484,31 @@ body > .container {
   margin: 0 auto;
 }
 
-.social-buttons {
-  padding-top: 0;
-}
-
-.social-buttons a {
-  margin-bottom: 10px;
+.share-buttons {
+  margin: 20px 0;
 }
 
 .or-delimiter {
   text-align: center;
   margin: 10px 0;
 }
+
+/* Email
+-------------------------------------------------- */
+.email-heading {
+  max-width: 350px;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+#email-subheading {
+  font-size: 1.2em;
+}
+
+span {
+  font-size: 1em;
+}
+
 
 /* User Profile
 -------------------------------------------------- */
@@ -228,7 +555,8 @@ table.decoration-none  tr a {
   font-size: 2em;
 }
 
-.blog-entry .body {
+.blog-entry .body,
+.box-body {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 1.2em;
   line-height: 1.8em;
@@ -236,6 +564,63 @@ table.decoration-none  tr a {
 
 .blog-entry .tags {
   font-size: 1.3em;
+}
+
+/* Meetup CSS
+------------------------------------------------- */
+.box-container {
+  margin: 25px 0px;
+  padding: 0px 25px;
+  border: 1px solid #eee;
+}
+
+.box-body {
+  margin: 30px 0px;
+}
+
+.pt25 {
+  padding-top: 25px;
+}
+
+.map-container {
+  height:400px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.meetup-details span {
+  margin-right: 15px;
+}
+
+.text-bottom{
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.upcomingMeetupslist{
+  height: 400px;
+  overflow-y: scroll;
+  line-height: 1em;
+  word-wrap: break-word;
+  margin-bottom: 40px;
+}
+/* Commentbox CSS
+------------------------------------------------- */
+.comment-box{
+  border: 0px;
+  background-color: white;
+  color: #555555;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.0em;
+  line-height: 1.0em;
+/*  webkit-text-size-adjust: 100%;*/
+}
+
+/* Meetup Location Members user-cell space
+-------------------------------------------------- */
+.user-cell-wh-100 {
+  width: 100px;
+  height: 170px;
 }
 
 /* RESPONSIVE CSS

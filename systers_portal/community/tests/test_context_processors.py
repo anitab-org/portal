@@ -8,8 +8,8 @@ from community.models import Community
 
 class CommunitiesProcessorTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.client = Client()
 
     def test_communities_processor(self):
@@ -20,7 +20,7 @@ class CommunitiesProcessorTestCase(TestCase):
                                  admin=self.systers_user)
         index_url = reverse('index')
         response = self.client.get(index_url)
-        self.assertContains(response, '<a role="menuitem" tabindex="-1" '
+        self.assertContains(response, '<a role="menuitem" '
                                       'href="/community/foo/">Foo</a>')
-        self.assertContains(response, '<a role="menuitem" tabindex="-1" '
+        self.assertContains(response, '<a role="menuitem" '
                                       'href="/community/boo/">Boo</a>')

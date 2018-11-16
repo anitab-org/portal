@@ -2,8 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 
 from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
-                        EditResourceForm, TagForm)
-from blog.models import News, Resource, Tag
+                        EditResourceForm, TagForm, ResourceTypeForm)
+from blog.models import News, Resource, Tag, ResourceType
 from community.models import Community
 from users.models import SystersUser
 
@@ -11,7 +11,7 @@ from users.models import SystersUser
 class AddNewsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -40,7 +40,7 @@ class AddNewsFormTestCase(TestCase):
 class EditNewsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -72,7 +72,7 @@ class EditNewsFormTestCase(TestCase):
 class AddResourceFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -101,7 +101,7 @@ class AddResourceFormTestCase(TestCase):
 class EditResourceFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -133,7 +133,7 @@ class EditResourceFormTestCase(TestCase):
 class TagFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -154,3 +154,29 @@ class TagFormTestCase(TestCase):
         form.save()
         tag = Tag.objects.get()
         self.assertEqual(tag.name, 'bar')
+
+
+class ResourceTypeFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_resourceType_form(self):
+        """Test adding and editing resourceType form"""
+        form = ResourceTypeForm(data={})
+        self.assertFalse(form.is_valid())
+
+        form = ResourceTypeForm(data={'name': 'foo'})
+        self.assertTrue(form.is_valid())
+        form.save()
+        resourceType = ResourceType.objects.get()
+        self.assertEqual(resourceType.name, 'foo')
+
+        form = ResourceTypeForm(instance=resourceType, data={'name': 'bar'})
+        self.assertTrue(form.is_valid())
+        form.save()
+        resourceType = ResourceType.objects.get()
+        self.assertEqual(resourceType.name, 'bar')

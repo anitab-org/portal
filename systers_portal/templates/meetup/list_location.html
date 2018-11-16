@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Systers Meetup Locations
+{% endblock %}
+
+{% block content %}
+  <h2 class="mt40 text-center">Systers Meetup Locations</h2>
+  <div class="row">
+    <div id="map-canvas" class="map-container mt20"></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+        {% include "meetup/snippets/meetup_locations_grid.html" %}
+    </div>
+    <div class="col-sm-4">
+        {% include "meetup/snippets/upcoming_meetups_list.html" %}
+        {% include "meetup/snippets/systers_twitter_feed.html" %}
+    </div>
+  </div>
+  {% include "meetup/snippets/meetup_locations_map.html" %}
+{% endblock %}

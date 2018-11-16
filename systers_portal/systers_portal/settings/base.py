@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SECRET_KEY']
 
+
 ALLOWED_HOSTS = []
 
 
@@ -33,6 +34,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.gis',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -41,14 +43,18 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     'ckeditor',
-    'django_wysiwyg',
     'guardian',
     'crispy_forms',
+    'cities_light',
+    'imagekit',
     'blog',
     'common',
     'community',
+    'meetup',
     'membership',
     'users',
+    'rest_framework',
+    'pinax.notifications',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -62,33 +68,31 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.admindocs.middleware.XViewMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'allauth.account.context_processors.account',
-    'allauth.socialaccount.context_processors.socialaccount',
-)
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS += (
-    'community.context_processors.communities_processor',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'community.context_processors.communities_processor',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+            ],
+        },
+    }, ]
 
 ROOT_URLCONF = 'systers_portal.urls'
 
 WSGI_APPLICATION = 'systers_portal.wsgi.application'
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
 
 LANGUAGES = [
     ('en-us', 'English'),
@@ -124,10 +128,10 @@ MEDIA_URL = "/media/"
 # Django-allauth settings
 # https://django-allauth.readthedocs.org/en/latest/#configuration
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.SystersUserAccountAdapter'
-
-# WYSIWYG configuration
-DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_FORMS = {'change_password': 'users.forms.SystersChangePasswordForm'}
 
 # Ckeditor configuration
 CKEDITOR_UPLOAD_PATH = "uploads/"
@@ -137,6 +141,7 @@ CKEDITOR_RESTRICT_BY_USER = True
 
 CKEDITOR_CONFIGS = {
     'default': {
+        'width': '100%',
         'toolbar': [
             ['Styles', 'Format', 'Font', 'FontSize', 'Bold', 'Italic',
              'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'Undo',

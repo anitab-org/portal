@@ -1,1 +1,1 @@
-import community.signals  # NOQA
+default_app_config = 'community.apps.CommunityConfig'

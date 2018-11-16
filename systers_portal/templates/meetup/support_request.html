@@ -1,0 +1,52 @@
+{% extends "meetup/base.html" %}
+
+{% block meetup_location_page_content %}
+  <h2>Support Request</h2>
+  <div class="box-container box-body pt25">
+    <p> 
+      <b>Volunteer: </b> {{ support_request.volunteer }}
+    </p>
+    <p>
+      <b>Description: </b> {{ support_request.description|safe }} <br/>
+    </p>
+    <hr>
+    {% if support_request.is_approved %}
+      <p>
+        <b>Status: </b><i>Approved</i>
+      </p>
+    {% else %}
+      <p>
+        <b>Status: </b><i>Not Approved</i>
+        &nbsp; &nbsp; 
+        <a href="{% url 'approve_support_request' meetup_location.slug meetup.slug support_request.pk %}"
+           role="button" class="btn btn-primary btn-sm">Approve</a>
+        <a href="{% url 'reject_support_request' meetup_location.slug meetup.slug support_request.pk %}"
+           role="button" class="btn btn-warning btn-sm">Reject</a>
+      </p>
+    {% endif %}
+    <hr>
+    <p>
+      <a href="{% url 'add_support_request_comment' meetup_location.slug meetup.slug support_request.pk %}">Add comment</a>
+    </p>
+  </div>
+  <h3>Discussion Area</h3>
+  {% if not comments %}
+    <div class="box-container box-body pt25">
+      <p>
+        <i>There are no comments yet.</i>
+      </p>
+    </div>
+  {% endif %}
+  {% for comment in comments %}
+    <div class="box-container pt25">
+      <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
+      <div class="box-body">
+        <pre class="comment-box">{{ comment.body }}</pre>
+      </div>
+      {% if user == comment.author.user %}
+        <a href="{% url 'edit_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">edit</a>
+        <a href="{% url 'delete_support_request_comment' meetup_location.slug meetup.slug support_request.pk comment.id %}">delete</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endblock %}

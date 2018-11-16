@@ -22,7 +22,7 @@ class PermissionsTestCase(TestCase):
             "add_community_resource",
             "change_community_resource",
         ]
-        self.assertSequenceEqual(content_contributor_permissions, permissions)
+        self.assertCountEqual(content_contributor_permissions, permissions)
 
     def test_content_manager_permissions(self):
         """Test content manager list of permissions"""
@@ -45,7 +45,7 @@ class PermissionsTestCase(TestCase):
             "approve_community_comment",
             "delete_community_comment",
         ]
-        self.assertSequenceEqual(content_manager_permissions, permissions)
+        self.assertCountEqual(content_manager_permissions, permissions)
 
     def test_user_content_manager_permissions(self):
         """Test user and content manager list of permissions"""
@@ -72,7 +72,7 @@ class PermissionsTestCase(TestCase):
             "delete_community_systersuser",
             "approve_community_joinrequest"
         ]
-        self.assertSequenceEqual(user_content_manager_permissions, permissions)
+        self.assertCountEqual(user_content_manager_permissions, permissions)
 
     def test_community_admin_permissions(self):
         """Test community admin list of permissions"""
@@ -99,8 +99,9 @@ class PermissionsTestCase(TestCase):
             "delete_community_systersuser",
             "approve_community_joinrequest",
             "change_community",
+            "add_community",
         ]
-        self.assertSequenceEqual(community_admin_permissions, permissions)
+        self.assertCountEqual(community_admin_permissions, permissions)
 
     def test_group_permissions(self):
         """Test group permissions keys"""

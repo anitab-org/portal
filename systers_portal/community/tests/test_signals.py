@@ -4,7 +4,7 @@ from django.db.models.signals import post_save, post_delete
 
 from community.constants import COMMUNITY_ADMIN
 from community.models import Community
-from community.signals import manage_community_groups, remove_community_groups
+from community.signals import (manage_community_groups, remove_community_groups)
 from users.models import SystersUser
 
 
@@ -19,7 +19,7 @@ class SignalsTestCase(TestCase):
         """Test handling of operations required when saving a Community
         object"""
         user1 = User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        systers_user = SystersUser.objects.get(user=user1)
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              admin=systers_user)
         groups_count = Group.objects.count()
@@ -44,13 +44,13 @@ class SignalsTestCase(TestCase):
             name=COMMUNITY_ADMIN.format("Bar"))
         self.assertEqual(user2.groups.get(), community_admin_group)
         self.assertNotEqual(list(user1.groups.all()), [community_admin_group])
-        self.assertSequenceEqual(Community.objects.get().members.all(),
-                                 [systers_user, systers_user2])
+        self.assertCountEqual(Community.objects.get().members.all(),
+                              [systers_user, systers_user2])
 
     def test_remove_community_groups(self):
         """Test the removal of groups when a community is deleted"""
-        User.objects.create(username='foo', password='foobar')
-        systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        systers_user = SystersUser.objects.get(user=self.user)
         community = Community.objects.create(name="Foo", slug="foo", order=1,
                                              admin=systers_user)
         groups_count = Group.objects.count()

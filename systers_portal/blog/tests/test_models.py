@@ -22,8 +22,8 @@ class ResourceTypeModelTestCase(TestCase):
 
 class NewsModelTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -39,8 +39,8 @@ class NewsModelTestCase(TestCase):
 
 class ResourceModelTestCase(TestCase):
     def setUp(self):
-        User.objects.create(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)

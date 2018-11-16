@@ -3,7 +3,9 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django_countries.fields import CountryField
+from cities_light.models import Country
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from community.utils import get_groups
 from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
@@ -13,7 +15,7 @@ from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User)
-    country = CountryField(blank=True, null=True, verbose_name="Country")
+    country = models.ForeignKey(Country, blank=True, null=True, verbose_name="Country")
     blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
     homepage_url = models.URLField(max_length=255, blank=True,
                                    verbose_name="Homepage")
@@ -21,6 +23,9 @@ class SystersUser(models.Model):
                                         blank=True,
                                         null=True,
                                         verbose_name="Profile picture")
+    profile_picture_thumbnail = ImageSpecField(source='profile_picture',
+                                               processors=[ResizeToFill(100, 100)],
+                                               options={'quality': 100})
 
     def __str__(self):
         return str(self.user)

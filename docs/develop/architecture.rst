@@ -16,6 +16,7 @@ As any other Django project Portal organizes its functionality in several apps:
   requests to a community, removing and inviting users to become members of a
   community.
 * **users** - showing and editing user personal profile.
+* **meetup** - handles meetup locations and meetup functionality.
 
 The templates are placed inside ``systers_portal/templates`` folder organized
 in a folder structure similar to the apps tree. Respectively the templates

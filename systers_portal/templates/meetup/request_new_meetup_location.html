@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+  - Request a Meetup Location
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="mt20 mb40"></div>
+  <div class="row ml20">
+    <div class="col-md-12">
+      <h1>Request a Meetup Location</h1>
+      <hr/>
+    </div>
+    <div class="col-md-12">
+      <div class="well">
+        {{ form.media }}
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

@@ -1,0 +1,3 @@
+{% url "about_meetup_location" meetup_location.slug as meetup_location_url %}You are now a Member of the meetup location {{ meetup_location }}.
+
+To view {{ meetup_location }}, click here: {{ default_http_protocol }}:8000//{{ current_site }}{{ meetup_location_url }}

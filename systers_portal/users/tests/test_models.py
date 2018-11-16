@@ -3,20 +3,21 @@ from django.test import TestCase
 
 from community.models import Community
 from community.utils import create_groups
+from community.permissions import groups_templates
 from membership.models import JoinRequest
 from users.models import SystersUser
 
 
 class SystersUserTestCase(TestCase):
     def setUp(self):
-        User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
 
     def test_create_systers_user(self):
         """Test creation of SystersUser on new User create"""
         self.assertTrue(1, SystersUser.objects.count())
         self.assertEqual(self.systers_user.user,
-                         SystersUser.objects.get().user)
+                         SystersUser.objects.get(user=self.user).user)
 
         self.systers_user.user.save()
         self.assertTrue(1, SystersUser.objects.count())
@@ -42,7 +43,7 @@ class SystersUserTestCase(TestCase):
         name = "Baz"
         self.systers_user.leave_groups(name)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
-        create_groups(name)
+        create_groups(name, groups_templates)
         content_manager_group = Group.objects.get(name="Baz: Content Manager")
         self.systers_user.join_group(content_manager_group)
         self.assertSequenceEqual(self.systers_user.user.groups.all(),
@@ -50,7 +51,7 @@ class SystersUserTestCase(TestCase):
         self.systers_user.leave_groups(name)
         self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
         other_name = "Foo"
-        create_groups(other_name)
+        create_groups(other_name, groups_templates)
         admin_group = Group.objects.get(name="Foo: Community Admin")
         self.systers_user.join_group(admin_group)
         self.systers_user.join_group(content_manager_group)
@@ -81,7 +82,7 @@ class SystersUserTestCase(TestCase):
 
     def test_get_member_groups(self):
         """Test getting groups of which the user is a member"""
-        groups = create_groups("Bar")
+        groups = create_groups("Bar", groups_templates)
         self.assertEqual(self.systers_user.get_member_groups(groups), [])
         first_group = groups[0]
         self.systers_user.join_group(first_group)
@@ -89,12 +90,12 @@ class SystersUserTestCase(TestCase):
                                  [first_group])
         last_group = groups[-1]
         self.systers_user.join_group(last_group)
-        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
-                                 [first_group, last_group])
+        self.assertCountEqual(self.systers_user.get_member_groups(groups),
+                              [first_group, last_group])
         group = Group.objects.create(name="Dummy")
         self.systers_user.join_group(group)
-        self.assertSequenceEqual(self.systers_user.get_member_groups(groups),
-                                 [first_group, last_group])
+        self.assertCountEqual(self.systers_user.get_member_groups(groups),
+                              [first_group, last_group])
 
     def test_get_last_join_request(self):
         """Test fetching last join request made to a community"""

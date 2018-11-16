@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+  - Request a new Community
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="mt20 mb40"></div>
+  <div class="row ml20">
+    <div class="col-md-12">
+      <h1 class="request-form-head">Request a new community</h1>
+      <hr/>
+    </div>
+    <div class="col-md-8">
+      <div class="well">
+      {{ form.media }}
+        {% crispy form %}
+      </div>
+    </div>
+    {% if community_requests %}
+      <div class="col-md-4">
+        <h4 class="request-form-head"> Your Community requests </h4>
+        <ol class="list-unstyled">
+        {% for community_request in community_requests %}
+          <li class="ml15"><a href="{% url 'view_community_request' community_request.slug %}">
+                          {{ community_request }}
+          </a></li>
+        {% endfor %}
+        </ol>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

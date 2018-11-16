@@ -10,7 +10,7 @@ from users.models import SystersUser
 class CommunityNewsListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -70,7 +70,7 @@ class CommunityNewsListViewTestCase(TestCase):
 class CommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -95,6 +95,35 @@ class CommunityNewsViewTestCase(TestCase):
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
 
+    def test_multiple_communities_same_slug_news_view(self):
+        """Test GET request to two news object with same slug, but belonging to
+        two separate communities"""
+        new_community = Community.objects.create(name="Super Unusual Name",
+                                                 slug="bar",
+                                                 order=2,
+                                                 admin=self.systers_user)
+        news1 = News.objects.create(slug="bar", title="Bar",
+                                    author=self.systers_user,
+                                    content="Hi there!",
+                                    community=self.community)
+        news2 = News.objects.create(slug="bar", title="New Bar!",
+                                    author=self.systers_user,
+                                    content="Hi there!",
+                                    community=new_community)
+        url = reverse('view_community_news', kwargs={'slug': 'foo',
+                                                     'news_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.community.name)
+        self.assertContains(response, news1.title)
+
+        new_url = reverse("view_community_news", kwargs={'slug': 'bar',
+                                                         'news_slug': 'bar'})
+        response = self.client.get(new_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, new_community.name)
+        self.assertContains(response, news2.title)
+
     def test_community_news_sidebar(self):
         """Test the presence or the lack of the news sidebar in the template"""
         self.client.login(username="foo", password="foobar")
@@ -116,7 +145,7 @@ class CommunityNewsViewTestCase(TestCase):
 class AddCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -165,7 +194,7 @@ class AddCommunityNewsViewTestCase(TestCase):
 class EditCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -214,7 +243,7 @@ class EditCommunityNewsViewTestCase(TestCase):
 class DeleteCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -253,7 +282,7 @@ class DeleteCommunityNewsViewTestCase(TestCase):
 class CommunityResourceListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -337,7 +366,7 @@ class CommunityResourceListViewTestCase(TestCase):
 class CommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -362,6 +391,35 @@ class CommunityResourceViewTestCase(TestCase):
         self.assertContains(response, "Bar")
         self.assertContains(response, "Hi there!")
 
+    def test_multiple_communities_same_slug_resource_view(self):
+        """Test GET request to two resource objects with same slug, but
+        belonging to two separate communities"""
+        new_community = Community.objects.create(name="Super Unusual Name",
+                                                 slug="bar",
+                                                 order=2,
+                                                 admin=self.systers_user)
+        resource1 = Resource.objects.create(slug="bar", title="Bar",
+                                            author=self.systers_user,
+                                            content="Hi there!",
+                                            community=self.community)
+        resource2 = Resource.objects.create(slug="bar", title="New Bar!",
+                                            author=self.systers_user,
+                                            content="Hi there!",
+                                            community=new_community)
+        url = reverse('view_community_resource',
+                      kwargs={'slug': 'foo', 'resource_slug': 'bar'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.community.name)
+        self.assertContains(response, resource1.title)
+
+        new_url = reverse("view_community_resource",
+                          kwargs={'slug': 'bar', 'resource_slug': 'bar'})
+        response = self.client.get(new_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, new_community.name)
+        self.assertContains(response, resource2.title)
+
     def test_community_resources_sidebar(self):
         """Test the presence or the lack of the resource sidebar in the
         template"""
@@ -385,7 +443,7 @@ class CommunityResourceViewTestCase(TestCase):
 class AddCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -434,7 +492,7 @@ class AddCommunityResourceViewTestCase(TestCase):
 class EditCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -483,7 +541,7 @@ class EditCommunityResourceViewTestCase(TestCase):
 class DeleteCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -522,7 +580,7 @@ class DeleteCommunityResourceViewTestCase(TestCase):
 class AddTagViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
-        self.systers_user = SystersUser.objects.get()
+        self.systers_user = SystersUser.objects.get(user=self.user)
         self.community = Community.objects.create(name="Foo", slug="foo",
                                                   order=1,
                                                   admin=self.systers_user)
@@ -543,3 +601,29 @@ class AddTagViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Tag.objects.get().name, "Baz")
+
+
+class AddResourceTypeViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1,
+                                                  admin=self.systers_user)
+
+    def test_add_resourceType_view(self):
+        """Test GET and POST requests to add a new resource type"""
+        url = reverse("add_resource_type", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        group = Group.objects.get(name="Foo: Content Contributor")
+        self.systers_user.join_group(group)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        self.client.post(url, data={'name': 'Baz'})
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(ResourceType.objects.get().name, "Baz")

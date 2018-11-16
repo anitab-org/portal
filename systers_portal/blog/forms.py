@@ -1,6 +1,6 @@
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from blog.models import News, Resource, Tag
+from blog.models import News, Resource, Tag, ResourceType
 from users.models import SystersUser
 
 
@@ -93,4 +93,14 @@ class TagForm(ModelFormWithHelper):
         fields = ['name']
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_community_news_list' " \
+                             "community.slug %}"
+
+
+class ResourceTypeForm(ModelFormWithHelper):
+    """Form to create or edit a ResourceType object"""
+    class Meta:
+        model = ResourceType
+        fields = ['name']
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_community_resource_list' " \
                              "community.slug %}"
