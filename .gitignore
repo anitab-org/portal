@@ -106,3 +106,6 @@ _build
 # pytest
 
 .pytest_cache
+
+# Python Decouple
+.env
