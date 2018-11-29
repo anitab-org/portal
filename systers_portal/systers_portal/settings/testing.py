@@ -1,6 +1,7 @@
 from .base import *
+from decouple import config
 
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 INSTALLED_APPS += (
@@ -11,10 +12,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'systersdb',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'USER': config('TEST_DB_USER'),
+        'PASSWORD': config('TEST_DB_PASSWORD'),
+        'HOST': config('TEST_DB_HOST', default='localhost'),
+        'PORT': config('TEST_DB_PORT', default='5432'),
     }
 }
 
