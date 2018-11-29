@@ -43,11 +43,7 @@ Setup for developers (Unix)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON DATABASE systersdb to <the name>;
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `export SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. Optionally to set the
-  shell variable every time you activate the virtualenv, edit `venv/bin/activate`
-  and add to the bottom the export statement.
+1. Fill in the database details in `systers_portal/.env`.
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
@@ -76,14 +72,14 @@ Setup for developers (Windows)
 - Precomplie standard libary
 - Select install location and hit install
 1. Run `pip install virtualenv` using windows command line
-1. You would have to install PostgreSQL. Download from [official location](https://www.postgresql.org/download/windows/) or alternative location, you could lookup some PostgreSQL tutorials online if you are completely blank on this. 
+1. You would have to install PostgreSQL. Download from [official location](https://www.postgresql.org/download/windows/) or alternative location, you could lookup some PostgreSQL tutorials online if you are completely blank on this.
 1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into the `portal` directory. Use git CMD or git Bash(unix-like terminal) to do so.
 1. Create a virtual environment with Python 3 and install dependencies, using CMD :
- 
+
      ```bash
      $ virtualenv venv
      $ ./venv/Scripts/activate
-     $ pip install -r requirements/dev.txt 
+     $ pip install -r requirements/dev.txt
      ```
 1. Create `systersdb` database, where `systersdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
@@ -99,9 +95,7 @@ Setup for developers (Windows)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON systersdb TO <username created above>;
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `set SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. 
+1. Fill in the database details in `systers_portal/.env`.
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
@@ -139,7 +133,7 @@ production at the moment. It may be configured to do so in the future.
    `portal` directory.
 1. Run `docker-compose build`. This pulls the Docker images required to run the
    project and installs the necessary dependencies.
-1. **This step will require the Django SECRET_KEY.**
+1. **This step may require the Django SECRET_KEY.**
    Run `docker run -e SECRET_KEY=foobarbaz portal_web`.
 1. Run `docker-compose run web python systers_portal/manage.py migrate`.
 1. Run `docker-compose run web python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
