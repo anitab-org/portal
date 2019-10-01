@@ -27,6 +27,12 @@ class RequestCommunityView(LoginRequiredMixin, CreateView):
     form_class = RequestCommunityForm
     raise_exception = True
 
+    def __init__(self):
+        self.community_requests = RequestCommunity.objects.filter(
+            user=self.systersuser)
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+
     def get_success_url(self):
         """Supply the redirect URL in case of successful submit"""
         return reverse("view_community_request", kwargs={"slug": self.object.slug})
@@ -34,10 +40,6 @@ class RequestCommunityView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         """Add the communities requested by the user to the context"""
         context = super(RequestCommunityView, self).get_context_data(**kwargs)
-        self.systersuser = get_object_or_404(
-            SystersUser, user=self.request.user)
-        self.community_requests = RequestCommunity.objects.filter(
-            user=self.systersuser)
         context['community_requests'] = self.community_requests
         return context
 
@@ -56,6 +58,12 @@ class ViewCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
     template_name = "community/view_community_request.html"
     form_class = RequestCommunityForm
     raise_exception = True
+
+    def __init__(self):
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+        self.community_request = get_object_or_404(
+            RequestCommunity, slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
         """Add RequestCommunity object and it's verbose fields to the context."""
@@ -76,10 +84,6 @@ class ViewCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permissions to view the community request.
         The permission holds true for superusers."""
-        self.community_request = get_object_or_404(
-            RequestCommunity, slug=self.kwargs['slug'])
-        self.systersuser = get_object_or_404(
-            SystersUser, user=self.request.user)
         return self.systersuser == self.community_request.user or request.user.is_superuser
 
 
@@ -90,6 +94,12 @@ class EditCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
     model = RequestCommunity
     form_class = EditCommunityRequestForm
     raise_exception = True
+
+    def __init__(self):
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+        self.community_request = get_object_or_404(
+            RequestCommunity, slug=self.kwargs['slug'])
 
     def get_success_url(self):
         """Supply the redirect URL in case of successful submit"""
@@ -105,10 +115,6 @@ class EditCommunityRequestView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permissions to edit the community request.
         The permission holds true for superusers."""
-        self.community_request = get_object_or_404(
-            RequestCommunity, slug=self.kwargs['slug'])
-        self.systersuser = get_object_or_404(
-            SystersUser, user=self.request.user)
         return self.systersuser == self.community_request.user or request.user.is_superuser
 
 
@@ -118,6 +124,15 @@ class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,
     model = RequestCommunity
     permanent = False
     raise_exception = True
+
+    def __init__(self):
+        self.slug_communtiy_request = community_request.slug
+        self.order_community_request = community_request.order
+        self.admin = get_object_or_404(SystersUser, user=self.request.user)
+        self.systersuser = community_request.user
+        self.slug_community_values = Community.objects.all().values_list('slug', flat=True)
+        self.order_community_values = list(
+            Community.objects.all().values_list('order', flat=True))
 
     def get_redirect_url(self, *args, **kwargs):
         """Supply the redirect URL in case of successful approval.
@@ -129,8 +144,6 @@ class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,
             RequestCommunity, slug=self.kwargs['slug'])
         new_community = Community()
         community_request_fields = community_request.get_fields()
-        self.order_community_request = community_request.order
-        self.slug_communtiy_request = community_request.slug
         new_community_fields = [
             field.name for field in new_community._meta.fields]
         fields = [(field_name, field_value) for field_name, field_value in community_request_fields
@@ -138,9 +151,7 @@ class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,
         for field_name, field_value in fields:
             setattr(new_community, field_name, field_value)
 
-        self.systersuser = community_request.user
         new_community.admin = self.systersuser
-        self.admin = get_object_or_404(SystersUser, user=self.request.user)
         status, message, level = self.process_request()
         if status == OK:
             new_community.save()
@@ -156,28 +167,25 @@ class ApproveRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin,
     def process_request(self):
         """If an error occurs during the creation of a new community, this method returns the
         status and message."""
-        self.order_community_values = list(
-            Community.objects.all().values_list('order', flat=True))
         self.order_community_values.sort()
-        self.slug_community_values = Community.objects.all().values_list('slug', flat=True)
         if self.order_community_request is None:
-            STATUS = ORDER_NULL
-            return STATUS, ORDER_NULL_MSG, messages.INFO
+            status = ORDER_NULL
+            return status, ORDER_NULL_MSG, messages.INFO
         elif self.order_community_request in self.order_community_values:
-            STATUS = ORDER_ALREADY_EXISTS
+            status = ORDER_ALREADY_EXISTS
             string_order_values = ', '.join(
                 map(str, self.order_community_values))
-            return STATUS, ORDER_ALREADY_EXISTS_MSG.format(self.order_community_request,
+            return status, ORDER_ALREADY_EXISTS_MSG.format(self.order_community_request,
                                                            string_order_values), messages.INFO
         elif self.slug_communtiy_request in self.slug_community_values:
-            STATUS = SLUG_ALREADY_EXISTS
+            status = SLUG_ALREADY_EXISTS
             string_slug_values = ', '.join(
                 map(str, self.slug_community_values))
-            return STATUS, SLUG_ALREADY_EXISTS_MSG.format(self.slug_communtiy_request,
+            return status, SLUG_ALREADY_EXISTS_MSG.format(self.slug_communtiy_request,
                                                           string_slug_values), messages.INFO
         else:
-            STATUS = OK
-            return STATUS, SUCCESS_MSG, messages.INFO
+            status = OK
+            return status, SUCCESS_MSG, messages.INFO
 
 
 class RejectRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin, DeleteView):
@@ -196,6 +204,13 @@ class RejectRequestCommunityView(LoginRequiredMixin, StaffuserRequiredMixin, Del
         return reverse('unapproved_community_requests')
 
 
+def get_queryset():
+    """Set ListView queryset to all the unapproved community requests"""
+    request_community_list = RequestCommunity.objects.filter(
+        is_approved=False)
+    return request_community_list
+
+
 class NewCommunityRequestsListView(LoginRequiredMixin, StaffuserRequiredMixin, ListView):
     """List of Community Requests"""
     template_name = "community/new_community_requests.html"
@@ -203,45 +218,42 @@ class NewCommunityRequestsListView(LoginRequiredMixin, StaffuserRequiredMixin, L
     raise_exception = True
     paginate_by = 10
 
+    def __init__(self):
+        self.systersuser = get_object_or_404(
+            SystersUser, user=self.request.user)
+
     def get_context_data(self, **kwargs):
         """Add RequestCommunity object to the context"""
         context = super(NewCommunityRequestsListView,
                         self).get_context_data(**kwargs)
-        self.systersuser = get_object_or_404(
-            SystersUser, user=self.request.user)
         context['requestor'] = self.systersuser
         return context
 
-    def get_queryset(self):
-        """Set ListView queryset to all the unapproved community requests"""
-        request_community_list = RequestCommunity.objects.filter(
-            is_approved=False)
-        return request_community_list
+
+def get_redirect_url(*args, **kwargs):
+    """Provide a redirect url based on the following conditions:
+
+    * if a Community has no pages, redirect to the news list views
+    * if a Community has at least one page, redirect to the page with the
+      lowest order (aka first page)
+    """
+    community = get_object_or_404(Community, slug=kwargs['slug'])
+    community_pages = CommunityPage.objects.filter(
+        community=community).order_by('order')
+    if community_pages.exists():
+        community_page_slug = community_pages[0].slug
+        return reverse("view_community_page",
+                       kwargs={"slug": community.slug,
+                               "page_slug": community_page_slug})
+    else:
+        return reverse("view_community_news_list",
+                       kwargs={'slug': community.slug})
 
 
 class CommunityLandingView(RedirectView):
     """View Community landing page, which might be a CommunityPage of lowest
     order or if pages are missing, then community news page."""
     permanent = False
-
-    def get_redirect_url(self, *args, **kwargs):
-        """Provide a redirect url based on the following conditions:
-
-        * if a Community has no pages, redirect to the news list views
-        * if a Community has at least one page, redirect to the page with the
-          lowest order (aka first page)
-        """
-        community = get_object_or_404(Community, slug=kwargs['slug'])
-        community_pages = CommunityPage.objects.filter(
-            community=community).order_by('order')
-        if community_pages.exists():
-            community_page_slug = community_pages[0].slug
-            return reverse("view_community_page",
-                           kwargs={"slug": community.slug,
-                                   "page_slug": community_page_slug})
-        else:
-            return reverse("view_community_news_list",
-                           kwargs={'slug': community.slug})
 
 
 class ViewCommunityProfileView(DetailView):
@@ -302,12 +314,21 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         return self.kwargs['page_slug']
 
 
+def check_permissions(request):
+    """Check if the request user has the permissions to add a new community.
+    The permission holds true for superusers."""
+    return request.user.has_perm("add_community")
+
+
 class AddCommunityView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     template_name = "community/add_community.html"
     model = Community
     form_class = AddCommunityForm
     raise_exception = True
+
+    def __init__(self):
+        self.systersuser = get_object_or_404(SystersUser, user=request.user)
 
     def get_success_url(self):
         """Supply the redirect URL in case of successful submit"""
@@ -322,12 +343,6 @@ class AddCommunityView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
         kwargs.update({'admin': self.systersuser})
         return kwargs
 
-    def check_permissions(self, request):
-        """Check if the request user has the permissions to add a new community.
-        The permission holds true for superusers."""
-        self.systersuser = get_object_or_404(SystersUser, user=request.user)
-        return request.user.has_perm("add_community")
-
 
 class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
                            CreateView):
@@ -338,6 +353,9 @@ class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
+
+    def __init__(self):
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
 
     def get_success_url(self):
         """Supply the redirect URL in case of successful submit"""
@@ -365,7 +383,6 @@ class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permissions to add new community
         page. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("add_community_page", self.community)
 
 
@@ -379,6 +396,9 @@ class EditCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
+
+    def __init__(self):
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
 
     def get_success_url(self):
         """Supply the redirect URL in case of successful submit"""
@@ -395,7 +415,6 @@ class EditCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permissions to edit community
         news. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_page",
                                      self.community)
 
@@ -409,6 +428,9 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
+
+    def __init__(self):
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
 
     def get_success_url(self):
         """Supply the redirect URL in case of successful deletion"""
@@ -426,7 +448,6 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permissions to delete community
         page. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("delete_community_page", self.community)
 
 
@@ -438,6 +459,9 @@ class CommunityUsersView(LoginRequiredMixin, PermissionRequiredMixin,
     raise_exception = True
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
+
+    def __init__(self):
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
 
     def get_queryset(self):
         """Set ListView queryset to all the members of the community"""
@@ -453,7 +477,6 @@ class CommunityUsersView(LoginRequiredMixin, PermissionRequiredMixin,
         """Check if the request user has the permission to manage community
         users (add, change, delete). The permission holds true for
         superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         add_perm = request.user.has_perm("add_community_systersuser",
                                          self.community)
         change_perm = request.user.has_perm("change_community_systersuser",
@@ -472,6 +495,10 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
+    def __init__(self):
+        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
+        self.systersuser = SystersUser.objects.get(user=user)
+
     def get_success_url(self):
         """On success redirect to the manage community users page"""
         return reverse("community_users", kwargs={'slug': self.community.slug})
@@ -482,7 +509,6 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
         kwargs['community'] = self.community
         username = self.kwargs['username']
         user = User.objects.get(username=username)
-        self.systersuser = SystersUser.objects.get(user=user)
         kwargs['user'] = self.systersuser
         return kwargs
 
@@ -503,6 +529,5 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
     def check_permissions(self, request):
         """Check if the request user has the permission to change user
         permission groups. The permission holds true for superusers."""
-        self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_systersuser",
                                      self.community)
