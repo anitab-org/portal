@@ -1,5 +1,5 @@
 *.py[cod]
-
+.vscode/
 ### Django ###
 *.log
 *.pot
