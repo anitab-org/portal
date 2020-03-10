@@ -2018,7 +2018,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupLocationViewBaseTestCase, TestCase
                            'location': 'Foo Systers1',
                            'location_slug': 'foob',
                            'meetup_slug': 'foobarbaz',
-                           'distance': 2800,
+                           'distance': 900,
                            'unit': 'kilometers from your location'}]})
 
         data2 = {'date': '2018-06-12', 'meeetup_location': 'Meetup Location'}
