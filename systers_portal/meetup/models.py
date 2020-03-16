@@ -100,6 +100,10 @@ class Meetup(models.Model):
     meetup_location = models.ForeignKey(MeetupLocation, verbose_name="Meetup Location")
     created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
+    meetup_picture = models.ImageField(upload_to='meetup/pictures/',
+                                       blank=True,
+                                       null=True,
+                                       verbose_name="Meetup picture")
 
     def __str__(self):
         return self.title
