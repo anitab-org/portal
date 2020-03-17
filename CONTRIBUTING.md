@@ -1,5 +1,5 @@
 # Contributing Guidelines
-* You can join our [slack channel](http://systers.io/slack-systers-opensource/).  Each active repo has its own channel to direct questions to (for example #powerup or #portal).  
+* You can join our [AnitaB.org Open Source Zulip channel](https://anitab-org.zulipchat.com/). Each active repo has its own channel to direct questions to (for example #powerup or [#portal](https://anitab-org.zulipchat.com/#narrow/stream/222540-portal)). 
 * Remember that this is an inclusive community, committed to creating a safe, positive environment.  See the full [Code of Conduct](http://www.systers.io/code-of-conduct.html).
 ## General Guidelines
 * If you’re just getting started work on an issue labeled “First Timers Only” in any project. Additional resources are available on our [website](http://www.systers.io).
