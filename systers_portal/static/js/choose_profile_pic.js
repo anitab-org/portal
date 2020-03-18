@@ -1,7 +1,7 @@
 // Altered content for the form loaded by crispy forms
-var htmlInnerContent="<label for='id_profile_picture' \n" + 
+var htmlInnerContent="<label for='id_profile_picture' \n" +
 "class='control-label'>Profile picture</label><br>\n" +
-"<button id='upload_pic' class='btn btn-default'>\n" +
+"<button id='upload_pic' class='btn btn-default' type='button'>\n" +
 "UPLOAD PICTURE</button><strong id='file_name_display'>\n" +
  "</strong><div class='controls'> <input name='profile_picture'\n" +
   "class='clearablefileinput' id='id_profile_picture' type='file'\n" +
