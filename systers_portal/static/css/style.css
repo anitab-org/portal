@@ -56,7 +56,8 @@ body > .container-fluid {
 -------------------------------------------------- */
 .messages {
   margin-top: 54px;
-  margin-bottom: -60px;
+  margin-bottom: -15px;
+  text-align: center;
 }
 
 .message {
@@ -147,13 +148,13 @@ body > .container-fluid {
   top:20px;
   font-size: 16px;
   font-weight: bolder;
-  font-family: 'Cairo'; 
+  font-family: 'Cairo';
 }
 
 #line {
   width: 70%;
   z-index: 2;
-  height: 4px; 
+  height: 4px;
 }
 
 #systers-logo {
@@ -163,7 +164,7 @@ body > .container-fluid {
 }
 
 #log-btn {
-  background-color: #47bca0; 
+  background-color: #47bca0;
 }
 
 #signup-btn {
@@ -220,7 +221,7 @@ body > .container-fluid {
   background-color: #e2e2e2;
   border-color: #dadada;
   color: #555555;
-  padding: 8px 12px 7px;  
+  padding: 8px 12px 7px;
 }
 
 @media screen and (max-width: 991px) {
@@ -275,7 +276,7 @@ body > .container-fluid {
 }
 
 .search-options {
-  font-family: Cairo;  
+  font-family: Cairo;
   font-size: 15px;
   margin: 0 4px 0 0;
   color: #888b8d;
@@ -347,7 +348,7 @@ input {
 
 #filters {
   float: right;
-  width: 30%; 
+  width: 30%;
 }
 
 #meetup-location-input,#location-input {
@@ -395,7 +396,7 @@ input {
   background-color: white;
   border: none;
   box-shadow: none;
-  width: auto; 
+  width: auto;
   font-family: Cairo;
 }
 
