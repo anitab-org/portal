@@ -11,7 +11,7 @@
   <div class="container">
     <form class="login form-signin" role="form" method="POST" action="{% url 'account_login' %}">
       <div>
-          <h3>Sign Up Using<a href="{% provider_login_url 'github' %}"><img class="auth-img" src="{% static 'img/github.svg' %}"></a>
+          <h3>Sign In Using<a href="{% provider_login_url 'github' %}"><img class="auth-img" src="{% static 'img/github.svg' %}"></a>
             <a href="{% provider_login_url 'twitter' %}"><img class="auth-img" src="{% static 'img/twitter.png' %}"></a>
             <a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a>
             <a href="{% provider_login_url 'facebook' %}"><img class="auth-img" src="{% static 'img/facebook.png' %}"></a></h3>
