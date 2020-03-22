@@ -6,10 +6,10 @@ and with other communities.
 
 Website: http://portal.systers.org
 
-Project page: http://systers.github.io/portal/
+Project page: https://anitab-org.github.io/portal/
 
 
-If you are an Outreachy Applicant, start with reading [this](https://github.com/systers/ossprojects/wiki/Systers-Portal) for meetup features, please go through [this](https://github.com/systers/ossprojects/wiki/Meetup-Features).
+If you are interested in learning more about this project, start with reading [Portal GitHub Wiki](https://github.com/anitab-org/portal/wiki).
 
 Setup for developers (Unix)
 ---------------------------
