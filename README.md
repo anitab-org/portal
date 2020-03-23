@@ -85,7 +85,11 @@ Setup for developers (Windows)
      $ ./venv/Scripts/activate
      $ pip install -r requirements/dev.txt 
      ```
-1. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Make sure you have GDAL installed. 
+- Download OSGeo4W using the [OSGeo4W installer](https://trac.osgeo.org/osgeo4w/wiki)
+- Specifically, install pkg-gdal-python, which is within 'Libs' in the installer tree.
+- Add GDAL_LIBRARY_PATH in the `systers_portal/settings/base.py` and make sure the path points to the GDAL Library on your local machine.
+6. Create `systersdb` database, where `systersdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
 
     ```
