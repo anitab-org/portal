@@ -170,6 +170,7 @@ body > .container-fluid {
 #signup-btn {
   background-color: #8d2165;
   right: 20%;
+  border-radius: 5px;
 }
 
 .auth-img {
@@ -650,4 +651,69 @@ table.decoration-none  tr a {
   .featurette .img-responsive {
     margin: 0 auto;
   }
+  #systers-logo {
+    height: 70px;
+    width: 298px;
+    margin: 6px;
+  }
+  #upper-nav {
+      display: none;
+  }
+}
+
+@media (max-width: 991px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none;
+    }
+    .navbar-nav {
+        float: none;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .navbar-text {
+        float: none;
+        margin: 15px 0;
+    }
+    .navbar-collapse.collapse.in {
+        display: block;
+    }
+    .collapsing {
+        overflow: hidden;
+    }
+    #log-btn {
+        margin-right: 19px;
+        margin-top: 3px;
+    }
+    #signup-btn {
+        margin-left: 19px;
+        margin-bottom: 3px;
+    }
+}
+
+@media (min-width: 769px) {
+    #log-btn-menu {
+        display: none;
+    }
+    #signup-btn-menu {
+        display: none;
+    }
+    #user-dropdown-menu {
+        display: none;
+    }
 }
