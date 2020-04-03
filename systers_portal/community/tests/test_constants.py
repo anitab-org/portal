@@ -55,7 +55,7 @@ class ConstantsTestCase(TestCase):
     def test_community_types_choices_constant(self):
         """Test community types field choices """
         community_types_choices = [
-            ('Affinity Group', 'Affinity Group (Latinas in Computing, LGBT, etc'),
+            ('Affinity Group', 'Affinity Group (Latinas in Computing, LGBT, etc)'),
             ('Special Interest Group',
              'Special Interest Group (Student Researchers, Systers in Government,'
              'Women in Cyber Security, etc) '),
