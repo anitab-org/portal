@@ -91,7 +91,7 @@ class AddMeetupForm(ModelFormWithHelper):
     """
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'venue', 'description')
+        fields = ('title', 'slug', 'date', 'time', 'venue', 'description', 'meetup_picture')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
