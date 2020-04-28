@@ -34,7 +34,7 @@ Setup for developers (Unix)
      $ pip install -r requirements/dev.txt
      $ sudo apt-get install python-gdal
      ```
-1. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Create `systersdb` database, where `systersdb` might be any suitable name [Password should not be empty].
     ```
     $ sudo -i -u postgres
     $ createuser <any name e.g. alice> --pwprompt
