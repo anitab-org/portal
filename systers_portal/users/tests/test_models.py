@@ -4,8 +4,10 @@ from django.test import TestCase
 from community.models import Community
 from community.utils import create_groups
 from community.permissions import groups_templates
+from meetup.models import MeetupLocation
 from membership.models import JoinRequest
 from users.models import SystersUser
+from cities_light.models import City, Country
 
 
 class SystersUserTestCase(TestCase):
@@ -184,6 +186,22 @@ class SystersUserTestCase(TestCase):
         self.assertEqual(status, "ok")
         self.assertFalse(bar_systers_user.is_member(community))
         self.assertSequenceEqual(bar_systers_user.user.groups.all(), [])
+
+    def test_is_meetup_location_member(self):
+        """ Check if SystersUser is a member of a Meetuplocation """
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
+        meetup_location = MeetupLocation.objects.create(
+            name="Foo Systers", slug="foo", location=location,
+            description="It's a test location", sponsors="BarBaz", leader=self.systers_user)
+
+        user = User.objects.create(username='bar', password='barfoo')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        self.assertFalse(bar_systers_user.is_member_meetuplocation(meetup_location))
+        meetup_location.members.add(bar_systers_user)
+        meetup_location.save()
+        self.assertTrue(bar_systers_user.is_member_meetuplocation(meetup_location))
 
 
 class UserTestCase(TestCase):

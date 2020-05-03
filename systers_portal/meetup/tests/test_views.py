@@ -2125,3 +2125,125 @@ class UpcomingMeetupsSearchViewTestCase(MeetupLocationViewBaseTestCase, TestCase
                            'meetup_slug': 'foobarbaz',
                            'distance': '',
                            'unit': ''}]})
+
+
+class TransferOwnershipViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
+        self.meetup_location = MeetupLocation.objects.create(
+            name="Foo Systers", slug="foo", location=self.location,
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
+
+    def test_transfer_ownership(self):
+        """Test GET request to transfer ownership of a MeetupLocation"""
+        url = reverse("transfer_ownership_meetup", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        User.objects.create_user(username="bar", password="foobar")
+        self.client.login(username="bar", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("transfer_ownership_meetup", kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_transfer_ownership_meetup_view(self):
+        """Test POST request to transfer ownership of a MeetupLocation"""
+        url = reverse('transfer_ownership_meetup', kwargs={'slug': 'foo'})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        bar_user = User.objects.create_user(username="bar", password="foobar")
+        bar_systers_user = SystersUser.objects.get(user=bar_user)
+        self.client.login(username="bar", password="foobar")
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        nonexistent_url = reverse("transfer_ownership_meetup", kwargs={'slug': 'new'})
+        response = self.client.post(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        self.client.login(username="foo", password="foobar")
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+        response = self.client.post(url, data={'new_admin': 30})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a valid choice.")
+
+        self.meetup_location.members.add(bar_systers_user)
+        self.meetup_location.save()
+
+        response = self.client.post(url, follow=True,
+                                    data={'new_admin': bar_systers_user.id})
+        self.assertEqual(response.status_code, 200)
+        meetup_location = MeetupLocation.objects.get(name="Foo Systers")
+        self.assertEqual(meetup_location.leader, bar_systers_user)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                "The new Foo Systers community admin is bar. You no longer "
+                "have any admin permissions in this community." in message.message)
+
+
+class LeaveMeetupViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
+        self.meetup_location = MeetupLocation.objects.create(
+            name="Foo Systers", slug="foo", location=self.location,
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
+        self.meetup_location.members.add(self.systers_user)
+        self.meetup_location.moderators.add(self.systers_user)
+
+    def test_leave_meetup(self):
+        """Test GET request to leave a MeetupLocation"""
+        url = reverse("leave_meetuplocation", kwargs={'slug': 'foo'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+        self.client.login(username="foo", password="foobar")
+        nonexistent_url = reverse("leave_meetuplocation", kwargs={'slug': 'new'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                "You are the Foo Systers community admin. If you want to leave "
+                "the community, first transfer community ownership to "
+                "another user." in message.message)
+
+        user = User.objects.create_user(username='bar', password='foobar')
+        systers_user = SystersUser.objects.get(user=user)
+        self.client.login(username="bar", password="foobar")
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "warning")
+            self.assertTrue(
+                "You are not a member of Foo Systers community, hence you can't leave "
+                "the community." in message.message)
+
+        self.meetup_location.members.add(systers_user)
+        self.meetup_location.save()
+        response = self.client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        for message in response.context['messages']:
+            self.assertEqual(message.tags, "success")
+            self.assertTrue(
+                "You have successfully left Foo Systers community." in message.message)
+        self.assertFalse(systers_user.is_member(self.meetup_location))

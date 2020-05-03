@@ -22,6 +22,24 @@
             </td>
           </tr>
         {% endfor %}
+        {% for meetuplocation in meetuplocation_list %}
+          <tr class="profile-row">
+            <td>
+              <a href="{% url "about_meetup_location" meetuplocation.slug %}" class="table-anchor">{{ meetuplocation }}</a>
+            </td>
+            <td>
+              {% if user == systersuser.user or user.is_superuser %}
+                {% if systersuser == meetuplocation.leader %}
+                  <a href="{% url "transfer_ownership_meetup" meetuplocation.slug %}" role="button"
+                    class="btn btn-primary btn-xs btn-warning pull-right">Transfer ownership</a>
+                {% else %}                  
+                  <a href="{% url "leave_meetuplocation" meetuplocation.slug %}" role="button"
+                    class="btn btn-primary btn-xs btn-warning pull-right">Leave</a>
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
         {% for join_request in join_requests %}
           <tr class="profile-row">
             <td><a href="{% url "view_community_landing" join_request.community.slug %}"

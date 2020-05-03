@@ -17,6 +17,8 @@ from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, Request
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
+from meetup.forms import TransferOwnershipForm
+from django import forms
 
 
 class MeetupFormTestCaseBase:
@@ -387,3 +389,31 @@ class EditSupportRequestCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(comments[0].body, 'This is an edited test comment')
         self.assertEqual(comments[0].author, self.systers_user)
         self.assertEqual(comments[0].content_object, self.support_request)
+
+
+class TransferOwnershipFormTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar',
+                                             email='user@test.com')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
+        self.meetuplocation = MeetupLocation.objects.create(
+            name="Foo Systers", slug="foo", location=self.location,
+            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
+        self.meetuplocation.members.add(self.systers_user)
+        self.meetuplocation.moderators.add(self.systers_user)
+
+    def test_transfer_ownership_form(self):
+        """Test Transfer Owndership form"""
+        form = TransferOwnershipForm(meetuplocation=self.meetuplocation)
+        self.assertIsInstance(form.fields['new_admin'], forms.ChoiceField)
+        self.assertSequenceEqual(form.fields['new_admin'].choices, [])
+
+        bar_user = User.objects.create_user(username="bar", password="foobar")
+        bar_systers_user = SystersUser.objects.get(user=bar_user)
+        self.meetuplocation.members.add(bar_systers_user)
+
+        form = TransferOwnershipForm(meetuplocation=self.meetuplocation)
+        self.assertSequenceEqual(form.fields['new_admin'].choices,
+                                 [(bar_user.id, "bar")])

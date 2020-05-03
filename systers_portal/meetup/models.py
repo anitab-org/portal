@@ -1,9 +1,9 @@
 from django.db import models
 from cities_light.models import City
 from ckeditor.fields import RichTextField
-
-
+from membership.constants import NOT_MEMBER, OK
 from users.models import SystersUser
+from django.contrib.auth.models import Group
 
 
 class MeetupLocation(models.Model):
@@ -52,6 +52,41 @@ class MeetupLocation(models.Model):
 
     def __str__(self):
         return self.name
+
+    def remove_member(self, systers_user):
+        """Remove meetuplocation member
+
+        :param systers_user: MeetupLocation object
+        :return:
+        """
+        self.members.remove(systers_user)
+
+    def remove_moderator(self, systers_user):
+        """Remove meetuplocation moderator
+
+        :param systers_user: MeetupLocation object
+        :return:
+        """
+        self.moderators.remove(systers_user)
+
+    def set_new_admin(self, new_leader):
+        """Transfer the admin role from the old to the new admin
+
+        :param new_admin: SystersUser object new admin of Meetup Location
+        :return: OK if setting was successful, NOT_MEMBER if settings was
+                 unsuccessful, since the new admin is not a member of meetup
+                 location
+        """
+        if not new_leader.is_member_meetuplocation(self):
+            return NOT_MEMBER
+        COMMUNITY_LEADER = "{0}: Community Leader"
+        name = COMMUNITY_LEADER.format(self.name)
+        leader_group = Group.objects.get(name=name)
+        self.leader.leave_group(leader_group)
+        new_leader.join_group(leader_group)
+        self.leader = new_leader
+        self.save()
+        return OK
 
 
 class RequestMeetupLocation(models.Model):

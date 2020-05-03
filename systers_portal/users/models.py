@@ -162,6 +162,35 @@ class SystersUser(models.Model):
         community.save()
         return OK
 
+    def is_member_meetuplocation(self, meetuplocation):
+        """Check if the user is a member of the meetuplocation
+
+        :param meetuplocation: MeetupLocation object
+        :return: True if user is member of the MeetupLocation, False otherwise
+        """
+        return self.community_members.filter(pk=meetuplocation.pk).exists()
+
+    def leave_meetuplocation(self, meetuplocation):
+        """Leave a meetuplocation. That involves losing all permissions towards
+         this community.
+
+        :param meetuplocation: MeetupLocation object
+        :return: string status: OK if left the meetuplocation, NOT_MEMBER if the
+                 user was not a member of the meetuplocation in the first place,
+                 IS_LEADER if the user is meetuplocation leader and can't just leave
+                 the meetuplocation
+        """
+        if not self.is_member_meetuplocation(meetuplocation):
+            return NOT_MEMBER
+        if self == meetuplocation.leader:
+            return IS_ADMIN
+        self.leave_groups(meetuplocation.name)
+        if self.community_moderators.filter(pk=meetuplocation.pk).exists():
+            meetuplocation.remove_moderator(self)
+        meetuplocation.remove_member(self)
+        meetuplocation.save()
+        return OK
+
 
 def user_str(self):
     """String representation of Django User model

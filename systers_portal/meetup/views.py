@@ -19,7 +19,7 @@ from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMember
                           EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                           EditSupportRequestForm, AddSupportRequestCommentForm,
                           EditSupportRequestCommentForm, RequestMeetupLocationForm,
-                          RequestMeetupForm)
+                          RequestMeetupForm, TransferOwnershipForm)
 from meetup.mixins import MeetupLocationMixin
 from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
                            RequestMeetup)
@@ -35,6 +35,7 @@ from cities_light.models import City
 from geopy.geocoders import Nominatim
 from django.contrib.gis.geos import Point
 from django.db.models import Q
+from membership.constants import *
 
 
 class RequestMeetupView(LoginRequiredMixin, MeetupLocationMixin, CreateView):
@@ -1603,3 +1604,78 @@ class UpcomingMeetupsSearchView(ListView):
 
             results.sort(key=operator.itemgetter('date'))
             return JsonResponse({'search_results': results}, safe=False)
+
+
+class LeaveMeetupLocationView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
+    """Leave a MeetupLocation view"""
+    model = MeetupLocation
+    permanent = False
+    raise_exception = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        """Redirect to user profile page"""
+        return reverse("user", kwargs={'username': self.request.user.username})
+
+    def get(self, request, *args, **kwargs):
+        """Attempt to leave MeetupLocation"""
+        systers_user = get_object_or_404(SystersUser, user=self.request.user)
+        meetuplocation = self.get_object()
+        status = systers_user.leave_meetuplocation(meetuplocation)
+        if status == OK:
+            messages.add_message(request, messages.SUCCESS,
+                                 LEAVE_OK_MSG.format(meetuplocation))
+        elif status == NOT_MEMBER:
+            messages.add_message(request, messages.WARNING,
+                                 NOT_MEMBER_MSG.format(meetuplocation))
+        elif status == IS_ADMIN:
+            messages.add_message(request, messages.WARNING,
+                                 LEAVE_IS_ADMIN_MSG.format(meetuplocation))
+        else:
+            pass
+            # TODO: configure logging and log the unknown status
+        return super(LeaveMeetupLocationView, self).get(request, *args, **kwargs)
+
+
+class TransferOwnershipView(LoginRequiredMixin, PermissionRequiredMixin,
+                            FormView):
+    """Transfer Meetup Location ownership to another member."""
+    template_name = "meetup/transfer_ownership.html"
+    form_class = TransferOwnershipForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Redirect to user profile"""
+        return reverse("user", kwargs={'username': self.request.user.username})
+
+    def get_context_data(self, **kwargs):
+        """Add meetuplocation object to the context"""
+        context = super(TransferOwnershipView, self).get_context_data(**kwargs)
+        context['meetuplocation'] = self.meetuplocation
+        return context
+
+    def get_form_kwargs(self):
+        """Add meetuplocation object to form kwargs"""
+        kwargs = super(TransferOwnershipView, self).get_form_kwargs()
+        kwargs['meetuplocation'] = self.meetuplocation
+        return kwargs
+
+    def form_valid(self, form):
+        """Since the form is valid, set the new admin of meetup locationn"""
+        meetuplocation = self.meetuplocation
+        new_admin_pk = form.cleaned_data['new_admin']
+        new_admin = get_object_or_404(SystersUser, pk=int(new_admin_pk))
+        status = meetuplocation.set_new_admin(new_admin)
+        if status == OK:
+            messages.add_message(self.request, messages.SUCCESS,
+                                 NEW_ADMIN_SUCCESS_MSG.format(meetuplocation,
+                                                              new_admin))
+        else:
+            pass
+        return super(TransferOwnershipView, self).form_valid(form)
+
+    def check_permissions(self, request):
+        """Check if the request user is the community admin. Only the admin
+        has the permission to transfer community ownership to another member
+        of the community."""
+        self.meetuplocation = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
+        return request.user == self.meetuplocation.leader.user

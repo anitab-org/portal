@@ -20,7 +20,8 @@ from meetup.views import (MeetupLocationAboutView, MeetupLocationList, MeetupVie
                           RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
                           ApproveRequestMeetupView, RejectMeetupRequestView,
                           CancelMeetupLocationJoinRequestView, ApiForVmsView,
-                          AllUpcomingMeetupsView, UpcomingMeetupsSearchView)
+                          AllUpcomingMeetupsView, UpcomingMeetupsSearchView,
+                          LeaveMeetupLocationView, TransferOwnershipView)
 
 
 urlpatterns = [
@@ -92,6 +93,10 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/edit/$', EditMeetupLocationView.as_view(), name="edit_meetup_location"),
     url(r'^(?P<slug>[\w-]+)/delete/$', DeleteMeetupLocationView.as_view(),
         name='delete_meetup_location'),
+    url(r'^(?P<slug>[\w-]+)/leave/$', LeaveMeetupLocationView.as_view(),
+        name="leave_meetuplocation"),
+    url(r'^(?P<slug>[\w-]+)/transfer_ownership/$',
+        TransferOwnershipView.as_view(), name="transfer_ownership_meetup"),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/add_comment/$', AddMeetupCommentView.as_view(),
         name="add_meetup_comment"),
     url(r'^(?P<slug>[\w-]+)/(?P<meetup_slug>[\w-]+)/edit_comment/(?P<comment_pk>\d+)/$',

@@ -332,3 +332,18 @@ class EditSupportRequestCommentForm(ModelFormWithHelper):
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_support_request' meetup_location.slug meetup.slug" \
                              " support_request.pk %}"
+
+
+class TransferOwnershipForm(forms.Form):
+    """Form with a single field that allow a single choice out of a list of
+    members of meetuplocation. Used to select the new admin of a meetup location."""
+    def __init__(self, *args, **kwargs):
+        self.meetuplocation = kwargs.pop('meetuplocation')
+        super(TransferOwnershipForm, self).__init__(*args, **kwargs)
+        members = self.meetuplocation.members.all()
+        members = members.exclude(pk=self.meetuplocation.leader.pk)
+        choices = [(member.id, str(member)) for member in members]
+        self.fields['new_admin'] = forms.ChoiceField(
+            choices=choices, label="New Meetup Location Community Leader")
+
+        self.helper = SubmitCancelFormHelper(self, cancel_href="{% url 'user' user.username %}")

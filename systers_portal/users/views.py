@@ -25,11 +25,13 @@ class UserView(LoginRequiredMixin, TemplateView):
         username = context['username']
         systersuser = get_object_or_404(SystersUser, user__username=username)
         communities = systersuser.communities.all()
+        meetuplocations = systersuser.community_members.all()
         join_requests = JoinRequest.objects.filter(user=systersuser,
                                                    is_approved=False)
         permission_groups = systersuser.user.groups.all()
         context_dict = {'systersuser': systersuser,
                         'community_list': communities,
+                        'meetuplocation_list': meetuplocations,
                         'join_requests': join_requests,
                         'permission_groups': permission_groups}
         for key, value in context_dict.items():

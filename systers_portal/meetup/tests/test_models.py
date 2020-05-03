@@ -1,10 +1,13 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.test import TestCase
 from django.utils import timezone
+from django.db.models.signals import post_save, post_delete
 from cities_light.models import City, Country
 
 from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
                            RequestMeetup)
+from meetup.signals import (manage_meetup_location_groups, remove_meetup_location_groups)
+from meetup.constants import COMMUNITY_LEADER, COMMUNITY_MEMBER
 from users.models import SystersUser
 
 
@@ -28,6 +31,46 @@ class MeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
     def test_str(self):
         """Test MeetupLocation object str/unicode representation"""
         self.assertEqual(str(self.meetup_location), "Foo Systers")
+
+    def test_remove_member(self):
+        """Test removing MeetupLocation members"""
+        self.assertQuerysetEqual(self.meetup_location.members.all(), [])
+        self.meetup_location.members.add(self.systers_user)
+        self.meetup_location.save()
+        self.meetup_location.remove_member(self.systers_user)
+        self.meetup_location.save()
+        self.assertQuerysetEqual(self.meetup_location.members.all(), [])
+
+    def test_remove_moderator(self):
+        """Test removing MeetupLocation moderators"""
+        self.assertQuerysetEqual(self.meetup_location.moderators.all(), [])
+        self.meetup_location.moderators.add(self.systers_user)
+        self.meetup_location.save()
+        self.meetup_location.remove_moderator(self.systers_user)
+        self.meetup_location.save()
+        self.assertQuerysetEqual(self.meetup_location.moderators.all(), [])
+
+    def test_set_new_admin(self):
+        """Test setting a new admin for a MeetupLocation"""
+        post_save.connect(manage_meetup_location_groups, sender=MeetupLocation,
+                          dispatch_uid="manage_groups")
+        post_delete.connect(remove_meetup_location_groups, sender=MeetupLocation,
+                            dispatch_uid="remove_groups")
+        user = User.objects.create(username='bar', password='foobar')
+        bar_systers_user = SystersUser.objects.get(user=user)
+        status = self.meetup_location.set_new_admin(bar_systers_user)
+        self.assertEqual(status, "not_member")
+
+        self.meetup_location.members.add(bar_systers_user)
+        self.meetup_location.save()
+        status = self.meetup_location.set_new_admin(bar_systers_user)
+        self.assertEqual(status, "ok")
+        self.assertEqual(self.meetup_location.leader, bar_systers_user)
+        admin_group = Group.objects.get(name=COMMUNITY_LEADER.format("Foo Systers"))
+        member_group = Group.objects.get(name=COMMUNITY_MEMBER.format("Foo Systers"))
+        self.assertSequenceEqual(bar_systers_user.user.groups.all(),
+                                 [member_group, admin_group])
+        self.assertSequenceEqual(self.systers_user.user.groups.all(), [])
 
 
 class RequestMeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
