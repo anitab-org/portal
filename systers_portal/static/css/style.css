@@ -584,6 +584,15 @@ table.decoration-none  tr a {
   padding-top: 25px;
 }
 
+.glyphicon {
+  float: right;
+  color: black;
+}
+
+.glyphicon-pencil {
+  right: 10px;
+}
+
 .map-container {
   height:400px;
   padding-right: 15px;
@@ -606,6 +615,7 @@ table.decoration-none  tr a {
   word-wrap: break-word;
   margin-bottom: 40px;
 }
+
 /* Commentbox CSS
 ------------------------------------------------- */
 .comment-box{
@@ -615,6 +625,20 @@ table.decoration-none  tr a {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 1.0em;
   line-height: 1.0em;
+}
+  
+.edit .delete {
+    background-color: #fff;
+    color: black;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    float: right;
+}
+
+.commentbox .details{
+  text-decoration: none;
+  
 /*  webkit-text-size-adjust: 100%;*/
 }
 
