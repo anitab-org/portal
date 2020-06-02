@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.test import TestCase
 from django.contrib.auth.models import Group, User
 from guardian.shortcuts import get_perms
@@ -69,8 +70,12 @@ class UtilsTestCase(TestCase):
         """Test assignment of permissions to community"""
         self.user = User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get(user=self.user)
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             admin=systers_user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1, location=location,
+                                                  admin=systers_user)
         name = community.name
         groups = create_groups(name, groups_templates)
         assign_permissions(community, groups,

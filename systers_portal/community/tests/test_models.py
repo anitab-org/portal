@@ -1,3 +1,4 @@
+from cities_light.models import City, Country
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, post_delete
 from django.test import TestCase
@@ -12,9 +13,12 @@ class RequestCommunityModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.request_community = RequestCommunity.objects.create(
             name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
-            community_channel='Existing Social Media Channels ',
+            location=location, community_channel='Existing Social Media Channels ',
             is_avail_volunteer='Yes', count_avail_volunteer=0,
             user=self.systers_user)
 
@@ -43,8 +47,11 @@ class CommunityModelTestCase(TestCase):
                                dispatch_uid="remove_groups")
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=self.location,
                                                   admin=self.systers_user)
 
     def test_str(self):
@@ -104,7 +111,7 @@ class CommunityModelTestCase(TestCase):
         post_delete.connect(remove_community_groups, sender=Community,
                             dispatch_uid="remove_groups")
         community = Community.objects.create(name="Bar", slug="bar",
-                                             order=2,
+                                             order=2, location=self.location,
                                              admin=self.systers_user)
         user = User.objects.create(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
@@ -126,8 +133,11 @@ class CommunityPageModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_str(self):

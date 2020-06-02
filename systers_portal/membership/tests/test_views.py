@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -12,8 +13,11 @@ class CommunityJoinRequestListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_get_community_join_request_list_view(self):
@@ -43,8 +47,11 @@ class ApproveCommunityJoinRequestViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_approve_community_join_request_view_redundant(self):
@@ -124,8 +131,11 @@ class RejectCommunityJoinRequestViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_reject_community_join_request_view_redundant(self):
@@ -179,8 +189,11 @@ class RequestJoinCommunityViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_request_join_community_view(self):
@@ -241,8 +254,11 @@ class CancelCommunityJoinRequestView(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_cancel_community_join_request(self):
@@ -295,8 +311,11 @@ class LeaveCommunityViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_leave_community(self):
@@ -345,8 +364,11 @@ class TransferOwnershipViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_get_transfer_ownership_view(self):
@@ -411,8 +433,11 @@ class RemoveCommunityMemberViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_remove_community_member_view(self):

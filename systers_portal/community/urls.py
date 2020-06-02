@@ -1,18 +1,19 @@
 from django.conf.urls import url
 
-from community.views import (CommunityLandingView, EditCommunityProfileView,
-                             ViewCommunityProfileView, CommunityPageView,
-                             AddCommunityPageView, EditCommunityPageView,
-                             DeleteCommunityPageView, CommunityUsersView,
-                             UserPermissionGroupsView, RequestCommunityView,
-                             NewCommunityRequestsListView, ApproveRequestCommunityView,
-                             RejectRequestCommunityView, ViewCommunityRequestView,
-                             EditCommunityRequestView, AddCommunityView)
+from .views import (CommunityLandingView, EditCommunityProfileView,
+                    ViewCommunityProfileView, CommunityPageView,
+                    AddCommunityPageView, EditCommunityPageView,
+                    DeleteCommunityPageView, CommunityUsersView,
+                    UserPermissionGroupsView, RequestCommunityView,
+                    NewCommunityRequestsListView, ApproveRequestCommunityView,
+                    RejectRequestCommunityView, ViewCommunityRequestView,
+                    EditCommunityRequestView, AddCommunityView, CommunitySearch)
 
 
 urlpatterns = [
     url(r'add_community/$', AddCommunityView.as_view(),
         name='add_community'),
+    url(r'search/$', CommunitySearch.as_view(), name="search"),
     url(r'request_community/$', RequestCommunityView.as_view(),
         name='request_community'),
     url(r'community_requests', NewCommunityRequestsListView.as_view(),
