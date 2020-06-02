@@ -1,0 +1,22 @@
+{% if communities %}
+
+<div class="row">
+    {% for community in communities %}
+    <div>
+      <a href="{%url 'view_community_landing' community.slug %}">
+        <div class="panel panel-primary col-md-4">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{community.name}}</h3>
+        </div>
+        <div class="panel-body">
+          {{community.location}}
+        </div>
+      </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+  <h3>No communities found</h3>
+{% endif %}
+
