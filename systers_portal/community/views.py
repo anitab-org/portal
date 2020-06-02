@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.views.generic import DetailView, RedirectView, ListView, FormView
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserRequiredMixin
@@ -518,3 +520,21 @@ class CommunitySearch(ListView):
     """Search for Communities View"""
     template_name = "community/community_search.html"
     model = Community
+
+    def get(self, request):
+        if request.method == 'GET':
+            context = {}
+            url_parameter = request.GET.get("query")
+            if url_parameter:
+                communities = Community.objects.filter(name__icontains=url_parameter)
+            else:
+                communities = Community.objects.all()
+            context['communities'] = communities
+            if request.is_ajax():
+                html = render_to_string(
+                    template_name="community/snippets/search-snippet.html",
+                    context={"communities": communities}
+                )
+                data_dict = {"html": html}
+                return JsonResponse(data=data_dict)
+            return render(request, "community/community_search.html", context=context)
