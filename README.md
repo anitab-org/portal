@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/367ea3bde09d4f508cb83c1d9c7a2dcb)](https://app.codacy.com/gh/anitab-org/portal?utm_source=github.com&utm_medium=referral&utm_content=anitab-org/portal&utm_campaign=Badge_Grade_Dashboard)
 Systers Portal [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal) [![Coverage Status](https://coveralls.io/repos/github/systers/portal/badge.svg?branch=master)](https://coveralls.io/r/systers/portal?branch=master)
 ==============
 
