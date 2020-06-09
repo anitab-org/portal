@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -12,8 +13,11 @@ class CommentModelTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_str(self):

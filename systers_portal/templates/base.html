@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
 
   {% block head %}{% endblock %}
-
 </head>
 
 <body>
@@ -56,6 +55,7 @@
                   Request a new community</a>
               </li>
               {% endif %}
+            <li><a href="{%url 'search'%}">Search For Communities</a></li>
               {% if user.is_authenticated and user.is_active and user.is_staff %}
               {% url 'unapproved_community_requests' as url %}
               <li {% if url == request.path %}class="active"{% endif %}role="presentation">

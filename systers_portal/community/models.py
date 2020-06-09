@@ -8,6 +8,7 @@ from community.constants import (COMMUNITY_ADMIN,
                                  YES_NO_CHOICES)
 from membership.constants import NOT_MEMBER, OK
 from users.models import SystersUser
+from cities_light.models import City
 
 
 class Community(models.Model):
@@ -15,6 +16,8 @@ class Community(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name")
     slug = models.SlugField(max_length=150, unique=True, verbose_name="Slug")
     order = models.IntegerField(unique=True, verbose_name="Order")
+    location = models.ForeignKey(City, verbose_name="Location", default="",
+                                 on_delete=models.DO_NOTHING)
     email = models.EmailField(max_length=255, blank=True, verbose_name="Email")
     mailing_list = models.EmailField(max_length=255, blank=True,
                                      verbose_name="Mailing list")
@@ -141,6 +144,7 @@ class RequestCommunity(models.Model):
     slug = models.SlugField(max_length=150, unique=True, verbose_name="Slug")
     order = models.PositiveIntegerField(
         null=True, blank=True, verbose_name="Order")
+    location = models.ForeignKey(City, verbose_name="Location", default="")
     email = models.EmailField(max_length=255, blank=True,
                               verbose_name=" At what email address would you like to be contacted?")
     mailing_list = models.EmailField(max_length=255, blank=True,

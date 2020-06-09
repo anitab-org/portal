@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -14,9 +15,14 @@ class CommunitiesProcessorTestCase(TestCase):
 
     def test_communities_processor(self):
         """Test the rendering of all communities in the templates"""
-        Community.objects.create(name="Foo", slug="foo", order=1,
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        Community.objects.create(name="Foo", slug="foo",
+                                 order=1, location=location,
                                  admin=self.systers_user)
-        Community.objects.create(name="Boo", slug="boo", order=2,
+        Community.objects.create(name="Boo", slug="boo",
+                                 order=2, location=location,
                                  admin=self.systers_user)
         index_url = reverse('index')
         response = self.client.get(index_url)

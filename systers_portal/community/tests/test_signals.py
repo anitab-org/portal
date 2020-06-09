@@ -1,3 +1,4 @@
+from cities_light.models import City, Country
 from django.test import TestCase
 from django.contrib.auth.models import Group, User
 from django.db.models.signals import post_save, post_delete
@@ -20,8 +21,12 @@ class SignalsTestCase(TestCase):
         object"""
         user1 = User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get(user=user1)
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             admin=systers_user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1, location=location,
+                                                  admin=systers_user)
         groups_count = Group.objects.count()
         self.assertEqual(groups_count, 4)
         community_admin_group = Group.objects.get(
@@ -51,8 +56,12 @@ class SignalsTestCase(TestCase):
         """Test the removal of groups when a community is deleted"""
         self.user = User.objects.create(username='foo', password='foobar')
         systers_user = SystersUser.objects.get(user=self.user)
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
-                                             admin=systers_user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        community = Community.objects.create(name="Foo", slug="foo",
+                                                  order=1, location=location,
+                                                  admin=systers_user)
         groups_count = Group.objects.count()
         self.assertEqual(groups_count, 4)
         community.delete()

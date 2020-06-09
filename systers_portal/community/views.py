@@ -257,6 +257,7 @@ class EditCommunityProfileView(LoginRequiredMixin, PermissionRequiredMixin,
     model = Community
     form_class = EditCommunityForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -303,7 +304,6 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
 
 
 class AddCommunityView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-
     template_name = "community/add_community.html"
     model = Community
     form_class = AddCommunityForm
@@ -336,6 +336,7 @@ class AddCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     model = CommunityPage
     form_class = AddCommunityPageForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -377,6 +378,7 @@ class EditCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     slug_url_kwarg = "page_slug"
     form_class = EditCommunityPageForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -407,6 +409,7 @@ class DeleteCommunityPageView(LoginRequiredMixin, PermissionRequiredMixin,
     model = CommunityPage
     slug_url_kwarg = "page_slug"
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -436,6 +439,7 @@ class CommunityUsersView(LoginRequiredMixin, PermissionRequiredMixin,
     template_name = "community/users.html"
     paginate_by = 50
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -469,6 +473,7 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
     template_name = "community/permissions.html"
     form_class = PermissionGroupsForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -506,3 +511,10 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
         self.community = get_object_or_404(Community, slug=self.kwargs['slug'])
         return request.user.has_perm("change_community_systersuser",
                                      self.community)
+
+
+class CommunitySearch(ListView):
+
+    """Search for Communities View"""
+    template_name = "community/community_search.html"
+    model = Community

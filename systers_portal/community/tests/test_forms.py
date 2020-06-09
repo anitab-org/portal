@@ -1,6 +1,6 @@
+from cities_light.models import City, Country
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
-
 
 from community.forms import (EditCommunityForm, AddCommunityPageForm,
                              EditCommunityPageForm, PermissionGroupsForm,
@@ -14,6 +14,9 @@ class RequestCommunityFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
 
     def test_request_community_form(self):
         """Test Requestcommunity form"""
@@ -21,7 +24,8 @@ class RequestCommunityFormTestCase(TestCase):
                         'slug': 'foo'}
         form = RequestCommunityForm(data=invalid_data, user=self.user)
         self.assertFalse(form.is_valid())
-        valid_data = {'name': 'Bar', 'slug': 'bar', 'order': '1',
+
+        valid_data = {'name': 'Bar', 'slug': 'bar', 'order': '1', 'location': self.location.id,
                       'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
                       'community_channel': 'Existing Social Media Channels ',
                       'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
@@ -35,6 +39,7 @@ class RequestCommunityFormTestCase(TestCase):
         self.community_request = RequestCommunity.objects.get()
         self.assertEqual(self.community_request.name, 'Bar')
         self.assertEqual(self.community_request.slug, 'bar')
+        self.assertEqual(self.community_request.location, self.location)
         self.assertEqual(self.community_request.user, self.systers_user)
 
 
@@ -42,9 +47,12 @@ class EditCommunityRequestFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
         self.community_request = RequestCommunity.objects.create(
-            name="Foo", slug="foo", order=1, is_member='Yes', type_community='Other',
-            community_channel='Existing Social Media Channels ',
+            name="Foo", slug="foo", order=1, location=self.location, is_member='Yes',
+            type_community='Other', community_channel='Existing Social Media Channels ',
             is_avail_volunteer='Yes', count_avail_volunteer=0,
             user=self.systers_user)
 
@@ -66,7 +74,7 @@ class EditCommunityRequestFormTestCase(TestCase):
         form = EditCommunityRequestForm(
             data=order_none_data, instance=self.community_request)
         self.assertFalse(form.is_valid())
-        data = {'name': 'Bar', 'slug': 'bar', 'order': '1',
+        data = {'name': 'Bar', 'slug': 'bar', 'order': '1', 'location': self.location.id,
                 'is_member': 'Yes', 'email': 'foo@bar.com', 'type_community': 'Other',
                 'community_channel': 'Existing Social Media Channels ',
                 'demographic_target_count': 'Foobarbar', 'purpose': 'foopurpose',
@@ -82,14 +90,14 @@ class EditCommunityRequestFormTestCase(TestCase):
         self.assertEqual(self.community_request.slug, 'bar')
         # Test if order of the request exists in Community
         self.community = Community.objects.create(name="FooBarComm", slug="foobar",
-                                                  order=1,
+                                                  order=1, location=self.location,
                                                   admin=self.systers_user)
         form = EditCommunityRequestForm(
             data=data, instance=self.community_request)
         self.assertFalse(form.is_valid())
         # Test if slug of the request exists in Community
         self.community = Community.objects.create(name="FooBarComm", slug="bar",
-                                                  order=2,
+                                                  order=2, location=self.location,
                                                   admin=self.systers_user)
         form = EditCommunityRequestForm(
             data=data, instance=self.community_request)
@@ -100,8 +108,11 @@ class EditCommunityFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=self.location,
                                                   admin=self.systers_user)
 
     def test_edit_community_form(self):
@@ -109,6 +120,7 @@ class EditCommunityFormTestCase(TestCase):
         data = {'name': 'Bar',
                 'slug': 'bar',
                 'order': 1,
+                'location': self.location.id,
                 'admin': self.systers_user}
         form = EditCommunityForm(data=data, instance=self.community)
         self.assertTrue(form.is_valid())
@@ -121,6 +133,9 @@ class AddCommunityFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
 
     def test_add_community_form(self):
         """Test add Community Form"""
@@ -131,7 +146,8 @@ class AddCommunityFormTestCase(TestCase):
 
         data = {'name': 'Bar',
                 'slug': 'foo',
-                'order': '1'}
+                'order': '1',
+                'location': self.location.id}
         form = AddCommunityForm(data=data, admin=self.systers_user)
         self.assertTrue(form.is_valid())
         form.save()
@@ -145,8 +161,11 @@ class AddCommunityPageFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_add_community_page_form(self):
@@ -173,8 +192,11 @@ class EditCommunityPageFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_edit_community_page_form(self):
@@ -205,8 +227,11 @@ class PermissionGroupsFormTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_permissions_groups_form(self):

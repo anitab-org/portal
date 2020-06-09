@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User, Group
 from django.test import TestCase
 
@@ -63,8 +64,11 @@ class SystersUserTestCase(TestCase):
 
     def test_is_member(self):
         """Test if SystersUser is a member of a Community"""
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         community = Community.objects.create(name="Foo", slug="foo",
-                                             order=1,
+                                             order=1, location=location,
                                              admin=self.systers_user)
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
@@ -99,9 +103,13 @@ class SystersUserTestCase(TestCase):
 
     def test_get_last_join_request(self):
         """Test fetching last join request made to a community"""
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         community = Community.objects.create(name="Foo", slug="foo",
-                                             order=1,
-                                             admin=self.systers_user)
+                                                  order=1, location=location,
+                                                  admin=self.systers_user)
+
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
         self.assertIsNone(bar_systers_user.get_last_join_request(community))
@@ -116,8 +124,11 @@ class SystersUserTestCase(TestCase):
 
     def test_approve_all_join_requests(self):
         """Test approving all user join requests"""
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         community = Community.objects.create(name="Foo", slug="foo",
-                                             order=1,
+                                             order=1, location=location,
                                              admin=self.systers_user)
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
@@ -138,9 +149,12 @@ class SystersUserTestCase(TestCase):
 
     def test_reject_all_join_requests(self):
         """Test rejecting all user join requests"""
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         community = Community.objects.create(name="Foo", slug="foo",
-                                             order=1,
-                                             admin=self.systers_user)
+                                                  order=1, location=location,
+                                                  admin=self.systers_user)
         user = User.objects.create_user(username='bar', password='foobar')
         bar_systers_user = SystersUser.objects.get(user=user)
         status = bar_systers_user.delete_all_join_requests(community)
@@ -155,8 +169,11 @@ class SystersUserTestCase(TestCase):
 
     def test_leave_community(self):
         """Test leaving a community"""
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         community = Community.objects.create(name="Foo", slug="foo",
-                                             order=1,
+                                             order=1, location=location,
                                              admin=self.systers_user)
         status = self.systers_user.leave_community(community)
         self.assertEqual(status, "is_admin")

@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -54,7 +55,11 @@ class UserViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'users/view_profile.html')
         self.assertTemplateUsed(response, 'users/snippets/membership.html')
 
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1, location=location,
                                              admin=self.systers_user)
         community.add_member(self.systers_user)
         community.save()
@@ -62,8 +67,11 @@ class UserViewTestCase(TestCase):
         self.assertContains(response, "Transfer ownership")
         new_user = User.objects.create_user(username='bar', password='foobar')
         new_systers_user = SystersUser.objects.get(user=new_user)
+        new_country = Country.objects.create(name='Foo', continent='AS')
+        new_location = City.objects.create(name='Bar', display_name='Bar',
+                                           country=new_country)
         new_comm = Community.objects.create(name="Bar", slug="bar",
-                                            order=2,
+                                            order=2, location=new_location,
                                             admin=new_systers_user)
         new_comm.add_member(self.systers_user)
         new_comm.save()
@@ -128,7 +136,11 @@ class UserProfileViewTestCase(TestCase):
         # Get view profile of other user having the necessary permissions
         self.user.is_superuser = True
         self.user.save()
-        community = Community.objects.create(name="Foo", slug="foo", order=1,
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
+        community = Community.objects.create(name="Foo", slug="foo",
+                                             order=1, location=location,
                                              admin=self.systers_user)
         community.add_member(systersuser)
         community.save()
