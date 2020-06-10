@@ -929,3 +929,67 @@ class UserPermissionGroupsViewTestCase(TestCase):
         response = self.client.post(url, data={})
         self.assertEqual(response.status_code, 302)
         self.assertFalse(self.systers_user.is_group_member(group))
+
+
+class CommunitySearchViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='Test', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Test Country', continent='AS')
+        location = City.objects.create(name='Test City', display_name='Test City',
+                                       latitude=20, longitude=20,
+                                       country=country)
+        self.community1 = Community.objects.create(name="Foo", slug="foo",
+                                                   order=1, location=location,
+                                                   admin=self.systers_user)
+        self.community2 = Community.objects.create(name="Bar", slug="bar",
+                                                   order=2, location=location,
+                                                   admin=self.systers_user)
+        self.community3 = Community.objects.create(name="Baz", slug="baz",
+                                                   order=3, location=location,
+                                                   admin=self.systers_user)
+
+    def test_search_results(self):
+        url = reverse('search')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'community/community_search.html')
+        self.assertEqual(len(response.context['communities']), 3)
+
+        response = self.client.get('/community/search/?query=')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'community/community_search.html')
+        self.assertEqual(len(response.context['communities']), 3)
+        self.assertContains(response, "Foo")
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "Baz")
+
+        response = self.client.get('/community/search/?query=B')
+        self.assertEqual(len(response.context['communities']), 2)
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "Baz")
+        self.assertNotContains(response, "Foo")
+
+        response = self.client.get('/community/search/?query=Ba')
+        self.assertEqual(len(response.context['communities']), 2)
+        self.assertContains(response, "Bar")
+        self.assertContains(response, "Baz")
+        self.assertNotContains(response, "Foo")
+
+        response = self.client.get('/community/search/?query=Bar')
+        self.assertEqual(len(response.context['communities']), 1)
+        self.assertContains(response, "Bar")
+        self.assertNotContains(response, "Baz")
+        self.assertNotContains(response, "Foo")
+
+        response = self.client.get('/community/search/?query=F')
+        self.assertEqual(len(response.context['communities']), 1)
+        self.assertNotContains(response, "Bar")
+        self.assertNotContains(response, "Baz")
+        self.assertContains(response, "Foo")
+
+        response = self.client.get('/community/search/?query=Foooo')
+        self.assertEqual(len(response.context['communities']), 0)
+        self.assertNotContains(response, "Bar")
+        self.assertNotContains(response, "Baz")
+        self.assertNotContains(response, "Foo")

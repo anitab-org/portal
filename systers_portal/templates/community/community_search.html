@@ -4,8 +4,10 @@
   <div class="md-form" >
     <input type="text" id="form1" class="form-control" placeholder="Search">
   </div>
+<div id="map-canvas" class="map-container mt20"></div>
 <hr>
-  <div id="cards" class="col-md-12" >
-    {% include 'community/snippets/search-snippet.html' %}
-  </div>
+{%include 'community/snippets/community-map.html'%}
+<div id="cards" class="col-md-12" >
+  {% include 'community/snippets/search-snippet.html' %}
+</div>
   {%endblock content%}

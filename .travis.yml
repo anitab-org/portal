@@ -20,6 +20,7 @@ install:
   - pip install coveralls==0.4.4
   - sudo apt-get install python-gdal
 before_script:
+  - export GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
   - export SECRET_KEY=foobarbaz
   - psql -c "CREATE DATABASE systersdb;" -U postgres
 script:

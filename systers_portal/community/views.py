@@ -21,6 +21,8 @@ from community.mixins import CommunityMenuMixin
 from community.models import Community, CommunityPage, RequestCommunity
 from users.models import SystersUser
 
+from systers_portal.settings.base import GOOGLE_MAPS_API_KEY
+
 
 class RequestCommunityView(LoginRequiredMixin, CreateView):
     """View to Request a new community"""
@@ -516,7 +518,6 @@ class UserPermissionGroupsView(LoginRequiredMixin, PermissionRequiredMixin,
 
 
 class CommunitySearch(ListView):
-
     """Search for Communities View"""
     template_name = "community/community_search.html"
     model = Community
@@ -530,6 +531,7 @@ class CommunitySearch(ListView):
             else:
                 communities = Community.objects.all()
             context['communities'] = communities
+            context['api_key'] = GOOGLE_MAPS_API_KEY
             if request.is_ajax():
                 html = render_to_string(
                     template_name="community/snippets/search-snippet.html",
