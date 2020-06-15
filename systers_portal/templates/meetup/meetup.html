@@ -29,6 +29,11 @@
       </tbody>
     </table> 
     <hr>
+    {% if meetup.meetup_picture.name and meetup.meetup_picture.name != "False" %}
+   <img src="{{ meetup.meetup_picture.url }}" class="img-responsive"
+          alt="{{ meetup.title }} meetup picture"/>
+          <hr>
+      {% endif %}
     {% include 'meetup/snippets/share_buttons.html' %}
     <p>
       <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
@@ -43,15 +48,16 @@
     </div>
   {% endif %}
   {% for comment in comments %}
-    <div class="box-container pt25">
-      <a href="{{ comment.author.get_absolute_url }}">{{ comment.author}}</a>
-      <div class="box-body">
-        <pre class="comment-box">{{ comment.body }}</pre>
-      </div>
+    <div class="box-container pt25 commentbox">
+      <a href="{{ comment.author.get_absolute_url }}"><strong>{{ comment.author}}</strong></a>
+      <a class="details">commented on {{ comment.date_created}}</a>
       {% if user == comment.author.user %}
-        <a href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}">edit</a>
-        <a href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}">delete</a>
+           <a class="delete" href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+           <a class="edit" href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
       {% endif %}
+        <div class="box-body">
+        <p>{{ comment.body }}</p>
+      </div>
     </div>
   {% endfor %}
 {% endblock %}

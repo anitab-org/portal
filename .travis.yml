@@ -6,6 +6,9 @@ env:
 addons:
   firefox: "55.0"
 
+services:
+  - postgresql
+
 python:
   - "3.6"
 before_install:

@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -11,8 +12,11 @@ class CommunityNewsListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         self.client = Client()
 
@@ -71,8 +75,11 @@ class CommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=self.location,
                                                   admin=self.systers_user)
         self.client = Client()
 
@@ -100,7 +107,7 @@ class CommunityNewsViewTestCase(TestCase):
         two separate communities"""
         new_community = Community.objects.create(name="Super Unusual Name",
                                                  slug="bar",
-                                                 order=2,
+                                                 order=2, location=self.location,
                                                  admin=self.systers_user)
         news1 = News.objects.create(slug="bar", title="Bar",
                                     author=self.systers_user,
@@ -146,9 +153,13 @@ class AddCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
+
         self.client = Client()
 
     def test_get_add_community_news(self):
@@ -195,8 +206,11 @@ class EditCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         self.news = News.objects.create(slug="bar", title="Bar",
                                         author=self.systers_user,
@@ -244,8 +258,11 @@ class DeleteCommunityNewsViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         News.objects.create(slug="bar", title="Bar",
                             author=self.systers_user,
@@ -283,8 +300,11 @@ class CommunityResourceListViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         self.client = Client()
 
@@ -367,8 +387,11 @@ class CommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Foo', display_name='Foo',
+                                            country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=self.location,
                                                   admin=self.systers_user)
         self.client = Client()
 
@@ -396,7 +419,7 @@ class CommunityResourceViewTestCase(TestCase):
         belonging to two separate communities"""
         new_community = Community.objects.create(name="Super Unusual Name",
                                                  slug="bar",
-                                                 order=2,
+                                                 order=2, location=self.location,
                                                  admin=self.systers_user)
         resource1 = Resource.objects.create(slug="bar", title="Bar",
                                             author=self.systers_user,
@@ -444,9 +467,13 @@ class AddCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
+
         self.client = Client()
 
     def test_get_add_community_resource(self):
@@ -493,8 +520,11 @@ class EditCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         self.resource = Resource.objects.create(slug="bar", title="Bar",
                                                 author=self.systers_user,
@@ -542,8 +572,11 @@ class DeleteCommunityResourceViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
         Resource.objects.create(slug="bar", title="Bar",
                                 author=self.systers_user,
@@ -581,8 +614,11 @@ class AddTagViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_add_tag_view(self):
@@ -607,8 +643,11 @@ class AddResourceTypeViewTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_add_resourceType_view(self):

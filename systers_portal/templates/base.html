@@ -17,10 +17,10 @@
   <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
 
   {% block head %}{% endblock %}
-
 </head>
 
 <body>
+<div class="ml16 mr16">
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -55,11 +55,12 @@
                   Request a new community</a>
               </li>
               {% endif %}
+            <li><a href="{%url 'search'%}">Search For Communities</a></li>
               {% if user.is_authenticated and user.is_active and user.is_staff %}
               {% url 'unapproved_community_requests' as url %}
               <li {% if url == request.path %}class="active"{% endif %}role="presentation">
                 <a role="menuitem" href="{{ url }}">
-                  View community requests </a>          
+                  View community requests </a>
               </li>
               {% endif %}
               {% if user.is_authenticated and user.is_active and user.is_staff %}
@@ -72,7 +73,7 @@
           </ul>
         </li>
         <li {% if '/meetup/' in request.path %}class="active"{% endif %} class="dropdown" id="meetup-dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetups <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Meetups<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% url 'list_meetup_location' as url %}
             <li {% if url == request.path %}class="active"{% endif %}>
@@ -86,14 +87,14 @@
             {% url 'request_meetup_location' as url %}
             <li {% if url == request.path %}class="active"{% endif %}role="presentation">
               <a role="menuitem" href="{{ url }}">
-              Request New Meetup Location</a> 
+              Request New Meetup Location</a>
             </li>
             {% endif %}
             {% if user.is_authenticated and user.is_active and user.is_staff %}
             {% url 'new_meetup_location_requests' as url %}
             <li {% if url == request.path %}class="active"{% endif %}role="presentation">
               <a role="menuitem" href="{{ url }}">
-              View meetup location requests </a>          
+              View meetup location requests </a>
             </li>
             {% endif %}
             {% if user.is_staff %}
@@ -107,6 +108,36 @@
         <li><a href="http://wiki.systers.org/open-source/doku.php/portal" target="blank_">Wiki</a></li>
         {% url 'contact' as url %}
         <li {% if url == request.path %}class="active"{% endif %}><a href="{{ url }}">Contact</a></li>
+        {% if user.is_authenticated and user.is_active %}
+        <li id='user-dropdown-menu' class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}">
+              <a role="menuitem" href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li {% if '/users/' in request.path %}class="active"{% endif %}>
+                  <a role="menuitem" href="{% url 'user' user.username %}">Profile</a>
+                </li>
+                {% if user.is_staff %}
+                <li><a role="menuitem" href="{% url 'admin:index' %}">Admin Panel</a></li>
+                {% endif %}
+                {% url 'account_change_password' as url %}
+                <li {% if url == request.path %}class="active"{% endif %}>
+                  <a role="menuitem" href="{{ url }}">Change password</a>
+                </li>
+                {% url 'logout' as url %}
+                <li {% if url == request.path %}class="active"{% endif %}>
+                  <a role="menuitem" href="{{ url }}">Logout</a>
+                </li>
+              </ul>
+         </li>
+        {% else %}
+            {% url 'account_signup' as url %}
+            <li {% if url == request.path %}class="active"{% endif %}>
+              <a id="signup-btn-menu" href="{{ url }}">Sign up</a>
+            </li>
+            {% url 'account_login' as url %}
+            <li {% if url == request.path %}class="active"{% endif %}>
+              <a id="log-btn-menu" href="{{ url }}">Login</a>
+            </li>
+        {% endif %}
       </ul>
       <ul class="nav navbar-nav text-uppercase" id="upper-nav">
         {% if user.is_authenticated and user.is_active %}
@@ -166,9 +197,10 @@
     </p>
   </div>
 </div>
-
+</div>
 <script src="{% static 'js/libs/jquery-1.11.1.min.js' %}"></script>
 <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/community-search.js' %}"></script>
 <script src="{% static 'js/choose_profile_pic.js' %}"></script>
 <script src="{% static 'js/search_menu.js' %}"></script>
 {% block scripts %}{% endblock %}

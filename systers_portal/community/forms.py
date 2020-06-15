@@ -12,9 +12,10 @@ from users.models import SystersUser
 
 class AddCommunityForm(ModelFormWithHelper):
     """ Form to create a new Community by admin. """
+
     class Meta:
         model = Community
-        fields = ('name', 'slug', 'order', 'email', 'mailing_list',
+        fields = ('name', 'slug', 'order', 'location', 'email', 'mailing_list',
                   'parent_community', 'website', 'facebook', 'googleplus',
                   'twitter')
         helper_class = SubmitCancelFormHelper
@@ -35,6 +36,7 @@ class AddCommunityForm(ModelFormWithHelper):
 
 class RequestCommunityForm(ModelFormWithHelper):
     """Form to request a new Community"""
+
     def __init__(self, *args, **kwargs):
         """Makes some fields required and modifies a field to use widget"""
         self.user = kwargs.pop('user')
@@ -52,7 +54,7 @@ class RequestCommunityForm(ModelFormWithHelper):
 
     class Meta:
         model = RequestCommunity
-        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order',
+        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order', 'location',
                   'type_community', 'other_community_type', 'parent_community',
                   'community_channel', 'mailing_list', 'website', 'facebook',
                   'googleplus', 'twitter', 'social_presence', 'other_account',
@@ -96,7 +98,7 @@ class EditCommunityRequestForm(ModelFormWithHelper):
 
     class Meta:
         model = RequestCommunity
-        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order',
+        fields = ('is_member', 'email_id', 'email', 'name', 'slug', 'order', 'location',
                   'type_community', 'other_community_type', 'parent_community',
                   'community_channel', 'mailing_list', 'website', 'facebook',
                   'googleplus', 'twitter', 'social_presence', 'other_account',
@@ -143,9 +145,10 @@ class EditCommunityRequestForm(ModelFormWithHelper):
 
 class EditCommunityForm(ModelFormWithHelper):
     """Form to edit Community profile"""
+
     class Meta:
         model = Community
-        fields = ('name', 'slug', 'order', 'email', 'mailing_list',
+        fields = ('name', 'slug', 'order', 'location', 'email', 'mailing_list',
                   'parent_community', 'website', 'facebook', 'googleplus',
                   'twitter')
         helper_class = SubmitCancelFormHelper
@@ -160,6 +163,7 @@ class AddCommunityPageForm(ModelFormWithHelper):
     * author - currently logged in user, aka the author of the page
     * community - to which Community the CommunityPage belongs
     """
+
     class Meta:
         model = CommunityPage
         fields = ('title', 'slug', 'order', 'content')
@@ -184,6 +188,7 @@ class AddCommunityPageForm(ModelFormWithHelper):
 
 class EditCommunityPageForm(ModelFormWithHelper):
     """Form to edit a CommunityPage."""
+
     class Meta:
         model = CommunityPage
         fields = ('slug', 'title', 'order', 'content')
@@ -194,6 +199,7 @@ class EditCommunityPageForm(ModelFormWithHelper):
 
 class PermissionGroupsForm(forms.Form):
     """Form to manage (select/deselect) user permission groups"""
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         community = kwargs.pop('community')
@@ -206,7 +212,7 @@ class PermissionGroupsForm(forms.Form):
             name=COMMUNITY_ADMIN.format(community.name))
         self.groups.remove(admin_group)
         choices = [(group.pk, group.name) for group in self.groups]
-        self.fields['groups'] = forms.\
+        self.fields['groups'] = forms. \
             MultipleChoiceField(choices=choices, label="", required=False,
                                 widget=forms.CheckboxSelectMultiple)
         self.member_groups = self.user.get_member_groups(self.groups)

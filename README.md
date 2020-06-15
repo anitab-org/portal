@@ -6,10 +6,10 @@ and with other communities.
 
 Website: http://portal.systers.org
 
-Project page: http://systers.github.io/portal/
+Project page: https://anitab-org.github.io/portal/
 
 
-If you are an Outreachy Applicant, start with reading [this](https://github.com/systers/ossprojects/wiki/Systers-Portal) for meetup features, please go through [this](https://github.com/systers/ossprojects/wiki/Meetup-Features).
+If you are interested in learning more about this project, start with reading [Portal GitHub Wiki](https://github.com/anitab-org/portal/wiki).
 
 Setup for developers (Unix)
 ---------------------------
@@ -24,7 +24,7 @@ Setup for developers (Unix)
    Postgres, [Django Girls'](http://djangogirls.org) ebook,
    [Tutorials Extension](http://djangogirls.org/resources/), is a reference.
    The info is also on [Django Girls GitHub repository](https://github.com/DjangoGirls/tutorial-extensions/blob/master/en/optional_postgresql_installation/README.md).
-1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into
+1. Clone the repo - `git clone https://github.com/systers/portal.git` and cd into
   the `portal` directory. If working behind a proxy, follow the instructions [here](https://cms-sw.github.io/tutorial-proxy.html).
 1. Create a virtual environment with Python 3 and install dependencies:
 
@@ -34,7 +34,7 @@ Setup for developers (Unix)
      $ pip install -r requirements/dev.txt
      $ sudo apt-get install python-gdal
      ```
-1. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Create `systersdb` database, where `systersdb` might be any suitable name [Password should not be empty].
     ```
     $ sudo -i -u postgres
     $ createuser <any name e.g. alice> --pwprompt
@@ -77,7 +77,7 @@ Setup for developers (Windows)
 - Select install location and hit install
 1. Run `pip install virtualenv` using windows command line
 1. You would have to install PostgreSQL. Download from [official location](https://www.postgresql.org/download/windows/) or alternative location, you could lookup some PostgreSQL tutorials online if you are completely blank on this. 
-1. Clone the repo - `git clone git@github.com:systers/portal.git` and cd into the `portal` directory. Use git CMD or git Bash(unix-like terminal) to do so.
+1. Clone the repo - `git clone https://github.com/systers/portal.git` and cd into the `portal` directory. Use git CMD or git Bash(unix-like terminal) to do so.
 1. Create a virtual environment with Python 3 and install dependencies, using CMD :
  
      ```bash
@@ -85,7 +85,11 @@ Setup for developers (Windows)
      $ ./venv/Scripts/activate
      $ pip install -r requirements/dev.txt 
      ```
-1. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Make sure you have GDAL installed. 
+- Download OSGeo4W using the [OSGeo4W installer](https://trac.osgeo.org/osgeo4w/wiki)
+- Specifically, install pkg-gdal-python, which is within 'Libs' in the installer tree.
+- Add GDAL_LIBRARY_PATH in the `systers_portal/settings/base.py` and make sure the path points to the GDAL Library on your local machine.
+6. Create `systersdb` database, where `systersdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
 
     ```
@@ -134,7 +138,7 @@ production at the moment. It may be configured to do so in the future.
 1. Install [docker-compose](http://docs.docker.com/compose/install/).
    Note: fig has been deprecated. Docker-compose replaces fig.
 1. Create a new directory on your local system.
-1. Enter `git clone git@github.com:systers/portal.git` to clone the Systers
+1. Enter `git clone https://github.com/systers/portal.git` to clone the Systers
    Portal repository. After the clone is done, change directory (cd) to the
    `portal` directory.
 1. Run `docker-compose build`. This pulls the Docker images required to run the
@@ -176,3 +180,9 @@ For more information on semantics and builds, please refer to the Sphinx
 [official documentation](http://sphinx-doc.org/contents.html).
 
 You can view the requirements document [here](docs/requirements/Systers_GSoC14_Portal_Requirements.pdf).
+
+
+Contact
+-------
+
+You can reach the maintainers and our community on [AnitaB.org Open Source Zulip](https://anitab-org.zulipchat.com/). If you are interested in contributing to portal, we have a dedicated stream for this project [#portal](https://anitab-org.zulipchat.com/#narrow/stream/222540-portal), where you can ask questions and interact with the community, join with us!

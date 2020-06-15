@@ -16,7 +16,7 @@ COMMUNITY_PRESENCE_CHOICES = [
 ]
 
 COMMUNITY_TYPES_CHOICES = [
-    ('Affinity Group', 'Affinity Group (Latinas in Computing, LGBT, etc'),
+    ('Affinity Group', 'Affinity Group (Latinas in Computing, LGBT, etc)'),
     ('Special Interest Group',
      'Special Interest Group (Student Researchers, Systers in Government,'
      'Women in Cyber Security, etc) '),

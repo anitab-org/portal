@@ -1,3 +1,4 @@
+from cities_light.models import Country, City
 from django.contrib.auth.models import User, AnonymousUser
 from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase, RequestFactory
@@ -13,8 +14,11 @@ class UserDetailsMixinTestCase(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        location = City.objects.create(name='Foo', display_name='Foo',
+                                       country=country)
         self.community = Community.objects.create(name="Foo", slug="foo",
-                                                  order=1,
+                                                  order=1, location=location,
                                                   admin=self.systers_user)
 
     def test_get_context_data_no_community(self):
