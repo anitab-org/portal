@@ -1,0 +1,18 @@
+<script>
+          for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+            console.log("deleting",marker[i])
+          }
+           var markers = [];
+        {% for community in communities %}
+          var point = new google.maps.LatLng({{community.location.latitude}},{{community.location.longitude}});
+          var marker = new google.maps.Marker({position: point, map: map, title: '{{ community.name }}',});
+          marker['infowindow'] = new google.maps.InfoWindow({content: 
+            "<a href='{% url "view_community_landing" community.slug %}'>{{community}}</a>", });
+          google.maps.event.addListener(marker, 'click', function() {this['infowindow'].open(map, this);});
+          markers.push(marker);
+        {% endfor %} 
+       for (var j = 0; j < markers.length; j++) {
+            markers[j].setMap(map);
+          }
+</script>
