@@ -1,4 +1,4 @@
-Django==1.11.6
+Django==1.11.29
 Pillow==4.3.0
 django-allauth==0.33.0
 django-braces==1.11.0
