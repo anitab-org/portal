@@ -1,6 +1,6 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
-{% block meetup_location_page_content %}
+{% block content %}
   <div class="mt20 mb40">
     <h2 class="ml15"> Upcoming Meetups </h2>
       {% for meetup in meetup_list %}
@@ -11,7 +11,7 @@
           alt="{{ meetup.title }} meetup picture" />
           {% endif %}
           <h3>
-            <a href="{% url 'view_meetup' meetup_location.slug meetup.slug %}">{{ meetup.title }}</a>
+            <a href="{% url 'view_meetup'  meetup.slug %}">{{ meetup.title }}</a>
           </h3>
           <p class="meetup-details">
             <span><strong>Date:</strong> {{ meetup.date }}</span>
@@ -20,7 +20,7 @@
           </p>
           <p>
             {{ meetup.description|safe|truncatewords:30 }}
-            <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">LEARN MORE</a>
+            <a href="{% url 'view_meetup' meetup.slug %}">LEARN MORE</a>
           </p>
         </div>
       {% endfor %}

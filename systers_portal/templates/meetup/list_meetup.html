@@ -7,45 +7,30 @@
 {% block content %}
   <style type="text/css">
   </style>
+  
   <h1 class="mt40 text-center meetup-list-head">Upcoming Meetups</h1>
   <p class="meetup-list-subhead">We host meetups, workshops, networking events, and more. See what’s happening near you.</p>
-    <div class="search-options">
+    
+`<div class="search-options">
       <div id="meetup-location" class="fake-border">
         <i class="glyphicon glyphicon-flag"></i>
-        <select id="meetup-location-input" name="city" placeholder="Select Meetup Location">
-        <option value ="0"> Meetup Location </option>
-        {% for location in meetup_locations %}
-        <option value = "{{ forloop.counter }}">{{ location }}</option>
-        {% endfor %}
-          </select>
-      </div>
-      <div id="date" class="fake-border">
-        <i class="glyphicon glyphicon-calendar"></i>
-        <input id="date-input" type="date" name="date" placeholder="Date"/>
-      </div>
+        
+        
       <div id="keyword" class="fake-border">
         <i class="glyphicon glyphicon-search"></i>
         <input id="keyword-input" type="text" name="keyword" placeholder="Keyword"/>  
       </div>
       <input id="go-btn" class="search-btn" type="submit" name="submit" placeholder="Go"/>
-      <input type="button" class="search-btn" value="Reset filters" onClick="window.location.reload()">
-      <div id="filters">
-      <label>Sort By:</label> 
-      <div class="fake-border">
-        <select id = "myList" class="filter-list">
-            <option value = "date">Date</option>
-            <option value = "distance">Distance</option>
-        </select>  
-      </div>
-       
-      <div id="location" class="fake-border hidden">
-        <i class="glyphicon glyphicon-map-marker"></i>
-        <select id="location-input" name="location" placeholder="Location">
+                <select id="location-input" name="location" placeholder="Location">
         {% for city in cities_list %}
         <option value = "{{forloop.counter}}">{{ city }}</option>
+
         {% endfor %}
           </select>
-      </div>
+        
+        <div id="location" class="fake-border hidden">
+        <i class="glyphicon glyphicon-map-marker"></i>
+
       </div>
     </div>    
   <div class="row">

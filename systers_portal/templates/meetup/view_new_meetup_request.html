@@ -20,11 +20,11 @@
   {% if not meetup_request.is_approved %}
       <div class="row">
         <div class="col-md-3">
-          <a href="{% url 'approve_meetup_request' meetup_request.meetup_location.slug meetup_request.slug %}"
+          <a href="{% url 'approve_meetup_request' meetup_request.slug %}"
              role="button" class="btn btn-primary btn-sm">Approve</a>
         </div>
         <div class="col-md-6">
-          <a href="{% url 'reject_meetup_request' meetup_request.meetup_location.slug meetup_request.slug %}"
+          <a href="{% url 'reject_meetup_request' meetup_request.slug %}"
              role="button" class="btn btn-warning btn-sm">Reject</a>
         </div>
       </div>

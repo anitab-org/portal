@@ -1,13 +1,9 @@
-{% if user.is_authenticated and user.is_active %} 
-   {% if user.systersuser not in meetup_location.moderators.all %}
-    {% if user.systersuser not in meetup_location.members.all and user.systersuser not in meetup_location.join_requests.all %}
+{% if user.is_authenticated and user.is_active %}
+{% now "Y-m-d" as todays_date %}
+{% if todays_date < meetup.date|date:"Y-m-d" %}
       <div class="sidebar-module mb40">
-        <a class="btn btn-success btn-block" href="{% url "join_meetup_location" meetup_location.slug user.username %}"
-           role="button">Join Meetup Location</a>
+        <a class="btn btn-success btn-block" href="{% url 'rsvp_meetup' meetup.slug%}"
+           role="button">RSVP</a>
       </div>
-    {% elif user.systersuser not in meetup_location.members.all and user.systersuser in meetup_location.join_requests.all %}
-      <a href="{% url "cancel_meetup_location_join_request" meetup_location.slug user.username %}?current_url={{ request.path }}"
-        role="button" class="btn btn-warning btn-block">Cancel request</a>
-    {% endif %}
-  {% endif %}
+{% endif %}
 {% endif %}

@@ -1,12 +1,12 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
-{% block meetup_location_page_content %}
+{% block content %}
   <div class="mt20 mb40">
     <h2 class="ml15"> Past Meetups </h2>
       {% for meetup in meetup_list %}
         <div class="ml15 mt20">
           <h4>
-            <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">{{ meetup.title }}</a>
+            <a href="{% url 'view_meetup' meetup.slug %}">{{ meetup.title }}</a>
           </h4>
         </div>
       {% endfor %}

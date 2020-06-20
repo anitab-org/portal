@@ -1,13 +1,13 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}
-  - {{ meetup_location }} - Delete {{ object.title }}
+ Delete {{ object.title }}
 {% endblock %}
 
 {% load crispy_forms_tags %}
-{% block meetup_location_page_content %}
+{% block content %}
 
-  {% url 'delete_meetup' meetup_location.slug object.slug as delete_url %}
+  {% url 'delete_meetup'  object.slug as delete_url %}
 
 <div class="mt40"></div>
 <div class="row">

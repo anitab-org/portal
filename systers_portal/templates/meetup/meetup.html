@@ -1,6 +1,6 @@
 {% extends "meetup/base.html" %}
 
-{% block meetup_location_page_content %}
+{% block meetup_page_content %}
   <h2 id="meetup-title">{{ meetup.title }}</h2>
   <div class="box-container box-body pt25">
     <p> 
@@ -36,7 +36,7 @@
       {% endif %}
     {% include 'meetup/snippets/share_buttons.html' %}
     <p>
-      <a href="{% url 'add_meetup_comment' meetup_location.slug meetup.slug %}">Add comment</a>
+      <a href="{% url 'add_meetup_comment'  meetup.slug %}">Add comment</a>
     </p>
   </div>
   <h3>Discussion Area</h3>
@@ -52,8 +52,8 @@
       <a href="{{ comment.author.get_absolute_url }}"><strong>{{ comment.author}}</strong></a>
       <a class="details">commented on {{ comment.date_created}}</a>
       {% if user == comment.author.user %}
-           <a class="delete" href="{% url 'delete_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
-           <a class="edit" href="{% url 'edit_meetup_comment' meetup_location.slug meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+           <a class="delete" href="{% url 'delete_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+           <a class="edit" href="{% url 'edit_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
       {% endif %}
         <div class="box-body">
         <p>{{ comment.body }}</p>

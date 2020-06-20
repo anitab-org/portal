@@ -1,43 +1,18 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {{ meetup_location }}
+{{meetup}}
 {% endblock %}
 
 {% block content %}
-  <div class="row mt40">
-    <div class="col-md-12">
-      <h1>{{ meetup_location }}</h1>
-      <hr/>
-    </div>
-    <div class="col-sm-9">
-      <ul class="nav nav-pills">
-        <li {% if 'upcoming/' in request.path %} class="active" {% endif %}>
-         <a href="{% url 'upcoming_meetups' meetup_location.slug %}">Upcoming</a> 
-         </li>
-        <li {% if 'past/' in request.path %} class="active" {% endif %}>
-          <a href="{% url 'past_meetups' meetup_location.slug %}">Past</a>
-        </li>
-        <li {% if 'members/' in request.path %} class="active" {% endif %}>
-          <a href="{% url 'members_meetup_location' meetup_location.slug %}">Members</a>
-        </li>        
-        <li {% if 'sponsors/' in request.path %} class="active" {% endif %}>
-          <a href="{% url 'sponsors_meetup_location' meetup_location.slug %}">Sponsors</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-
   <div class="row">
     <div class="col-sm-9">
-      {% block meetup_location_page_content %}
+      {% block meetup_page_content %}
       {% endblock %}
     </div>
     <div class="col-sm-3">
-      {% include 'meetup/snippets/meetup_location_sidebar.html' %}
       {% include 'meetup/snippets/meetup_sidebar.html' %}
       {% block extra_sidebar %}{% endblock %}
-      {% include 'meetup/snippets/about_button.html' %}
       {% include 'meetup/snippets/join_button.html' %}
     </div>
   </div>
