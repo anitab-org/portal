@@ -5,7 +5,7 @@ from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.core import mail
+
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm,
                           AddMeetupCommentForm, EditMeetupCommentForm,
@@ -92,7 +92,9 @@ class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_meetup_form(self):
         """Test add Meetup form"""
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
-        form = AddMeetupForm(data=invalid_data, created_by=self.systers_user, leader=self.systers_user)
+        form = AddMeetupForm(data=invalid_data,
+                             created_by=self.systers_user,
+                             leader=self.systers_user)
         self.assertFalse(form.is_valid())
 
         date = (timezone.now() + timedelta(2)).date()

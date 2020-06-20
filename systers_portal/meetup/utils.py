@@ -1,6 +1,5 @@
 from django.contrib.auth.models import Group, Permission
 from django.db import transaction
-from guardian.shortcuts import assign_perm
 
 from meetup.permissions import groups_templates, group_permissions
 

@@ -4,14 +4,11 @@ from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
-from django.core import mail
 
 from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
-from rest_framework.test import APITestCase
-import json
 
 
 class MeetupBaseCase:
@@ -19,7 +16,8 @@ class MeetupBaseCase:
         country = Country.objects.create(name='Bar', continent='AS')
         self.meetup_location = City.objects.create(name='Foo', display_name='Foo',
                                                    country=country)
-        self.user = User.objects.create_superuser(username='foo', email="test@gmail.com", password='foobar')
+        self.user = User.objects.create_superuser(username='foo', email="test@gmail.com",
+                                                  password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
                                             date=timezone.now().date(),
@@ -151,12 +149,16 @@ class NewMeetupRequestsListViewTestCase(MeetupBaseCase, TestCase):
     def setUp(self):
         super(NewMeetupRequestsListViewTestCase, self).setUp()
         self.meetup_request1 = RequestMeetup.objects.create(
-            title="Bar Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
-            description="This is a test meetup meetup_location request1", created_by=self.systers_user,
+            title="Bar Talk", slug="bar", date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="This is a test meetup meetup_location request1",
+            created_by=self.systers_user,
             meetup_location=self.meetup_location)
         self.meetup_request2 = RequestMeetup.objects.create(
-            title="Foo Talk", slug="foo", date=timezone.now().date(), time=timezone.now().time(),
-            description="This is a test meetup meetup_location request2", created_by=self.systers_user,
+            title="Foo Talk", slug="foo", date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="This is a test meetup meetup_location request2",
+            created_by=self.systers_user,
             meetup_location=self.meetup_location)
         self.password = 'foobar'
         self.user2 = User.objects.create(username='foobar', password=self.password,
@@ -189,8 +191,10 @@ class ViewMeetupRequestViewTestCase(MeetupBaseCase, TestCase):
     def setUp(self):
         super(ViewMeetupRequestViewTestCase, self).setUp()
         self.meetup_request = RequestMeetup.objects.create(
-            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
-            description="This is a test meetup meetup_location request", created_by=self.systers_user,
+            title="Foo Talk", slug="bar", date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="This is a test meetup meetup_location request",
+            created_by=self.systers_user,
             meetup_location=self.meetup_location)
         self.password = 'foobar'
         self.user2 = User.objects.create(username='foobar', password=self.password,
@@ -221,8 +225,10 @@ class ApproveRequestMeetupViewTestCase(MeetupBaseCase, TestCase):
     def setUp(self):
         super(ApproveRequestMeetupViewTestCase, self).setUp()
         self.meetup_request = RequestMeetup.objects.create(
-            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
-            description="This is a test meetup meetup_location request", created_by=self.systers_user,
+            title="Foo Talk", slug="bar", date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="This is a test meetup meetup_location request",
+            created_by=self.systers_user,
             meetup_location=self.meetup_location)
         self.password = 'foobar'
         self.user2 = User.objects.create(username='foobar', password=self.password,
@@ -272,8 +278,10 @@ class RejectMeetupRequestViewTestCase(MeetupBaseCase, TestCase):
     def setUp(self):
         super(RejectMeetupRequestViewTestCase, self).setUp()
         self.meetup_request = RequestMeetup.objects.create(
-            title="Foo Talk", slug="bar", date=timezone.now().date(), time=timezone.now().time(),
-            description="This is a test meetup request", created_by=self.systers_user,
+            title="Foo Talk", slug="bar", date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="This is a test meetup request",
+            created_by=self.systers_user,
             meetup_location=self.meetup_location)
         self.password = 'foobar'
         self.user2 = User.objects.create(username='foobar', password=self.password,
@@ -863,7 +871,9 @@ class ApproveSupportRequestViewTestCase(MeetupBaseCase, TestCase):
 
     def test_view_approve_support_request_view(self):
         """Test approve support request view for correct http response"""
-        url = reverse('approve_support_request', kwargs={'meetup_slug': 'foo-bar-baz', 'pk': self.support_request1.id})
+        url = reverse('approve_support_request',
+                      kwargs={'meetup_slug': 'foo-bar-baz',
+                              'pk': self.support_request1.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
 
@@ -888,7 +898,9 @@ class RejectSupportRequestViewTestCase(MeetupBaseCase, TestCase):
 
     def test_view_reject_support_request_view(self):
         """Test reject support request view for correct http response"""
-        url = reverse('reject_support_request', kwargs={'meetup_slug': 'foo-bar-baz', 'pk': self.support_request1.id})
+        url = reverse('reject_support_request',
+                      kwargs={'meetup_slug': 'foo-bar-baz',
+                              'pk': self.support_request1.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
 
@@ -1049,14 +1061,15 @@ class DeleteSupportRequestCommentViewTestCase(MeetupBaseCase, TestCase):
         self.assertEqual(response.status_code, 302)
         comments = Comment.objects.all()
         self.assertEqual(len(comments), 0)
-#
+
 # class ApiForVmsViewTestCase(APITestCase, TestCase):
 #     def setUp(self):
 #         self.user = User.objects.create_user(username='foo', password='foobar',
 #                                              email='user@test.com')
 #         self.systers_user = SystersUser.objects.get(user=self.user)
 #         country = Country.objects.create(name='Bar', continent='AS')
-#         self.meetup_location = City.objects.create(name='Baz', display_name='Baz', country=country)
+#         self.meetup_location = City.objects.create(name='Baz', display_name='Baz',
+#         country=country)
 #         # a meetup after the posted date
 #         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
 #                                             date='2018-06-16',

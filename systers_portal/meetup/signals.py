@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from pinax.notifications.models import NoticeType
 
 from meetup.models import Meetup
-from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR, COMMUNITY_LEADER
+from meetup.constants import COMMUNITY_LEADER
 from meetup.utils import (create_groups, assign_permissions, remove_groups)
 
 

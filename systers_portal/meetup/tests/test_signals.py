@@ -2,11 +2,10 @@ from django.utils import timezone
 
 from django.test import TestCase
 from django.contrib.auth.models import Group, User
-from django.db.models.signals import post_save, post_delete, m2m_changed, post_migrate
+from django.db.models.signals import post_save, post_delete, post_migrate
 from cities_light.models import City, Country
 from pinax.notifications.models import NoticeType
 
-from meetup.constants import COMMUNITY_MEMBER, COMMUNITY_MODERATOR
 from meetup.models import Meetup
 from users.models import SystersUser
 
@@ -37,6 +36,7 @@ class SignalsTestCase(TestCase):
                                        created_by=systers_user,
                                        leader=systers_user,
                                        last_updated=timezone.now())
+        self.assertEqual("Foo Bar Baz", meetup.title)
         groups_count = Group.objects.count()
         self.assertEqual(groups_count, 3)
 

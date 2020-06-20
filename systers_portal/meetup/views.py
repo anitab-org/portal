@@ -1,19 +1,15 @@
 import datetime
-import operator
 
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import DeleteView, TemplateView, RedirectView
-from django.views.generic.detail import DetailView, SingleObjectMixin
+from django.views.generic import DeleteView, RedirectView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.list import ListView
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin, StaffuserRequiredMixin
-from django.contrib.auth.models import User, Group, Permission
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse
-from guardian.shortcuts import assign_perm
-from pinax.notifications import models as notification
 from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
 from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
@@ -22,18 +18,12 @@ from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     RequestMeetupForm)
 from .models import (Meetup, Rsvp, SupportRequest,
                      RequestMeetup)
-from .constants import (OK, SUCCESS_MSG, NAME_ALREADY_EXISTS, NAME_ALREADY_EXISTS_MSG,
-                        SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
-                        LOCATION_ALREADY_EXISTS, LOCATION_ALREADY_EXISTS_MSG, ERROR_MSG,
-                        SUCCESS_MEETUP_MSG)
+from .constants import (OK, SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
+                        ERROR_MSG, SUCCESS_MEETUP_MSG)
 from users.models import SystersUser
 from common.models import Comment
 from rest_framework.views import APIView
-from django.views.decorators.csrf import csrf_exempt
 from cities_light.models import City
-from geopy.geocoders import Nominatim
-from django.contrib.gis.geos import Point
-from django.db.models import Q
 
 
 class RequestMeetupView(LoginRequiredMixin, CreateView):
@@ -72,7 +62,8 @@ class NewMeetupRequestsListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
 
     def get_queryset(self, **kwargs):
         """Set ListView queryset to all the unapproved meetup requests"""
-        request_meetups_list = RequestMeetup.objects.filter(is_approved=False).order_by('date', 'time')
+        request_meetups_list = \
+            RequestMeetup.objects.filter(is_approved=False).order_by('date', 'time')
         return request_meetups_list
 
     def get_meetup_location(self):
@@ -137,7 +128,6 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         new_meetup.description = meetup_request.description
         new_meetup.meetup_location = meetup_request.meetup_location
         new_meetup.leader = meetup_request.created_by
-        systersuser = meetup_request.created_by
         meetup_request.is_approved = True
         self.slug_meetup_request = meetup_request.slug
         status, message, level = self.process_request()
@@ -156,8 +146,8 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         ).values_list('slug', flat=True)
         if self.slug_meetup_request in self.slug_meetup_values:
             STATUS = SLUG_ALREADY_EXISTS
-            return STATUS, SLUG_ALREADY_EXISTS_MSG.format(self.slug_meetup_request), \
-                   messages.WARNING
+            return \
+                STATUS, SLUG_ALREADY_EXISTS_MSG.format(self.slug_meetup_request), messages.WARNING
         else:
             STATUS = OK
         return STATUS, SUCCESS_MEETUP_MSG, messages.INFO
@@ -322,7 +312,8 @@ class UpcomingMeetupsView(ListView):
     def get_queryset(self, **kwargs):
         """Set ListView queryset to all the meetups whose date is equal to or greater than the
         current date"""
-        meetup_list = Meetup.objects.filter(date__gte=datetime.date.today()).order_by('date', 'time')
+        meetup_list = \
+            Meetup.objects.filter(date__gte=datetime.date.today()).order_by('date', 'time')
         return meetup_list
 
 
@@ -500,7 +491,8 @@ class AddSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin,
 
     def get_success_url(self):
         """Redirect to the support request view page in case of successful submission"""
-        return reverse("view_support_request", kwargs={"meetup_slug": self.meetup.slug, "pk": self.object.pk})
+        return reverse("view_support_request",
+                       kwargs={"meetup_slug": self.meetup.slug, "pk": self.object.pk})
 
     def get_form_kwargs(self):
         """Add request user and meetup object to the form kwargs. Used to autofill form fields
@@ -530,7 +522,8 @@ class EditSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin,
 
     def get_success_url(self):
         """Redirect to the support request view page in case of successful submission"""
-        return reverse("view_support_request", kwargs={"meetup_slug": self.object.meetup.slug, "pk": self.object.pk})
+        return reverse("view_support_request",
+                       kwargs={"meetup_slug": self.object.meetup.slug, "pk": self.object.pk})
 
     def get_context_data(self, **kwargs):
         """Add Meetup object to the context"""

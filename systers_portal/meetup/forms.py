@@ -1,7 +1,5 @@
 from django import forms
 from django.utils import timezone
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
@@ -9,8 +7,6 @@ from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
-from pinax.notifications import models as notification
-
 
 # class RequestMeetupLocationForm(ModelFormWithHelper):
 #     """ Form to create a new Request Meetup Location by a systers user. """
@@ -84,7 +80,8 @@ class AddMeetupForm(ModelFormWithHelper):
     """
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description', 'meetup_picture')
+        fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description',
+                  'meetup_picture')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
