@@ -37,9 +37,10 @@ class RequestMeetupForm(ModelFormWithHelper):
     """ Form to create a new Meetup Request. """
     class Meta:
         model = RequestMeetup
-        fields = ('title', 'slug', 'date', 'time', 'venue', 'description')
+        fields = ('title', 'slug', 'date', 'start_time', 'end_time', 'venue', 'description')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
-                   'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
+                   'start_time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'}),
+                   'end_time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
 
@@ -70,16 +71,14 @@ class RequestMeetupForm(ModelFormWithHelper):
                                         code="date_in_past")
         return date
 
-    def clean_time(self):
-        """Check that if the date is the current date, the time is not the current time. If so,
-        raise an error."""
-        time = self.cleaned_data.get('time')
-        date = self.cleaned_data.get('date')
-        if time:
-            if date == timezone.now().date() and time < timezone.now().time():
-                raise forms.ValidationError("Time should not be a time that has already passed.",
-                                            code="time_in_past")
-        return time
+    def clean_end_time(self):
+        """Check that if start time is less than end time."""
+        start_time = self.cleaned_data.get('start_time')
+        end_time = self.cleaned_data.get('end_time')
+
+        if end_time < start_time:
+            raise forms.ValidationError("End time should not be less than Start Time.")
+        return end_time
 
 
 class AddMeetupForm(ModelFormWithHelper):
@@ -91,9 +90,11 @@ class AddMeetupForm(ModelFormWithHelper):
     """
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'venue', 'description', 'meetup_picture')
+        fields = ('title', 'slug', 'date', 'start_time', 'end_time', 'venue', 'description',
+                  'meetup_picture')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
-                   'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
+                   'start_time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'}),
+                   'end_time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
 
@@ -121,24 +122,23 @@ class AddMeetupForm(ModelFormWithHelper):
             raise forms.ValidationError("Date should not be before today's date.")
         return date
 
-    def clean_time(self):
-        """Check that if the date is the current date, the time is not the current time. If so,
-        raise an error."""
-        time = self.cleaned_data.get('time')
-        date = self.cleaned_data.get('date')
-        if time:
-            if date == timezone.now().date() and time < timezone.now().time():
-                raise forms.ValidationError("Time should not be a time that has already passed.")
-        return time
+    def clean_end_time(self):
+        """Check that if start time is less than end time."""
+        start_time = self.cleaned_data.get('start_time')
+        end_time = self.cleaned_data.get('end_time')
+        if end_time < start_time:
+            raise forms.ValidationError("End time should not be less than Start Time.")
+        return end_time
 
 
 class EditMeetupForm(ModelFormWithHelper):
     """Form to edit Meetup"""
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'description', 'venue')
+        fields = ('title', 'slug', 'date', 'start_time', 'end_time', 'description', 'venue')
         widgets = {'date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
-                   'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
+                   'start_time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'}),
+                   'end_time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
 

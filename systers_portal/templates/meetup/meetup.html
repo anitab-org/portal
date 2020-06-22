@@ -5,11 +5,15 @@
   <div class="box-container box-body pt25">
     <p> 
       <b> Date: </b> {{ meetup.date }}
-      &nbsp; &nbsp; 
-      <b>Time: </b> {{ meetup.time|time:"H:i" }}
+      &nbsp;
     </p>
     <p>
       <b> Venue: </b> {{ meetup.venue }}
+    </p>
+    <p> 
+      <b> Start Time: </b> {{ meetup.start_time }}
+      &nbsp; 
+      <b>End Time: </b> {{ meetup.end_time }}
     </p>
     <hr>
     {{ meetup.description|safe }} <br/>

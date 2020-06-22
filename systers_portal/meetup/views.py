@@ -78,7 +78,7 @@ class NewMeetupRequestsListView(LoginRequiredMixin, PermissionRequiredMixin, Mee
     def get_queryset(self, **kwargs):
         """Set ListView queryset to all the unapproved meetup requests"""
         request_meetups_list = RequestMeetup.objects.filter(
-            meetup_location=self.meetup_location, is_approved=False).order_by('date', 'time')
+            meetup_location=self.meetup_location, is_approved=False).order_by('date', 'start_time')
         return request_meetups_list
 
     def get_meetup_location(self):
@@ -148,7 +148,8 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Meet
         new_meetup.title = meetup_request.title
         new_meetup.slug = meetup_request.slug
         new_meetup.date = meetup_request.date
-        new_meetup.time = meetup_request.time
+        new_meetup.start_time = meetup_request.start_time
+        new_meetup.end_time = meetup_request.end_time
         new_meetup.venue = meetup_request.venue
         new_meetup.description = meetup_request.description
         new_meetup.meetup_location = meetup_request.meetup_location
@@ -385,7 +386,7 @@ class AllUpcomingMeetupsView(ListView):
 
     def get_context_data(self, **kwargs):
         meetup_list = Meetup.objects.filter(
-            date__gte=datetime.date.today()).order_by('date', 'time')
+            date__gte=datetime.date.today()).order_by('date', 'start_time')
         context = super(AllUpcomingMeetupsView, self).get_context_data(**kwargs)
         context['cities_list'] = City.objects.all()
         context['meetup_locations'] = MeetupLocation.objects.all()
@@ -402,7 +403,7 @@ class MeetupLocationList(ListView):
     def get_context_data(self, **kwargs):
         context = super(MeetupLocationList, self).get_context_data(**kwargs)
         context['meetup_list'] = Meetup.objects.filter(
-            date__gte=datetime.date.today()).order_by('date', 'time')
+            date__gte=datetime.date.today()).order_by('date', 'start_time')
         return context
 
 
@@ -558,7 +559,7 @@ class UpcomingMeetupsView(MeetupLocationMixin, ListView):
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         meetup_list = Meetup.objects.filter(
             meetup_location=self.meetup_location,
-            date__gte=datetime.date.today()).order_by('date', 'time')
+            date__gte=datetime.date.today()).order_by('date', 'start_time')
         return meetup_list
 
     def get_meetup_location(self):
@@ -577,7 +578,7 @@ class PastMeetupListView(MeetupLocationMixin, ListView):
         self.meetup_location = get_object_or_404(MeetupLocation, slug=self.kwargs['slug'])
         meetup_list = Meetup.objects.filter(
             meetup_location=self.meetup_location,
-            date__lt=datetime.date.today()).order_by('date', 'time')
+            date__lt=datetime.date.today()).order_by('date', 'start_time')
         return meetup_list
 
     def get_meetup_location(self):

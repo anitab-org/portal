@@ -38,7 +38,7 @@ class CommonViewsTestCase(TestCase):
         # Log in the user
         self.client.login(username=u.username, password=u.password)
         # Check response code for logout
-        response = self.client.get(reverse('logout'))
+        response = self.client.get(reverse('account_logout'))
         self.assertEqual(response.status_code, 302)
         # Log out the user
         self.client.logout()

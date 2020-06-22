@@ -15,8 +15,9 @@
           </h3>
           <p class="meetup-details">
             <span><strong>Date:</strong> {{ meetup.date }}</span>
-            <span><strong>Time:</strong> {{ meetup.time|time:"H:i"|default:"TBA" }}</span>
             <span><strong>Venue:</strong> {{ meetup.venue|default:"TBA" }}</span>
+            <span><strong>Start Time:</strong> {{ meetup.start_time|default:"TBA" }}</span>
+            <span><strong>End Time:</strong> {{ meetup.end_time|default:"TBA" }}</span>
           </p>
           <p>
             {{ meetup.description|safe|truncatewords:30 }}

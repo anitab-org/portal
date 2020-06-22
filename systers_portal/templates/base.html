@@ -122,7 +122,7 @@
                 <li {% if url == request.path %}class="active"{% endif %}>
                   <a role="menuitem" href="{{ url }}">Change password</a>
                 </li>
-                {% url 'logout' as url %}
+                {% url 'account_logout' as url %}
                 <li {% if url == request.path %}class="active"{% endif %}>
                   <a role="menuitem" href="{{ url }}">Logout</a>
                 </li>
@@ -155,7 +155,7 @@
               <li {% if url == request.path %}class="active"{% endif %}>
                 <a href="{{ url }}">Change password</a>
               </li>
-              {% url 'logout' as url %}
+              {% url 'account_logout' as url %}
               <li {% if url == request.path %}class="active"{% endif %}>
                 <a id="log-btn" href="{{ url }}">Logout</a>
               </li>
