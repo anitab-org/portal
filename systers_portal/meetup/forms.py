@@ -8,29 +8,10 @@ from meetup.models import (Meetup, Rsvp, SupportRequest,
 from users.models import SystersUser
 from common.models import Comment
 
-# class RequestMeetupLocationForm(ModelFormWithHelper):
-#     """ Form to create a new Request Meetup Location by a systers user. """
-#     class Meta:
-#         model = RequestMeetupLocation
-#         fields = ('name', 'slug', 'location', 'description', 'email')
-#         helper_class = SubmitCancelFormHelper
-#         helper_cancel_href = "{% url 'list_meetup_location' %}"
-#
-#     def __init__(self, *args, **kwargs):
-#         self.user = kwargs.pop('user')
-#         super(RequestMeetupLocationForm, self).__init__(*args, **kwargs)
-#
-#     def save(self, commit=True):
-#         """Override save to add requestor to the instance"""
-#         instance = super(RequestMeetupLocationForm, self).save(commit=False)
-#         instance.user = SystersUser.objects.get(user=self.user)
-#         if commit:
-#             instance.save()
-#         return instance
-
 
 class RequestMeetupForm(ModelFormWithHelper):
     """ Form to create a new Meetup Request. """
+
     class Meta:
         model = RequestMeetup
         fields = ('title', 'slug', 'date', 'time', 'venue', 'meetup_location', 'description')
@@ -78,6 +59,7 @@ class AddMeetupForm(ModelFormWithHelper):
     * created_by - currently logged in user
     * meetup_location - to which Meetup belongs
     """
+
     class Meta:
         model = Meetup
         fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description',
@@ -121,6 +103,7 @@ class AddMeetupForm(ModelFormWithHelper):
 
 class EditMeetupForm(ModelFormWithHelper):
     """Form to edit Meetup"""
+
     class Meta:
         model = Meetup
         fields = ('title', 'slug', 'date', 'time', 'description', 'venue')
@@ -132,6 +115,7 @@ class EditMeetupForm(ModelFormWithHelper):
 
 class AddMeetupCommentForm(ModelFormWithHelper):
     """Form to add a comment to a Meetup"""
+
     class Meta:
         model = Comment
         fields = ('body',)
@@ -155,6 +139,7 @@ class AddMeetupCommentForm(ModelFormWithHelper):
 
 class EditMeetupCommentForm(ModelFormWithHelper):
     """Form to edit a comment for a Meetup"""
+
     class Meta:
         model = Comment
         fields = ('body',)
@@ -164,6 +149,7 @@ class EditMeetupCommentForm(ModelFormWithHelper):
 
 class RsvpForm(ModelFormWithHelper):
     """Form to add RSVP"""
+
     class Meta:
         model = Rsvp
         fields = ('coming', 'plus_one')
@@ -187,6 +173,7 @@ class RsvpForm(ModelFormWithHelper):
 
 class AddSupportRequestForm(ModelFormWithHelper):
     """Form to add a new Support Request"""
+
     class Meta:
         model = SupportRequest
         fields = ('description',)
@@ -211,6 +198,7 @@ class AddSupportRequestForm(ModelFormWithHelper):
 
 class EditSupportRequestForm(ModelFormWithHelper):
     """Form to edit a Support Request"""
+
     class Meta:
         model = SupportRequest
         fields = ('description',)
@@ -220,6 +208,7 @@ class EditSupportRequestForm(ModelFormWithHelper):
 
 class AddSupportRequestCommentForm(ModelFormWithHelper):
     """Form to add a comment to a Support Request"""
+
     class Meta:
         model = Comment
         fields = ('body',)
@@ -244,6 +233,7 @@ class AddSupportRequestCommentForm(ModelFormWithHelper):
 
 class EditSupportRequestCommentForm(ModelFormWithHelper):
     """Form to edit a comment for a Support Request"""
+
     class Meta:
         model = Comment
         fields = ('body',)

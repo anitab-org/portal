@@ -17,6 +17,7 @@ community_moderator_permissions = community_member_permissions + [
     "reject_meetup_request",
     "view_meetup_request",
     "approve_support_request",
+    "reject_support_request"
 ]
 
 community_leader_permissions = community_moderator_permissions

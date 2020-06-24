@@ -46,5 +46,5 @@ def assign_permissions(meetup, groups):
         group = next(
             g for g in groups if g.name == group_name.format(meetup.title))
         for perm in group_permissions[key]:
-            group.permissions.add(Permission.objects.get(codename=perm))
+            group.permissions.add(Permission.objects.filter(codename=perm).first())
             group.save()

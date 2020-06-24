@@ -129,12 +129,14 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         new_meetup.meetup_location = meetup_request.meetup_location
         new_meetup.leader = meetup_request.created_by
         meetup_request.is_approved = True
+        meetup_request.approved_by = get_object_or_404(
+            SystersUser, user=self.request.user)
+        meetup_request.save()
         self.slug_meetup_request = meetup_request.slug
         status, message, level = self.process_request()
         messages.add_message(self.request, level, message)
         if status == OK:
             new_meetup.save()
-            meetup_request.delete()
             return reverse('view_meetup', kwargs={'slug': new_meetup.slug})
         else:
             return reverse('new_meetup_requests')
@@ -180,7 +182,7 @@ class RejectMeetupRequestView(LoginRequiredMixin, PermissionRequiredMixin, Delet
     def check_permissions(self, request):
         """Check if the request user has the permission to reject a meetup in the meetup location.
         The permission holds true for superusers."""
-        return self.request.user.has_perm("reject_meetup_request")
+        return self.request.user.has_perm("meetup.reject_meetup_request")
 
 
 class AllUpcomingMeetupsView(ListView):
@@ -250,7 +252,7 @@ class AddMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequire
     def check_permissions(self, request):
         """Check if the request user has the permission to add a meetup to the meetup location.
         The permission holds true for superusers."""
-        return request.user.has_perm('add_meetups')
+        return request.user.has_perm('meetup.add_meetups')
 
 
 class DeleteMeetupView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -264,14 +266,10 @@ class DeleteMeetupView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         """Redirect to meetup location's about page in case of successful deletion"""
         return reverse("upcoming_meetups")
 
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
-
     def check_permissions(self, request):
         """Check if the request user has the permission to delete a meetup from the meetup
         location. The permission holds true for superusers."""
-        return request.user.has_perm('delete_meetups')
+        return request.user.has_perm('meetup.delete_meetups')
 
 
 class EditMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
@@ -671,7 +669,7 @@ class RejectSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Redi
 
 
 class AddSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMixin,
-                                   LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+                                   LoginRequiredMixin, CreateView):
     """Add a comment to a Support Request"""
     template_name = "meetup/add_comment.html"
     model = Comment
@@ -702,11 +700,6 @@ class AddSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMixi
         context['meetup'] = self.meetup
         context['support_request'] = self.support_request
         return context
-
-    def check_permissions(self, request):
-        """Check if the request user has the permission to add a comment to a Support Request.
-        The permission holds true for superusers."""
-        return request.user.has_perm('meetup.add_support_request_comment')
 
 
 class EditSupportRequestCommentView(FormValidMessageMixin, FormInvalidMessageMixin,
