@@ -781,3 +781,11 @@ li[id=nav-menu]:hover{
     display: block;
   }
 }
+li[id=nav-menu]:hover{
+background-color:#54bceb;
+}
+@media only screen and (min-width: 768px) {
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+}

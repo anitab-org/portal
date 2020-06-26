@@ -22,10 +22,7 @@ class Meetup(models.Model):
     created_by = models.ForeignKey(
         SystersUser, null=True, verbose_name="Created By", on_delete=models.CASCADE)
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
-    meetup_picture = models.ImageField(upload_to='meetup/pictures/',
-                                       blank=True,
-                                       null=True,
-                                       verbose_name="Meetup picture")
+    resources = RichTextField(null=True, verbose_name="Meetup Resources", blank=True)
 
     class Meta:
         permissions = (
@@ -99,3 +96,8 @@ class SupportRequest(models.Model):
 
     def __str__(self):
         return "{0} volunteered for meetup {1}".format(self.volunteer, self.meetup)
+
+
+class MeetupImages(models.Model):
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    image = models.FileField(upload_to="meetup/images", verbose_name="Meetup Image")

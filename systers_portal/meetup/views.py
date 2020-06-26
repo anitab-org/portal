@@ -23,7 +23,7 @@ from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                     EditSupportRequestForm, AddSupportRequestCommentForm,
                     EditSupportRequestCommentForm,
-                    RequestMeetupForm)
+                    RequestMeetupForm, PastMeetup)
 from .models import (Meetup, Rsvp, SupportRequest,
                      RequestMeetup)
 from .constants import (OK, SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
@@ -819,3 +819,32 @@ class UpcomingMeetupsSearchView(ListView):
             results.sort(key=operator.itemgetter('date'))
             results.sort(key=operator.itemgetter('distance'))
             return JsonResponse({'search_results': results, 'unit': unit}, safe=False)
+
+
+class AddResourceView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
+                      PermissionRequiredMixin, UpdateView):
+    """Add Resources and Images to a past meetup"""
+    template_name = "meetup/edit_meetup.html"
+    model = Meetup
+    slug_url_kwarg = "meetup_slug"
+    form_class = PastMeetup
+    form_valid_message = (u"Meetup edited Successfully")
+    form_invalid_message = ERROR_MSG
+    raise_exception = True
+
+    def get_success_url(self):
+        """Redirect to meetup view page in case of successful submit"""
+        return reverse("view_meetup", kwargs={"slug": self.object.slug})
+
+    def get_context_data(self, **kwargs):
+        """Add Meetup and MeetupLocation objects to the context"""
+        context = super(AddResourceView, self).get_context_data(**kwargs)
+        self.meetup = get_object_or_404(Meetup, slug=self.kwargs['meetup_slug'])
+        context['meetup'] = self.meetup
+        context['meetup_location'] = self.meetup.meetup_location
+        return context
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to edit a meetup.
+        The permission holds true for superusers."""
+        return request.user.has_perm('meetup.change_meetups')
