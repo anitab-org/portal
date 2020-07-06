@@ -21,7 +21,7 @@
   </div>
   <div class="form-group">
     <select  name="location" id="location" placeholder="Location">
-      <option value="Current Location">{{current_city}}</option>
+      <option value="">{{current_city}}</option>
       {% for city in cities_list %}
       <option value = "{{forloop.counter}}">{{ city }}</option>
       {% endfor %}

@@ -1143,7 +1143,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
         self.location1 = City.objects.all()[0]
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
-                                            date=(timezone.now() + timezone.timedelta(4)).date(),
+                                            date='2018-09-16',
                                             time=timezone.now().time(),
                                             description='This is test Meetup',
                                             venue='Foo Systers',
@@ -1152,7 +1152,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
                                             leader=self.systers_user,
                                             last_updated=timezone.now())
         self.meetup2 = Meetup.objects.create(title='Foo Baz', slug='foobar',
-                                             date=timezone.now().date(),
+                                             date='2018-06-12',
                                              time=timezone.now().time(),
                                              description='This is new test Meetup',
                                              venue='Foo Systers',
@@ -1161,7 +1161,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
                                              leader=self.systers_user,
                                              last_updated=timezone.now())
         self.meetup3 = Meetup.objects.create(title='Foob Baz', slug='foobarbaz',
-                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             date='2018-06-13',
                                              time=timezone.now().time(),
                                              description='This is test Meetup',
                                              venue='Foo Systers',
@@ -1176,7 +1176,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         data = {'keyword': 'Foo Baz'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'search_results': [{'date': self.meetup2.date.isoformat(),
+                         {'search_results': [{'date': '2018-06-12',
                                               'meetup': 'Foo Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foobar',
@@ -1186,7 +1186,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         data1 = {'keyword': 'Foo Bar'}
         response = self.client.post(url, data1, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'search_results': [{'date': self.meetup.date.isoformat(),
+                         {'search_results': [{'date': '2018-09-16',
                                               'meetup': 'Foo Bar Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foo-bar-baz',
@@ -1196,7 +1196,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         data2 = {'keyword': 'Foo Bar', 'location': 'Baz'}
         response = self.client.post(url, data2, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'search_results': [{'date': self.meetup.date.isoformat(),
+                         {'search_results': [{'date': '2018-09-16',
                                               'meetup': 'Foo Bar Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foo-bar-baz',
@@ -1211,7 +1211,7 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         data4 = {'keyword': 'Foob'}
         response = self.client.post(url, data4, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'search_results': [{'date': self.meetup3.date.isoformat(),
+                         {'search_results': [{'date': '2018-06-13',
                                               'meetup': 'Foob Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foobarbaz',
@@ -1221,19 +1221,19 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
         data5 = {'keyword': 'Foo', 'location': 'Baz'}
         response = self.client.post(url, data5, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),
-                         {'search_results': [{'date': self.meetup2.date.isoformat(),
+                         {'search_results': [{'date': '2018-06-12',
                                               'meetup': 'Foo Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foobar',
                                               'distance': 0,
                                               'unit': 'kilometers from your location'},
-                                             {'date': self.meetup3.date.isoformat(),
+                                             {'date': '2018-06-13',
                                               'meetup': 'Foob Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foobarbaz',
                                               'distance': 0,
                                               'unit': 'kilometers from your location'},
-                                             {'date': self.meetup.date.isoformat(),
+                                             {'date': '2018-09-16',
                                               'meetup': 'Foo Bar Baz',
                                               'location': 'Baz',
                                               'meetup_slug': 'foo-bar-baz',
