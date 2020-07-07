@@ -107,7 +107,7 @@
             {% endif %}
           </ul>
         </li>
-        <li><a href="http://wiki.systers.org/open-source/doku.php/portal" target="blank_">Wiki</a></li>
+        <li><a href="https://github.com/anitab-org/portal/wiki" target="blank_">Wiki</a></li>
         {% url 'contact' as url %}
         <li {% if url == request.path %}class="active"{% endif %}><a href="{{ url }}">Contact</a></li>
         {% if user.is_authenticated and user.is_active %}
