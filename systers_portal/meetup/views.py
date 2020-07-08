@@ -3,7 +3,7 @@ import operator
 
 from django.contrib.gis.geoip2 import GeoIP2
 from django.contrib.gis.geos import Point
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -791,7 +791,7 @@ class UpcomingMeetupsSearchView(ListView):
             unit = ''
             for meetup in searched_meetups:
                 distance = ''
-                geolocator = Nominatim(timeout=6)
+                geolocator = Nominatim(user_agent="Anita-B Portal", timeout=6)
                 g = GeoIP2()
                 if location == "Current Location":
                     client_ip, is_routable = get_client_ip(request)

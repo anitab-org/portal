@@ -1,38 +1,41 @@
-{% load staticfiles %}
+{% load static %}
 
 {% load guardian_tags %}
 
 {% if user.is_authenticated and user.is_active %}
-  {% get_obj_perms user for meetup_location as "meetup_location_perms" %}
+{% get_obj_perms user for meetup_location as "meetup_location_perms" %}
 {% endif %}
 
 <div class="user-cell-wh-100">
   {% if systersuser.profile_picture.name and systersuser.profile_picture.name != "False" %}
-    <a href="{{ systersuser.get_absolute_url }}">
-      <img src="{{ systersuser.profile_picture_thumbnail.url }}" class="img-responsive" alt="{{ systersuser }} profile picture"/>
-    </a>
+  <a href="{{ systersuser.get_absolute_url }}">
+    <img src="{{ systersuser.profile_picture_thumbnail.url }}" class="img-responsive"
+      alt="{{ systersuser }} profile picture" />
+  </a>
   {% else %}
-    <a href="{{ systersuser.get_absolute_url }}">      
-      <img src="{% static 'img/default.png' %}" class=""
-      alt="{{ systersuser }} profile picture"/>
-    </a>
+  <a href="{{ systersuser.get_absolute_url }}">
+    <img src="{% static 'img/default.png' %}" class="" alt="{{ systersuser }} profile picture" />
+  </a>
   {% endif %}
   <a href="{{ systersuser.get_absolute_url }}">
     <p class="text-center"> {{ systersuser }} </p>
   </a>
   {% if "delete_meetup_location_member" in meetup_location_perms %}
-    <a href="{% url "remove_member_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-danger btn-xs">
-      Remove
-    </a>
+  <a href="{% url "remove_member_meetup_location" meetup_location.slug systersuser.user.username %}" role="button"
+    class="btn btn-danger btn-xs">
+    Remove
+  </a>
   {% endif %}
   {% if users == "Members" and "add_meetup_location_moderator" in meetup_location_perms %}
-    <a href="{% url "make_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-primary btn-xs">
-      Make Moderator
-    </a>
+  <a href="{% url "make_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button"
+    class="btn btn-primary btn-xs">
+    Make Moderator
+  </a>
   {% endif %}
   {% if users == "Moderators" and "delete_meetup_location_moderator" in meetup_location_perms %}
-    <a href="{% url "remove_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button" class="btn btn-warning btn-xs">
-      Remove Moderator
-    </a>
+  <a href="{% url "remove_moderator_meetup_location" meetup_location.slug systersuser.user.username %}" role="button"
+    class="btn btn-warning btn-xs">
+    Remove Moderator
+  </a>
   {% endif %}
 </div>

@@ -13,6 +13,7 @@ class CommunityAdmin(GuardedModelAdmin):
         form.cleaned_data['members'] = members
         super(CommunityAdmin, self).save_model(request, obj, form, change)
 
+
 admin.site.register(RequestCommunity)
 admin.site.register(Community, CommunityAdmin)
 admin.site.register(CommunityPage)

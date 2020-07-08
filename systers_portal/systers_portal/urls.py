@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^community/', include('membership.urls')),
     url(r'^meetup/', include('meetup.urls')),
     url(r'^users/', include('users.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^logout/', Logout.as_view(), name='logout'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^ckeditor/upload/', login_required(views),

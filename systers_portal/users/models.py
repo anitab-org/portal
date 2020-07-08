@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -14,8 +14,9 @@ from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
 
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
-    user = models.OneToOneField(User)
-    country = models.ForeignKey(Country, blank=True, null=True, verbose_name="Country")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, blank=True, null=True,
+                                verbose_name="Country", on_delete=models.CASCADE)
     blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
     homepage_url = models.URLField(max_length=255, blank=True,
                                    verbose_name="Homepage")

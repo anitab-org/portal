@@ -7,35 +7,34 @@
 {% load crispy_forms_tags %}
 {% block content %}
 {% load socialaccount %}
-{% load staticfiles %}
-  <div class="container">
-    <form class="login form-signin" role="form" method="POST" action="{% url 'account_login' %}">
-      <div>
-          <h3>Sign In Using<a href="{% provider_login_url 'github' %}"><img class="auth-img" src="{% static 'img/github.svg' %}"></a>
-            <a href="{% provider_login_url 'twitter' %}"><img class="auth-img" src="{% static 'img/twitter.png' %}"></a>
-            <a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a>
-            <a href="{% provider_login_url 'facebook' %}"><img class="auth-img" src="{% static 'img/facebook.png' %}"></a></h3>
-      </div>
-      <hr>
-      {% csrf_token %}
-      {{ form|crispy }}
-      {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}"
-               value="{{ redirect_field_value }}"/>
-      {% endif %}
-      <a class="button secondaryAction"
-         href="{% url 'account_reset_password' %}">Forgot Password?</a>
-      <button class="primaryAction btn btn-lg btn-primary btn-block"
-              type="submit" id="login_button">Sign In
-      </button>
-      <p class="or-delimiter">or</p>
-
-      <p>Sign in with one of your existing third party accounts.</p>
-    </form>
-    <div class="social-buttons form-signin">
-      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+{% load static %}
+<div class="container">
+  <form class="login form-signin" role="form" method="POST" action="{% url 'account_login' %}">
+    <div>
+      <h3>Sign In Using<a href="{% provider_login_url 'github' %}"><img class="auth-img"
+            src="{% static 'img/github.svg' %}"></a>
+        <a href="{% provider_login_url 'twitter' %}"><img class="auth-img" src="{% static 'img/twitter.png' %}"></a>
+        <a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a>
+        <a href="{% provider_login_url 'facebook' %}"><img class="auth-img" src="{% static 'img/facebook.png' %}"></a>
+      </h3>
     </div>
-  </div>
+    <hr>
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <a class="button secondaryAction" href="{% url 'account_reset_password' %}">Forgot Password?</a>
+    <button class="primaryAction btn btn-lg btn-primary btn-block" type="submit" id="login_button">Sign In
+    </button>
+    <p class="or-delimiter">or</p>
 
-  <div class="mt40"></div>
+    <p>Sign in with one of your existing third party accounts.</p>
+  </form>
+  <div class="social-buttons form-signin">
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+  </div>
+</div>
+
+<div class="mt40"></div>
 {% endblock %}
