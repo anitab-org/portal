@@ -271,7 +271,7 @@ class PastMeetup(ModelFormWithHelper):
         helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
     def save(self, commit=True):
-        """Override save to add created_by and meetup_location to the instance"""
+        """Override save to add images to the instance"""
         instance = super(PastMeetup, self).save(commit)
         if self.cleaned_data['images']:
             for img in self.cleaned_data['images']:

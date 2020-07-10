@@ -27,6 +27,7 @@ class PermissionsTestCase(TestCase):
             "view_meetup_request",
             "approve_support_request",
             "reject_support_request",
+            "add_resource",
         ]
         self.assertCountEqual(community_moderator_permissions, permissions)
 
@@ -42,7 +43,8 @@ class PermissionsTestCase(TestCase):
             "reject_meetup_request",
             "view_meetup_request",
             "approve_support_request",
-            "reject_support_request"
+            "reject_support_request",
+            "add_resource",
         ]
         self.assertCountEqual(community_leader_permissions, permissions)
 

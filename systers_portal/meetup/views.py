@@ -25,7 +25,7 @@ from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditSupportRequestCommentForm,
                     RequestMeetupForm, PastMeetup)
 from .models import (Meetup, Rsvp, SupportRequest,
-                     RequestMeetup)
+                     RequestMeetup, MeetupImages)
 from .constants import (OK, SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
                         ERROR_MSG, SUCCESS_MEETUP_MSG)
 from users.models import SystersUser
@@ -224,6 +224,7 @@ class MeetupView(DetailView):
         context['coming_no'] = len(coming_list) + len(plus_one_list)
         context['not_coming_no'] = len(not_coming_list)
         context['share_message'] = self.object.title + " @systers_org "
+        context['images'] = MeetupImages.objects.filter(meetup=self.object)
         return context
 
 
@@ -828,7 +829,7 @@ class AddResourceView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequi
     model = Meetup
     slug_url_kwarg = "meetup_slug"
     form_class = PastMeetup
-    form_valid_message = (u"Meetup edited Successfully")
+    form_valid_message = (u"Resources added successfully")
     form_invalid_message = ERROR_MSG
     raise_exception = True
 
@@ -845,6 +846,6 @@ class AddResourceView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequi
         return context
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to edit a meetup.
+        """Check if the request user has the permission to add resources to a meetup.
         The permission holds true for superusers."""
-        return request.user.has_perm('meetup.change_meetups')
+        return request.user.has_perm('meetup.add_resource')

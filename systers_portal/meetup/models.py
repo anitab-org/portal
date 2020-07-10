@@ -38,7 +38,8 @@ class Meetup(models.Model):
             ('delete_support_request', 'Delete Support Request'),
             ('approve_support_request', 'Approve Support Request'),
             ('reject_support_request', "Reject Support Request"),
-            ('add_support_request_comment', 'Add Support Request Comment')
+            ('add_support_request_comment', 'Add Support Request Comment'),
+            ('add_resource', 'Add Meetup Resource')
         )
 
     def __str__(self):
@@ -99,5 +100,5 @@ class SupportRequest(models.Model):
 
 
 class MeetupImages(models.Model):
-    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup", on_delete=models.CASCADE)
     image = models.FileField(upload_to="meetup/images", verbose_name="Meetup Image")

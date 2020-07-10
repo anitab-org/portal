@@ -12,4 +12,5 @@ python3-openid==3.2.0
 geoip2==4.0.1
 django-ipware==3.0.0
 django-apscheduler==0.3.1
+git+https://github.com/Chive/django-multiupload.git#egg=multiupload
 
