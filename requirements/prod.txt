@@ -7,6 +7,5 @@ django-ckeditor==5.3.1
 django-crispy-forms==1.7.0
 django-guardian==1.4.9
 django-imagekit==4.0.1
-djangocms-admin-style==1.2.7
 psycopg2==2.7.3.2
 python3-openid==3.1.0
