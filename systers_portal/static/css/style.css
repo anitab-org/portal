@@ -352,7 +352,7 @@ input {
   width: 30%;
 }
 
-#meetup-location-input,#location-input {
+#location-input {
   width: 15%;
   font-style: italic;
   font-family: 'Cairo';
@@ -747,3 +747,37 @@ input[id=form1] {
 }
 
 
+.thumbnail {
+    background-color: #F0FFFF;
+}
+
+input[id=keyword-input]{
+  height: 30px;
+  font-family: 'Cairo';
+  background-color: white;
+  border-bottom: 1px solid black;
+}
+
+select[id=location]{
+  height: 30px;
+  font-family: 'Cairo';
+  background-color: white;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+input[id=go-btn]{
+  height:30px;
+  font-family: 'Cairo';
+}
+
+li[id=nav-menu]:hover{
+  background-color:#54bceb;
+}
+
+@media only screen and (min-width: 768px) {
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+}

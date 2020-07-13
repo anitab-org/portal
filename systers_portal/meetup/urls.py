@@ -10,7 +10,8 @@ from .views import (MeetupView, AddMeetupView, DeleteMeetupView,
                     RequestMeetupView, NewMeetupRequestsListView, ViewMeetupRequestView,
                     ApproveRequestMeetupView, RejectMeetupRequestView, ApiForVmsView,
                     AllUpcomingMeetupsView, AddSupportRequestCommentView,
-                    EditSupportRequestCommentView, DeleteSupportRequestCommentView)
+                    EditSupportRequestCommentView, DeleteSupportRequestCommentView,
+                    UpcomingMeetupsSearchView)
 
 urlpatterns = [
     url(r'^upcoming/$', UpcomingMeetupsView.as_view(),
@@ -32,9 +33,9 @@ urlpatterns = [
         ApproveRequestMeetupView.as_view(), name="approve_meetup_request"),
     url(r'^(?P<meetup_slug>[\w-]+)/reject_meetup_request/$',
         RejectMeetupRequestView.as_view(), name="reject_meetup_request"),
-    # url(r'^all-upcoming-meetups/search/$', UpcomingMeetupsSearchView.as_view(),
-    #     name='search_meetups'),
-    url(r'^all-upcoming-meetups/$', AllUpcomingMeetupsView.as_view(),
+    url(r'^all/search/$', UpcomingMeetupsSearchView.as_view(),
+        name='search_meetups'),
+    url(r'^all/$', AllUpcomingMeetupsView.as_view(),
         name='all_upcoming_meetups'),
     url(r'^(?P<meetup_slug>[\w-]+)/add_comment/$', AddMeetupCommentView.as_view(),
         name="add_meetup_comment"),

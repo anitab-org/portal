@@ -164,3 +164,5 @@ ANONYMOUS_USER_ID = None
 
 # Django Crispy Forms configuration
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite2-City_20200616/GeoLite2-City.mmdb")
