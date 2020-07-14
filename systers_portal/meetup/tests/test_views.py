@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -1062,6 +1063,7 @@ class DeleteSupportRequestCommentViewTestCase(MeetupBaseCase, TestCase):
         comments = Comment.objects.all()
         self.assertEqual(len(comments), 0)
 
+
 # class ApiForVmsViewTestCase(APITestCase, TestCase):
 #     def setUp(self):
 #         self.user = User.objects.create_user(username='foo', password='foobar',
@@ -1129,3 +1131,113 @@ class DeleteSupportRequestCommentViewTestCase(MeetupBaseCase, TestCase):
 #                            u'end_date': u'2018-12-16',
 #                            u'meetup_id': 40,
 #                            u'description': u'This is test Meetup'}])
+
+
+class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
+    maxDiff = None
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar',
+                                             email='user@test.com')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        country = Country.objects.create(name='Bar', continent='AS')
+        self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
+        self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foo-bar-baz',
+                                            date=(timezone.now() + timezone.timedelta(4)).date(),
+                                            time=timezone.now().time(),
+                                            description='This is test Meetup',
+                                            venue='Foo Systers',
+                                            meetup_location=self.location,
+                                            created_by=self.systers_user,
+                                            leader=self.systers_user,
+                                            last_updated=timezone.now())
+
+        self.meetup2 = Meetup.objects.create(title='Foo Baz', slug='foobar',
+                                             date=timezone.now().date(),
+                                             time=timezone.now().time(),
+                                             description='This is new test Meetup',
+                                             venue='Foo Systers',
+                                             meetup_location=self.location,
+                                             created_by=self.systers_user,
+                                             leader=self.systers_user,
+                                             last_updated=timezone.now())
+
+        self.meetup3 = Meetup.objects.create(title='Foob Baz', slug='foobarbaz',
+                                             date=(timezone.now() + timezone.timedelta(2)).date(),
+                                             time=timezone.now().time(),
+                                             description='This is test Meetup',
+                                             venue='Foo Systers',
+                                             meetup_location=self.location,
+                                             leader=self.systers_user,
+                                             created_by=self.systers_user,
+                                             last_updated=timezone.now())
+
+    def test_post_view(self):
+        """Test post view for all search requests"""
+        url = reverse('search_meetups')
+        data = {'keyword': 'Foo Baz'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [{'date': self.meetup2.date.isoformat(),
+                                              'meetup': 'Foo Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foobar',
+                                              'distance': 900}],
+                          'unit': 'kilometers from your location'})
+
+        data1 = {'keyword': 'Foo Bar'}
+        response = self.client.post(url, data1, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [{'date': self.meetup.date.isoformat(),
+                                              'meetup': 'Foo Bar Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foo-bar-baz',
+                                              'distance': 900}],
+                          'unit': 'kilometers from your location'})
+
+        data2 = {'keyword': 'Foo Bar', 'location': 'Baz'}
+        response = self.client.post(url, data2, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [{'date': self.meetup.date.isoformat(),
+                                              'meetup': 'Foo Bar Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foo-bar-baz',
+                                              'distance': 0}],
+                          'unit': 'kilometers from your location'})
+
+        data3 = {'keyword': 'new'}
+        response = self.client.post(url, data3, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [],
+                          'unit': ''})
+
+        data4 = {'keyword': 'Foob'}
+        response = self.client.post(url, data4, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [{'date': self.meetup3.date.isoformat(),
+                                              'meetup': 'Foob Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foobarbaz',
+                                              'distance': 900}],
+                          'unit': 'kilometers from your location'})
+
+        data5 = {'keyword': 'Foo', 'location': 'Baz'}
+        response = self.client.post(url, data5, format='json')
+        self.assertEqual(json.loads(response.content.decode('utf-8')),
+                         {'search_results': [{'date': self.meetup2.date.isoformat(),
+                                              'meetup': 'Foo Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foobar',
+                                              'distance': 0},
+                                             {'date': self.meetup3.date.isoformat(),
+                                              'meetup': 'Foob Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foobarbaz',
+                                              'distance': 0},
+                                             {'date': self.meetup.date.isoformat(),
+                                              'meetup': 'Foo Bar Baz',
+                                              'location': 'Baz',
+                                              'meetup_slug': 'foo-bar-baz',
+                                              'distance': 0},
+                                             ],
+                          'unit': 'kilometers from your location'})

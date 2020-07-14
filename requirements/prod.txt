@@ -9,3 +9,6 @@ django-guardian==1.4.9
 django-imagekit==4.0.1
 psycopg2==2.7.3.2
 python3-openid==3.1.0
+geoip2==3.0.0
+django-ipware==3.0.0
+

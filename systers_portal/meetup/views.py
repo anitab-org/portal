@@ -1,7 +1,12 @@
 import datetime
+import operator
 
+from django.contrib.gis.geoip2 import GeoIP2
+from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DeleteView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, FormView
@@ -11,6 +16,9 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse
 from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
+from geopy import Nominatim
+from ipware import get_client_ip
+
 from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                     EditSupportRequestForm, AddSupportRequestCommentForm,
@@ -41,16 +49,12 @@ class RequestMeetupView(LoginRequiredMixin, CreateView):
         return reverse('upcoming_meetups')
 
     def get_form_kwargs(self):
-        """Add request user, meetup location to the form kwargs.
+        """Add request user to the form kwargs.
         Used to autofill form fields with requestor without
         explicitly filling them up in the form."""
         kwargs = super(RequestMeetupView, self).get_form_kwargs()
         kwargs.update({'created_by': self.request.user})
         return kwargs
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
 
 class NewMeetupRequestsListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -65,10 +69,6 @@ class NewMeetupRequestsListView(LoginRequiredMixin, PermissionRequiredMixin, Lis
         request_meetups_list = \
             RequestMeetup.objects.filter(is_approved=False).order_by('date', 'time')
         return request_meetups_list
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
     def check_permissions(self, request):
         """Check if the request user has the permission to view the meetup requests.
@@ -100,7 +100,7 @@ class ViewMeetupRequestView(LoginRequiredMixin, PermissionRequiredMixin, FormVie
         return kwargs
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to view meetup request in meetup location.
+        """Check if the request user has the permission to view meetup request .
         The permission holds true for superusers."""
         return self.request.user.has_perm("meetup.view_meetup_request")
 
@@ -115,7 +115,6 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         """Supply the redirect URL in case of successful approval.
         * Creates a new RequestMeetup object and copy fields,
             values from RequestMeetup object
-        * Adds the requestor as the meetup location moderator
         * Sets the RequestMeetup object's is_approved field to True.
         """
         meetup_request = get_object_or_404(RequestMeetup, slug=self.kwargs['meetup_slug'])
@@ -155,7 +154,7 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         return STATUS, SUCCESS_MEETUP_MSG, messages.INFO
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to add a meetup to the meetup location.
+        """Check if the request user has the permission to add a meetup .
         The permission holds true for superusers."""
         return self.request.user.has_perm("meetup.approve_meetup_request")
 
@@ -180,7 +179,7 @@ class RejectMeetupRequestView(LoginRequiredMixin, PermissionRequiredMixin, Delet
         return self.meetup_request
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to reject a meetup in the meetup location.
+        """Check if the request user has the permission to reject a meetup.
         The permission holds true for superusers."""
         return self.request.user.has_perm("meetup.reject_meetup_request")
 
@@ -196,6 +195,12 @@ class AllUpcomingMeetupsView(ListView):
         context = super(AllUpcomingMeetupsView, self).get_context_data(**kwargs)
         context['cities_list'] = City.objects.all()
         context['meetup_list'] = meetup_list
+        g = GeoIP2()
+        client_ip, is_routable = get_client_ip(self.request)
+        if is_routable:
+            context['current_city'] = g.city(client_ip)['city']
+        else:
+            context['current_city'] = g.city("google.com")['city']
         return context
 
 
@@ -237,20 +242,16 @@ class AddMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequire
         return reverse("view_meetup", kwargs={"slug": self.object.slug})
 
     def get_form_kwargs(self):
-        """Add request user and meetup location object to the form kwargs.
-        Used to autofill form fields with created_by and meetup_location without
+        """Add request user object to the form kwargs.
+        Used to autofill form fields with created_by without
         explicitly filling them up in the form."""
         kwargs = super(AddMeetupView, self).get_form_kwargs()
         kwargs.update({'created_by': self.request.user,
                        'leader': self.request.user})
         return kwargs
 
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
-
     def check_permissions(self, request):
-        """Check if the request user has the permission to add a meetup to the meetup location.
+        """Check if the request user has the permission to add a meetup .
         The permission holds true for superusers."""
         return request.user.has_perm('meetup.add_meetups')
 
@@ -263,12 +264,12 @@ class DeleteMeetupView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def get_success_url(self):
-        """Redirect to meetup location's about page in case of successful deletion"""
+        """Redirect to upcoming meetups page in case of successful deletion"""
         return reverse("upcoming_meetups")
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to delete a meetup from the meetup
-        location. The permission holds true for superusers."""
+        """Check if the request user has the permission to delete a meetup.
+         The permission holds true for superusers."""
         return request.user.has_perm('meetup.delete_meetups')
 
 
@@ -296,7 +297,7 @@ class EditMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequir
         return context
 
     def check_permissions(self, request):
-        """Check if the request user has the permission to edit a meetup from the meetup location.
+        """Check if the request user has the permission to edit a meetup.
         The permission holds true for superusers."""
         return request.user.has_perm('meetup.change_meetups')
 
@@ -325,10 +326,6 @@ class PastMeetupListView(ListView):
         """Set ListView queryset to all the meetups whose date is less than the current date"""
         meetup_list = Meetup.objects.filter(date__lt=datetime.date.today()).order_by('date', 'time')
         return meetup_list
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
 
 class AddMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
@@ -359,10 +356,6 @@ class AddMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, Login
         context = super(AddMeetupCommentView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
 
 class EditMeetupCommentView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequiredMixin,
@@ -449,10 +442,6 @@ class RsvpMeetupView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequir
         context['meetup'] = self.meetup
         return context
 
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
-
 
 class RsvpGoingView(LoginRequiredMixin, ListView):
     """List of members whose rsvp status is 'coming'"""
@@ -471,10 +460,6 @@ class RsvpGoingView(LoginRequiredMixin, ListView):
         context = super(RsvpGoingView, self).get_context_data(**kwargs)
         context['meetup'] = self.meetup
         return context
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
 
 class AddSupportRequestView(FormValidMessageMixin, FormInvalidMessageMixin,
@@ -612,10 +597,6 @@ class UnapprovedSupportRequestsListView(LoginRequiredMixin, PermissionRequiredMi
         context['meetup'] = self.meetup
         return context
 
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
-
     def check_permissions(self, request):
         """Check if the request user has the permission to approve a support request."""
         return request.user.has_perm('meetup.approve_support_request')
@@ -637,10 +618,6 @@ class ApproveSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin,
         support_request.save()
         return reverse('unapproved_support_requests', kwargs={'slug': self.meetup.slug})
 
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
-
     def check_permissions(self, request):
         """Check if the request user has the permission to approve a support request."""
         return request.user.has_perm('meetup.approve_support_request')
@@ -658,10 +635,6 @@ class RejectSupportRequestView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         support_request = get_object_or_404(SupportRequest, pk=self.kwargs['pk'])
         support_request.delete()
         return reverse('unapproved_support_requests', kwargs={'slug': self.meetup.slug})
-
-    def get_meetup_location(self):
-        """Add MeetupLocation object to the context"""
-        return self.meetup_location
 
     def check_permissions(self, request):
         """Check if the request user has the permission to reject a support request."""
@@ -801,79 +774,48 @@ class ApiForVmsView(APIView):
         apiforvmsview = ApiForVmsView()
         return (apiforvmsview.return_meetup_data(meetups))
 
-#
-# class UpcomingMeetupsSearchView(ListView):
-#     """Search Upcoming Meetups By Meetup Location, Date & Keyword and Filter by Date &
-#     Distance"""
-#     template_name = "meetup/list_meetup.html"
-#     model = Meetup
-#
-#     @csrf_exempt
-#     def post(self, request):
-#         if request.method == 'POST':
-#             date = request.POST.get('date')
-#             meetup_location = request.POST.get('meetup_location')
-#             keyword = request.POST.get('keyword')
-#             selected_filter = request.POST.get('filter')
-#             location = request.POST.get('location')
-#             if meetup_location == 'Meetup Location':
-#                 # when no meetup_location is selected from dropdown
-#                 meetup_location = ''
-#             if date and meetup_location and keyword:
-#                 # search by date, meetup_location & keyword
-#                 searched_meetups = Meetup.objects.filter(Q(description__contains=keyword) |
-#                                                          Q(title__contains=keyword), date=date,
-#                                                          meetup_location__name=meetup_location)
-#             elif date and meetup_location:
-#                 # search by date & meetup_location
-#                 searched_meetups = Meetup.objects.filter(date=date,
-#                                                          meetup_location__name=meetup_location)
-#             elif date and keyword:
-#                 # search by date & keyword
-#                 searched_meetups = Meetup.objects.filter(Q(description__contains=keyword) |
-#                                                          Q(title__contains=keyword), date=date,
-#                                                          description__contains=keyword)
-#             elif meetup_location and keyword:
-#                 # search by meetup_location & keyword
-#                 searched_meetups = Meetup.objects.filter(Q(description__contains=keyword) |
-#                                                          Q(title__contains=keyword),
-#                                                          meetup_location__name=meetup_location)
-#             elif date:
-#                 # search by date
-#                 searched_meetups = Meetup.objects.filter(date=date)
-#             elif meetup_location:
-#                 # search by meetup_location
-#                 searched_meetups = Meetup.objects.filter(meetup_location__name=meetup_location)
-#             elif keyword:
-#                 # search by keyword
-#                 searched_meetups = Meetup.objects.filter(Q(description__contains=keyword) |
-#                                                          Q(title__contains=keyword))
-#             else:
-#                 searched_meetups = Meetup.objects.filter(date__gte=datetime.date.today())
-#
-#             results = list()
-#             unit = ''
-#             for meetup in searched_meetups:
-#                 distance = ''
-#                 if selected_filter == 'distance':
-#                     # if user filters by distance
-#                     geolocator = Nominatim(timeout=6)
-#                     user_loc = (geolocator.geocode(location))
-#                     user_point = Point((float)(user_loc.raw['lon']), (float)(user_loc.raw['lat']))
-#                     meetup_loc = (geolocator.geocode(meetup.meetup_location.location))
-#                     meetup_point = Point((float)(meetup_loc.raw['lon']),
-#                                          (float)(meetup_loc.raw['lat']))
-#                     distance = (int)(user_point.distance(meetup_point)) * 100
-#                     results.sort(key=operator.itemgetter('distance'))
-#                     unit = 'kilometers from your location'
-#
-#                 results.append({'date': meetup.date,
-#                                 'meetup': meetup.title,
-#                                 'location': meetup.meetup_location.name,
-#                                 'location_slug': meetup.meetup_location.slug,
-#                                 'meetup_slug': meetup.slug,
-#                                 'distance': distance,
-#                                 'unit': unit})
-#
-#             results.sort(key=operator.itemgetter('date'))
-#             return JsonResponse({'search_results': results}, safe=False)
+
+class UpcomingMeetupsSearchView(ListView):
+    """Search Upcoming Meetups By  Keyword and Filter Date and Distance"""
+    template_name = "meetup/list_meetup.html"
+    model = Meetup
+
+    @csrf_exempt
+    def post(self, request):
+        if request.method == 'POST':
+            keyword = request.POST.get('keyword')
+            location = request.POST.get('location')
+            searched_meetups = Meetup.objects.filter(Q(date__gte=datetime.date.today()),
+                                                     Q(title__icontains=keyword))
+            results = list()
+            unit = ''
+            for meetup in searched_meetups:
+                distance = ''
+                geolocator = Nominatim(timeout=6)
+                g = GeoIP2()
+                if location == "Current Location":
+                    client_ip, is_routable = get_client_ip(request)
+                    if is_routable:
+                        lat, long = g.lat_lon(client_ip)
+                    else:
+                        lat, long = g.lat_lon("google.com")
+                    user_point = Point(float(long),
+                                       float(lat))
+                else:
+                    user_loc = geolocator.geocode(location)
+                    user_point = Point(float(user_loc.raw['lon']), float(user_loc.raw['lat']))
+                meetup_loc = geolocator.geocode(meetup.meetup_location)
+                meetup_point = Point(float(meetup_loc.raw['lon']),
+                                     float(meetup_loc.raw['lat']))
+                distance = int(user_point.distance(meetup_point)) * 100
+                unit = 'kilometers from your location'
+
+                results.append({'date': meetup.date,
+                                'meetup': meetup.title,
+                                'distance': distance,
+                                'location': meetup.meetup_location.name,
+                                'meetup_slug': meetup.slug})
+
+            results.sort(key=operator.itemgetter('date'))
+            results.sort(key=operator.itemgetter('distance'))
+            return JsonResponse({'search_results': results, 'unit': unit}, safe=False)
