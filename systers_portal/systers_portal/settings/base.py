@@ -13,10 +13,10 @@ import os
 from decouple import config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
-GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
-ZOOM_API_KEY = os.environ.get('ZOOM_API_KEY')
-ZOOM_API_SECRET = os.environ.get('ZOOM_API_SECRET')
-ZOOM_USER_ID = os.environ.get('ZOOM_USER_ID')
+ZOOM_API_KEY = config('ZOOM_API_KEY')
+ZOOM_API_SECRET = config('ZOOM_API_SECRET')
+ZOOM_USER_ID = config('ZOOM_USER_ID')
+GOOGLE_MAPS_API_KEY = config('GOOGLE_MAPS_API_KEY')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
