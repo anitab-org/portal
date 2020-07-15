@@ -110,4 +110,8 @@ _build
 
 .pytest_cache
 
+# gensim
 workdir.0
+
+# Environment variables
+.env
