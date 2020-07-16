@@ -190,3 +190,14 @@ def create_systers_user(sender, instance, created, **kwargs):
         if instance is not None:
             systers_user = SystersUser(user=instance)
             systers_user.save()
+
+
+class UserSetting(models.Model):
+    user = models.OneToOneField(SystersUser, on_delete=models.CASCADE)
+    weekly_digest = models.BooleanField(default=False)
+    location_change = models.BooleanField(default=False)
+    time_change = models.BooleanField(default=False)
+    reminder = models.BooleanField(default=False)
+
+    def __str__(self):
+        return "Settings for {0}".format(self.user)
