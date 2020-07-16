@@ -20,10 +20,11 @@ install:
   - pip install coveralls==0.4.4
   - sudo apt-get install python-gdal
 before_script:
+  - export GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
+  - export SECRET_KEY=foobarbaz
 #  - curl -o ipdb.tar.gz https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=$MAXMIND_LICENSE_KEY&suffix=tar.gz
 #  - tar -xzf ipdb.tar.gz -C systers_portal/
   - psql -c "CREATE DATABASE systersdb;" -U postgres
-  - cp .env.example .env
 script:
   - coverage run systers_portal/manage.py test --settings=systers_portal.settings.testing
   - flake8 systers_portal
