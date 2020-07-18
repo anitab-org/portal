@@ -95,10 +95,10 @@ class EditSettings(UpdateView, LoginRequiredMixin):
     template_name = "users/settings.html"
     form_class = EditUserSettings
     raise_exception = True
-    form_valid_message = (u"Settings added Successfully")
+    form_valid_message = u"Settings updated Successfully"
 
     def get_success_url(self):
-        return reverse('index')
+        return reverse('user', kwargs={'username': self.request.user.username})
 
     def get_form_kwargs(self):
         kwargs = super(EditSettings, self).get_form_kwargs()

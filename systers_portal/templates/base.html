@@ -147,7 +147,7 @@
                data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li {% if '/settings/' in request.path %}class="active"{% endif %}>
-                  <a role="menuitem" href="{% url 'edit_settings' user.username %}">Settings</a>
+                  <a role="menuitem" href="{% url 'edit_settings' user.username %}">Email Settings</a>
                 </li>
               <li {% if '/users/' in request.path and '/settings/' not in request.path %}class="active"{% endif %}>
                 <a href="{% url 'user' user.username %}">Profile</a>
