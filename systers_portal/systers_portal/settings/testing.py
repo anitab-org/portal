@@ -1,5 +1,6 @@
 from .base import *
 
+SCHEDULER_AUTOSTART = False
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
