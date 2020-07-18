@@ -68,7 +68,7 @@ class EditUserSettings(ModelFormWithHelper):
         super(EditUserSettings, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
-        """Override save to add created_by and meetup_location to the instance"""
+        """Override save to add user field to the instance"""
         instance = super(EditUserSettings, self).save(commit=False)
         instance.user = SystersUser.objects.get(user=self.user)
         if commit:

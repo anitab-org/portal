@@ -194,10 +194,18 @@ def create_systers_user(sender, instance, created, **kwargs):
 
 class UserSetting(models.Model):
     user = models.OneToOneField(SystersUser, on_delete=models.CASCADE)
-    weekly_digest = models.BooleanField(default=False)
-    location_change = models.BooleanField(default=False)
-    time_change = models.BooleanField(default=False)
-    reminder = models.BooleanField(default=False)
+    weekly_digest = models.BooleanField(
+        default=True,
+        verbose_name="Receive Weekly Digests from Communities")
+    location_change = models.BooleanField(
+        default=False,
+        verbose_name="Get Notified on Change in Location for Meetups")
+    time_change = models.BooleanField(
+        default=False,
+        verbose_name="Get Notified on Change in Timings for Meetups")
+    reminder = models.BooleanField(
+        default=False,
+        verbose_name="Get Reminders for rsvp'd Meetups")
 
     def __str__(self):
         return "Settings for {0}".format(self.user)
