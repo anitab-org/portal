@@ -1,0 +1,19 @@
+# This action uses commitlint to lint commit messages and check for the required guidelines
+# as given by the config file commitlint.config.js
+
+name: Check Commit Messages
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2.1.0
+      - run: yarn add @commitlint/{config-conventional,cli}
+      - run: yarn run commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD
