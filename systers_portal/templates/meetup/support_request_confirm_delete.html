@@ -1,13 +1,13 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}
   - {{ meetup }} - Delete support request
 {% endblock %}
 
 {% load crispy_forms_tags %}
-{% block meetup_location_page_content %}
+{% block content %}
 
-  {% url 'delete_support_request' meetup_location.slug meetup.slug object.pk as delete_url %}
+  {% url 'delete_support_request'  meetup.slug object.pk as delete_url %}
 
 <div class="mt40"></div>
 <div class="row">

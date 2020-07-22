@@ -1,6 +1,6 @@
 {% extends "meetup/base.html" %}
 
-{% block meetup_location_page_content %}
+{% block meetup_page_content %}
   <div class="mt20 mb40">
     <h2 class="ml15">Support Requests</h2>
     {% if not supportrequest_list %}
@@ -19,13 +19,13 @@
           {{ support_request.description|safe|truncatewords:30 }}
         </p>
         <p>
-          <a href="{% url "view_support_request" meetup_location.slug meetup.slug support_request.pk %}">SEE MORE</a>
+          <a href="{% url "view_support_request"  meetup.slug support_request.pk %}">SEE MORE</a>
         </p>
       </div>
     {% endfor %}
     {% include "blog/snippets/pagination.html" %}
     <p>
-      <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">Back to meetup</a>
+      <a href="{% url "view_meetup"  meetup.slug %}">Back to meetup</a>
     </p>
   </div>
 {% endblock %}

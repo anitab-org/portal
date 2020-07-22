@@ -1,49 +1,43 @@
 {% load guardian_tags %}
 {% if user.is_authenticated and user.is_active %}
 {% now "Y-m-d" as todays_date %}
-  {% get_obj_perms user for meetup_location as "meetup_location_perms" %}
+  {% get_obj_perms request.user for meetup as "meetup_perms" %}
+
   <div class="sidebar-module mb40">
     <h4>Meetup Actions</h4>
     <ol class="list-unstyled">
-      <li><a href="{% url 'request_meetup' meetup_location.slug %}">Request a Meetup</a></li>
-      {% if "view_meetup_location_meetuprequest" in meetup_location_perms %}
-      <li><a href="{% url 'new_meetup_requests' meetup_location.slug %}">New Meetup Requests</a></li>
+      <li><a href="{% url 'request_meetup' %}">Request a Meetup</a></li>
+      {% if "view_meetup_request" in meetup_perms %}
+      <li><a href="{% url 'new_meetup_requests' %}">New Meetup Requests</a></li>
       {% endif %}
       {% if perms.meetup.add_meetup %}
-        <li><a href="{% url 'add_meetup' meetup_location.slug %}">Add New Meetup</a></li>
+        <li><a href="{% url 'add_meetup' %}">Add New Meetup</a></li>
       {% endif %}
       {% if meetup.slug %}
-        {% if perms.meetup.change_meetup %}
-          <li><a href="{% url 'edit_meetup' meetup_location.slug meetup.slug %}">Edit Meetup</a></li>
+        {% if perms.meetup.change_meetup or user == meetup.leader.user %}
+          <li><a href="{% url 'edit_meetup' meetup.slug %}">Edit Meetup</a></li>
           {% endif %}
-          {% if perms.meetup.delete_meetup %}
-            <li><a href="{% url 'delete_meetup' meetup_location.slug meetup.slug %}">Delete Meetup</a></li>
-          {% endif %}
-          {% if todays_date < meetup.date|date:"Y-m-d" %}
-          <li><a href="{% url 'rsvp_meetup' meetup_location.slug meetup.slug %}">RSVP</a></li>
+          {% if perms.meetup.delete_meetup or user == meetup.leader.user %}
+            <li><a href="{% url 'delete_meetup' meetup.slug %}">Delete Meetup</a></li>
           {% endif %}
           {% if todays_date < meetup.date|date:"Y-m-d" %}
-          <li><a href="{% url 'rsvp_going' meetup_location.slug meetup.slug %}">Members Going</a></li>
+          <li><a href="{% url 'rsvp_going'  meetup.slug %}">Members Going</a></li>
           {% else %}
-          <li><a href="{% url 'rsvp_going' meetup_location.slug meetup.slug %}">Members Attended</a></li>
+          <li><a href="{% url 'rsvp_going'  meetup.slug %}">Members Attended</a></li>
           {% endif %}
-          <li><a href="{% url 'list_support_requests' meetup_location.slug meetup.slug %}">Support Requests</a></li>
+          <li><a href="{% url 'list_support_requests'  meetup.slug %}">Support Requests</a></li>
           {% if todays_date < meetup.date|date:"Y-m-d" %}
-          {% if "approve_support_request" in meetup_location_perms %}
-            <li><a href="{% url 'unapproved_support_requests' meetup_location.slug meetup.slug %}">Approve Support Requests</a></li>
+          {% if perms.meetup.approve_support_request %}
+            <li><a href="{% url 'unapproved_support_requests'  meetup.slug %}">Approve Support Requests</a></li>
           {% endif %}
-          {% if perms.meetup.add_supportrequest %}
-            <li><a href="{% url 'add_support_request' meetup_location.slug meetup.slug %}">Add Support Request</a></li>
-            {% endif %}
+            <li><a href="{% url 'add_support_request' meetup.slug %}">Add Support Request</a></li>
           {% endif %}
         {% endif %}
         {% if support_request.pk %}
-          {% if perms.meetup.change_supportrequest %}
-            <li><a href="{% url 'edit_support_request' meetup_location.slug meetup.slug support_request.pk %}">Edit Support Request</a></li>
-          {% endif %}
-          {% if perms.meetup.delete_supportrequest %}
-            <li><a href="{% url 'delete_support_request' meetup_location.slug meetup.slug support_request.pk %}">Delete Support Request</a></li>
-          {% endif %}
+              {% if support_request.volunteer.user == user%}
+            <li><a href="{% url 'edit_support_request' meetup.slug support_request.pk %}">Edit Support Request</a></li>
+            <li><a href="{% url 'delete_support_request' meetup.slug support_request.pk %}">Delete Support Request</a></li>
+            {% endif %}
         {% endif %}
       </ol>
     </div>

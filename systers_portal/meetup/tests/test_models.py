@@ -3,37 +3,18 @@ from django.test import TestCase
 from django.utils import timezone
 from cities_light.models import City, Country
 
-from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
 from users.models import SystersUser
 
 
-class MeetupBaseTestCase():
+class MeetupBaseTestCase:
     def setUp(self):
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Foo', display_name='Foo',
                                             country=country)
         self.user = User.objects.create(username='foo', password='foobar')
         self.systers_user = SystersUser.objects.get(user=self.user)
-        self.meetup_location = MeetupLocation.objects.create(
-            name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test location", sponsors="BarBaz", leader=self.systers_user)
-        self.meetup_location_request = RequestMeetupLocation.objects.create(
-            name="Bar Systers", slug="bar", location=self.location,
-            description="This is a test meetup location request",
-            user=self.systers_user)
-
-
-class MeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
-    def test_str(self):
-        """Test MeetupLocation object str/unicode representation"""
-        self.assertEqual(str(self.meetup_location), "Foo Systers")
-
-
-class RequestMeetupLocationModelTestCase(MeetupBaseTestCase, TestCase):
-    def test_str(self):
-        """Test MeetupLocation object str/unicode representation"""
-        self.assertEqual(str(self.meetup_location_request), "Bar Systers")
 
 
 class MeetupTestCase(MeetupBaseTestCase, TestCase):
@@ -43,8 +24,9 @@ class MeetupTestCase(MeetupBaseTestCase, TestCase):
                                             date=timezone.now().date(), time=timezone.now().time(),
                                             venue="FooBar colony",
                                             description="This is a testing meetup.",
-                                            meetup_location=self.meetup_location,
-                                            created_by=self.systers_user)
+                                            meetup_location=self.location,
+                                            created_by=self.systers_user,
+                                            leader=self.systers_user)
 
     def test_str(self):
         """Test Meetup object str/unicode representation"""
@@ -59,7 +41,7 @@ class RequestMeetupTestCase(MeetupBaseTestCase, TestCase):
                                          date=timezone.now().date(), time=timezone.now().time(),
                                          venue="FooBar colony",
                                          description="This is a testing meetup request.",
-                                         meetup_location=self.meetup_location,
+                                         meetup_location=self.location,
                                          created_by=self.systers_user)
 
     def test_str(self):
@@ -79,7 +61,8 @@ class RsvpTestCase(MeetupBaseTestCase, TestCase):
                                             date=timezone.now().date(), time=timezone.now().time(),
                                             venue="FooBar colony",
                                             description="This is a testing meetup.",
-                                            meetup_location=self.meetup_location,
+                                            meetup_location=self.location,
+                                            leader=self.systers_user,
                                             created_by=self.systers_user)
         self.rsvp = Rsvp.objects.create(user=self.systers_user, meetup=self.meetup)
 
@@ -94,7 +77,8 @@ class SupportRequestTestCase(MeetupBaseTestCase, TestCase):
                                             date=timezone.now().date(), time=timezone.now().time(),
                                             venue="FooBar colony",
                                             description="This is a testing meetup.",
-                                            meetup_location=self.meetup_location,
+                                            meetup_location=self.location,
+                                            leader=self.systers_user,
                                             created_by=self.systers_user)
         self.support_request = SupportRequest.objects.create(volunteer=self.systers_user,
                                                              meetup=self.meetup,

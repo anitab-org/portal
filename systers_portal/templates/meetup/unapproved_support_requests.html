@@ -1,6 +1,6 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
-{% block meetup_location_page_content %}
+{% block content %}
   <div class="mt20 mb40">
     <h2 class="ml15">Unapproved Support Requests</h2>
     {% for support_request in supportrequest_list %}
@@ -12,19 +12,19 @@
           {{ support_request.description|safe|truncatewords:30 }}
         </p>
         <p>
-          <a href="{% url "view_support_request" meetup_location.slug meetup.slug support_request.pk %}">SEE MORE</a>
+          <a href="{% url "view_support_request"  meetup.slug support_request.pk %}">SEE MORE</a>
         </p>
         <p>
-          <a href="{% url 'approve_support_request' meetup_location.slug meetup.slug support_request.pk %}"
+          <a href="{% url 'approve_support_request' meetup.slug support_request.pk %}"
              role="button" class="btn btn-primary btn-sm">Approve</a>
-          <a href="{% url 'reject_support_request' meetup_location.slug meetup.slug support_request.pk %}"
+          <a href="{% url 'reject_support_request' meetup.slug support_request.pk %}"
              role="button" class="btn btn-warning btn-sm">Reject</a>
         </p>
       </div>
     {% endfor %}
     {% include "blog/snippets/pagination.html" %}
     <p>
-      <a href="{% url "view_meetup" meetup_location.slug meetup.slug %}">Back to meetup</a>
+      <a href="{% url "view_meetup" meetup.slug %}">Back to meetup</a>
     </p>
   </div>
 {% endblock %}

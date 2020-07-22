@@ -6,40 +6,21 @@ groups_templates = {"community_member": COMMUNITY_MEMBER,
 
 community_member_permissions = [
     "add_meetup_rsvp",
-    "add_supportrequest",
-    "change_supportrequest",
-    "delete_supportrequest"
+    "add_support_request"
 ]
 
 community_moderator_permissions = community_member_permissions + [
-    "add_meetup",
-    "change_meetup",
-    "delete_meetup",
-    "add_meetup_location_member",
-    "delete_meetup_location_member",
-    "approve_meetup_location_joinrequest",
-    "reject_meetup_location_joinrequest",
-    "approve_meetup_location_meetuprequest",
-    "reject_meetup_location_meetuprequest",
-    "view_meetup_location_meetuprequest",
-    "approve_meetup_comment",
-    "reject_meetup_comment",
+    "add_meetups",
+    "change_meetups",
+    "delete_meetups",
+    "approve_meetup_request",
+    "reject_meetup_request",
+    "view_meetup_request",
     "approve_support_request",
-    "reject_support_request",
-    "add_support_request_comment",
-    "edit_support_request_comment",
-    "delete_support_request_comment",
-    "approve_support_request_comment",
-    "reject_support_request_comment"
+    "reject_support_request"
 ]
 
-community_leader_permissions = community_moderator_permissions + [
-    "change_meetuplocation",
-    "add_meetuplocation",
-    "add_meetup_location_moderator",
-    "delete_meetup_location_moderator",
-    "delete_meetuplocation",
-]
+community_leader_permissions = community_moderator_permissions
 
 group_permissions = {"community_member": community_member_permissions,
                      "community_moderator": community_moderator_permissions,

@@ -1,65 +1,35 @@
 from django import forms
 from django.utils import timezone
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
-from pinax.notifications import models as notification
-
-
-class RequestMeetupLocationForm(ModelFormWithHelper):
-    """ Form to create a new Request Meetup Location by a systers user. """
-    class Meta:
-        model = RequestMeetupLocation
-        fields = ('name', 'slug', 'location', 'description', 'email')
-        helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'list_meetup_location' %}"
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(RequestMeetupLocationForm, self).__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        """Override save to add requestor to the instance"""
-        instance = super(RequestMeetupLocationForm, self).save(commit=False)
-        instance.user = SystersUser.objects.get(user=self.user)
-        if commit:
-            instance.save()
-        return instance
 
 
 class RequestMeetupForm(ModelFormWithHelper):
     """ Form to create a new Meetup Request. """
+
     class Meta:
         model = RequestMeetup
-        fields = ('title', 'slug', 'date', 'time', 'venue', 'description')
+        fields = ('title', 'slug', 'date', 'time', 'venue', 'meetup_location', 'description')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
+        helper_cancel_href = "{% url 'index' %}"
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('created_by')
-        self.meetup_location = kwargs.pop('meetup_location')
         super(RequestMeetupForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
         """Override save to add admin to the instance"""
         instance = super(RequestMeetupForm, self).save(commit=False)
         instance.created_by = SystersUser.objects.get(user=self.user)
-        instance.meetup_location = self.meetup_location
-        moderators = [syster.user for syster in instance.meetup_location.moderators.all()]
         if commit:
             instance.save()
-            notification.send(moderators, 'new_meetup_request',
-                              {'meetup_location': instance.meetup_location,
-                               'systersuser': instance.created_by,
-                               'meetup_request': instance})
         return instance
 
     def clean_date(self):
@@ -89,29 +59,28 @@ class AddMeetupForm(ModelFormWithHelper):
     * created_by - currently logged in user
     * meetup_location - to which Meetup belongs
     """
+
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'venue', 'description', 'meetup_picture')
+        fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description',
+                  'meetup_picture')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
+        helper_cancel_href = "{% url 'index' %}"
 
     def __init__(self, *args, **kwargs):
         self.created_by = kwargs.pop('created_by')
-        self.meetup_location = kwargs.pop('meetup_location')
+        self.leader = kwargs.pop('leader')
         super(AddMeetupForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
         """Override save to add created_by and meetup_location to the instance"""
         instance = super(AddMeetupForm, self).save(commit=False)
         instance.created_by = SystersUser.objects.get(user=self.created_by)
-        instance.meetup_location = self.meetup_location
-        members = [systers_user.user for systers_user in self.meetup_location.members.all()]
+        instance.leader = SystersUser.objects.get(user=self.created_by)
         if commit:
             instance.save()
-            notification.send(members, 'new_meetup', {'meetup_location': self.meetup_location,
-                              'meetup': instance})
         return instance
 
     def clean_date(self):
@@ -134,86 +103,24 @@ class AddMeetupForm(ModelFormWithHelper):
 
 class EditMeetupForm(ModelFormWithHelper):
     """Form to edit Meetup"""
+
     class Meta:
         model = Meetup
         fields = ('title', 'slug', 'date', 'time', 'description', 'venue')
         widgets = {'date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
-
-
-class AddMeetupLocationMemberForm(ModelFormWithHelper):
-    """Form for adding a new member to a meetup location"""
-    class Meta:
-        model = User
-        fields = ('username',)
-        helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'members_meetup_location' meetup_location.slug %}"
-
-    def save(self, commit=True):
-        """Override save to map input username to User and append it to the meetup location. Also,
-         send the corresponding user the relevent notification."""
-        instance = super(AddMeetupLocationMemberForm, self).save(commit=False)
-        user = get_object_or_404(User, username=self.username)
-        systersuser = get_object_or_404(SystersUser, user=user)
-        if systersuser not in instance.members.all():
-            instance.members.add(systersuser)
-            notification.send([user], 'joined_meetup_location', {'meetup_location': instance})
-        if commit:
-            instance.save()
-        return instance
-
-    def clean(self):
-        """Check that only the username of an existing systers user is given"""
-        cleaned_data = super(AddMeetupLocationMemberForm, self).clean()
-        self.username = cleaned_data.get('username')
-
-        if len(User.objects.filter(username=self.username)) != 1:
-            raise forms.ValidationError("Enter username of an existing user")
-
-
-class AddMeetupLocationForm(ModelFormWithHelper):
-    """Form to create new Meetup Location"""
-    class Meta:
-        model = MeetupLocation
-        fields = ('name', 'slug', 'location', 'description', 'email', 'sponsors')
-        helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'list_meetup_location' %}"
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        super(AddMeetupLocationForm, self).__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        """Override save to add the request user to the meetup location's members,
-           leader and moderators to the instance"""
-        instance = super(AddMeetupLocationForm, self).save(commit=False)
-        systersuser = SystersUser.objects.get(user=self.user)
-        if commit:
-            instance.leader = systersuser
-            instance.save()
-            instance.members.add(systersuser)
-            instance.moderators.add(systersuser)
-        return instance
-
-
-class EditMeetupLocationForm(ModelFormWithHelper):
-    """Form to edit Meetup Location"""
-    class Meta:
-        model = MeetupLocation
-        fields = ('name', 'slug', 'location', 'description', 'email', 'sponsors')
-        helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'about_meetup_location' meetup_location.slug %}"
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
 
 class AddMeetupCommentForm(ModelFormWithHelper):
     """Form to add a comment to a Meetup"""
+
     class Meta:
         model = Comment
         fields = ('body',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.content_object = kwargs.pop('content_object')
@@ -232,20 +139,22 @@ class AddMeetupCommentForm(ModelFormWithHelper):
 
 class EditMeetupCommentForm(ModelFormWithHelper):
     """Form to edit a comment for a Meetup"""
+
     class Meta:
         model = Comment
         fields = ('body',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
 
 class RsvpForm(ModelFormWithHelper):
     """Form to add RSVP"""
+
     class Meta:
         model = Rsvp
         fields = ('coming', 'plus_one')
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+        helper_cancel_href = "{% url 'view_meetup'  meetup.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
@@ -264,11 +173,12 @@ class RsvpForm(ModelFormWithHelper):
 
 class AddSupportRequestForm(ModelFormWithHelper):
     """Form to add a new Support Request"""
+
     class Meta:
         model = SupportRequest
         fields = ('description',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
     def __init__(self, *args, **kwargs):
         self.volunteer = kwargs.pop('volunteer')
@@ -281,32 +191,29 @@ class AddSupportRequestForm(ModelFormWithHelper):
         instance = super(AddSupportRequestForm, self).save(commit=False)
         instance.volunteer = SystersUser.objects.get(user=self.volunteer)
         instance.meetup = self.meetup
-        moderators = [syster.user for syster in instance.meetup.meetup_location.moderators.all()]
         if commit:
             instance.save()
-            notification.send(moderators, 'new_support_request',
-                              {'meetup_location': instance.meetup.meetup_location,
-                               'meetup': instance.meetup, 'systersuser': instance.volunteer,
-                               'support_request': instance})
         return instance
 
 
 class EditSupportRequestForm(ModelFormWithHelper):
     """Form to edit a Support Request"""
+
     class Meta:
         model = SupportRequest
         fields = ('description',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_meetup' meetup_location.slug meetup.slug %}"
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
 
 
 class AddSupportRequestCommentForm(ModelFormWithHelper):
     """Form to add a comment to a Support Request"""
+
     class Meta:
         model = Comment
         fields = ('body',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_support_request' meetup_location.slug meetup.slug" \
+        helper_cancel_href = "{% url 'view_support_request' meetup.slug" \
                              " support_request.pk %}"
 
     def __init__(self, *args, **kwargs):
@@ -326,9 +233,10 @@ class AddSupportRequestCommentForm(ModelFormWithHelper):
 
 class EditSupportRequestCommentForm(ModelFormWithHelper):
     """Form to edit a comment for a Support Request"""
+
     class Meta:
         model = Comment
         fields = ('body',)
         helper_class = SubmitCancelFormHelper
-        helper_cancel_href = "{% url 'view_support_request' meetup_location.slug meetup.slug" \
+        helper_cancel_href = "{% url 'view_support_request' meetup.slug" \
                              " support_request.pk %}"

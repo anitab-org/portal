@@ -5,15 +5,15 @@ from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
-from django.core import mail
 
-from meetup.forms import (AddMeetupForm, EditMeetupForm, AddMeetupLocationMemberForm,
-                          AddMeetupLocationForm, EditMeetupLocationForm, AddMeetupCommentForm,
-                          EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
+
+from meetup.forms import (AddMeetupForm, EditMeetupForm,
+                          AddMeetupCommentForm, EditMeetupCommentForm,
+                          RsvpForm, AddSupportRequestForm,
                           EditSupportRequestForm, AddSupportRequestCommentForm,
-                          EditSupportRequestCommentForm, RequestMeetupLocationForm,
+                          EditSupportRequestCommentForm,
                           RequestMeetupForm)
-from meetup.models import (Meetup, MeetupLocation, Rsvp, SupportRequest, RequestMeetupLocation,
+from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
 from users.models import SystersUser
 from common.models import Comment
@@ -26,71 +26,44 @@ class MeetupFormTestCaseBase:
         self.systers_user = SystersUser.objects.get(user=self.user)
         country = Country.objects.create(name='Bar', continent='AS')
         self.location = City.objects.create(name='Baz', display_name='Baz', country=country)
-        self.meetup_location = MeetupLocation.objects.create(
-            name="Foo Systers", slug="foo", location=self.location,
-            description="It's a test meetup location", sponsors="BarBaz", leader=self.systers_user)
-        self.meetup_location.members.add(self.systers_user)
-        self.meetup_location.moderators.add(self.systers_user)
-
         self.meetup = Meetup.objects.create(title='Foo Bar Baz', slug='foobarbaz',
                                             date=timezone.now().date(),
                                             time=timezone.now().time(),
                                             description='This is test Meetup',
-                                            meetup_location=self.meetup_location,
+                                            meetup_location=self.location,
                                             created_by=self.systers_user,
+                                            leader=self.systers_user,
                                             last_updated=timezone.now())
-
-
-class RequestMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
-    def test_add_request_meetup_location_form(self):
-        # Testing form with invalid data
-        invalid_data = {'name': 'def', 'location': 'Baz, Bar, AS'}
-        form = AddMeetupLocationForm(data=invalid_data, user=self.user)
-        self.assertFalse(form.is_valid())
-        # Testing form with valid data
-        location_id = self.location.id
-        data = {'name': 'Bar Systers', 'slug': 'bar', 'location': location_id,
-                'description': 'test test test.', 'email': 'abc@def.com'}
-        form = RequestMeetupLocationForm(data=data, user=self.user)
-        self.assertTrue(form.is_valid())
-        form.save()
-
-        new_meetup_location_request = RequestMeetupLocation.objects.get(slug='bar')
-        self.assertTrue(new_meetup_location_request.name, 'Bar Systers')
 
 
 class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
     def test_add_request_meetup_form(self):
         # Testing form with invalid data
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
-        form = RequestMeetupForm(data=invalid_data, created_by=self.user,
-                                 meetup_location=self.meetup_location)
+        form = RequestMeetupForm(data=invalid_data, created_by=self.user)
         self.assertFalse(form.is_valid())
 
         date = (timezone.now() + timedelta(2)).date()
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location.id,
                 'description': "It's a test meetup."}
-        form = RequestMeetupForm(data=data, created_by=self.user,
-                                 meetup_location=self.meetup_location)
+        form = RequestMeetupForm(data=data, created_by=self.user)
         self.assertTrue(form.is_valid())
         form.save()
         new_meetup_request = RequestMeetup.objects.get(slug='foo')
         self.assertTrue(new_meetup_request.title, 'Foo')
         self.assertTrue(new_meetup_request.created_by, self.systers_user)
-        self.assertTrue(new_meetup_request.meetup_location, self.meetup_location)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn(self.user.email, mail.outbox[0].to)
-        self.assertIn('New Meetup Request', mail.outbox[0].subject)
+        self.assertTrue(new_meetup_request.meetup_location, self.location)
 
     def test_request_meetup_form_with_past_date(self):
         """Test add Meetup form with a date that has passed."""
         date = (timezone.now() - timedelta(2)).date()
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['date'], ["Date should not be before today's date."])
 
@@ -99,9 +72,9 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         date = timezone.now().date()
         time = (timezone.now() - timedelta(2)).time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['time'],
                         ["Time should not be a time that has already passed."])
@@ -115,41 +88,36 @@ class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.user2 = User.objects.create_user(username='baz', password=self.password,
                                               email='user2@test.com')
         self.systers_user2 = SystersUser.objects.get(user=self.user2)
-        self.meetup_location.members.add(self.systers_user2)
 
     def test_add_meetup_form(self):
         """Test add Meetup form"""
         invalid_data = {'title': 'abc', 'date': timezone.now().date()}
-        form = AddMeetupForm(data=invalid_data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=invalid_data,
+                             created_by=self.systers_user,
+                             leader=self.systers_user)
         self.assertFalse(form.is_valid())
 
         date = (timezone.now() + timedelta(2)).date()
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location.id,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=data, created_by=self.user, leader=self.systers_user)
         self.assertTrue(form.is_valid())
         form.save()
         new_meetup = Meetup.objects.get(slug='foo')
         self.assertTrue(new_meetup.title, 'Foo')
         self.assertTrue(new_meetup.created_by, self.systers_user)
-        self.assertTrue(new_meetup.meetup_location, self.meetup_location)
-        self.assertEqual(len(mail.outbox), 2)
-        self.assertIn(self.user.email, mail.outbox[0].to)
-        self.assertIn('New Meetup', mail.outbox[0].subject)
-        self.assertIn(self.user2.email, mail.outbox[1].to)
-        self.assertIn('New Meetup', mail.outbox[1].subject)
+        self.assertTrue(new_meetup.meetup_location, self.location)
 
     def test_add_meetup_form_with_past_date(self):
         """Test add Meetup form with a date that has passed."""
         date = (timezone.now() - timedelta(2)).date()
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['date'], ["Date should not be before today's date."])
 
@@ -158,9 +126,9 @@ class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         date = timezone.now().date()
         time = (timezone.now() - timedelta(2)).time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
+                'meetup_location': self.location,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user,
-                             meetup_location=self.meetup_location)
+        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['time'],
                         ["Time should not be a time that has already passed."])
@@ -185,70 +153,7 @@ class EditMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(meetup.title, 'Foo Bar')
         self.assertEqual(meetup.slug, 'foobar')
         self.assertEqual(meetup.created_by, self.systers_user)
-        self.assertEqual(meetup.meetup_location, self.meetup_location)
-
-
-class AddMeetupLocationMemberFormTestCase(MeetupFormTestCaseBase, TestCase):
-    def setUp(self):
-        super(AddMeetupLocationMemberFormTestCase, self).setUp()
-        self.user2 = User.objects.create_user(username='baz', password='bazbar',
-                                              email='user2@test.com')
-        self.systers_user2 = SystersUser.objects.get(user=self.user2)
-
-    def test_add_meetup_location_member_form(self):
-        """Test add meetup location Member form"""
-        invalid_data = {'username': 'non_existent'}
-        form = AddMeetupLocationMemberForm(data=invalid_data)
-        self.assertFalse(form.is_valid())
-
-        username = self.user2.get_username()
-        data = {'username': username}
-        self.meetup_location = MeetupLocation.objects.get()
-        form = AddMeetupLocationMemberForm(data=data, instance=self.meetup_location)
-        self.assertTrue(form.is_valid())
-        form.save()
-
-        members = self.meetup_location.members.all()
-        self.assertTrue(self.systers_user2 in members)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn(self.user2.email, mail.outbox[0].to)
-        self.assertIn('Joined Meetup Location', mail.outbox[0].subject)
-
-
-class AddMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
-    def test_add_meetup_location_form(self):
-        """Test add Meetup Location form"""
-        invalid_data = {'name': 'def', 'location': 'Baz, Bar, AS'}
-        form = AddMeetupLocationForm(data=invalid_data, user=self.user)
-        self.assertFalse(form.is_valid())
-
-        location_id = self.location.id
-        data = {'name': 'Bar Systers', 'slug': 'bar', 'location': location_id,
-                'description': 'test test test.', 'email': 'abc@def.com', 'sponsors': 'BaaBaa'}
-        form = AddMeetupLocationForm(data=data, user=self.user)
-        self.assertTrue(form.is_valid())
-        form.save()
-
-        new_meetup_location = MeetupLocation.objects.get(slug='bar')
-        self.assertTrue(new_meetup_location.name, 'Bar Systers')
-
-
-class EditMeetupLocationFormTestCase(MeetupFormTestCaseBase, TestCase):
-    def test_edit_meetup_location_form(self):
-        """Test edit meetup location form"""
-        invalid_data = {'location': 4, 'sponsors': 'wrogn'}
-        form = EditMeetupLocationForm(data=invalid_data)
-        self.assertFalse(form.is_valid())
-
-        location_id = self.location.id
-        data = {'name': 'Foo Systers', 'slug': 'foo', 'location': location_id,
-                'description': 'test edit', 'email': 'foo@bar.com', 'sponsors': 'test'}
-        form = EditMeetupLocationForm(instance=self.meetup_location, data=data)
-        self.assertTrue(form.is_valid())
-        form.save()
-        meetup_location = MeetupLocation.objects.get()
-        self.assertEqual(meetup_location.description, 'test edit')
-        self.assertEqual(meetup_location.sponsors, 'test')
+        self.assertEqual(meetup.meetup_location, self.location)
 
 
 class AddMeetupCommentFormTestCase(MeetupFormTestCaseBase, TestCase):
@@ -317,9 +222,6 @@ class AddSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):
         self.assertEqual(support_requests[0].description, 'This is a test description')
         self.assertEqual(support_requests[0].volunteer, self.systers_user)
         self.assertEqual(support_requests[0].meetup, self.meetup)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn(self.user.email, mail.outbox[0].to)
-        self.assertIn('New Support Request', mail.outbox[0].subject)
 
 
 class EditSupportRequestFormTestCase(MeetupFormTestCaseBase, TestCase):

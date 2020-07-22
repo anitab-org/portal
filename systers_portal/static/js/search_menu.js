@@ -18,18 +18,12 @@ function getCookie(name) {
 // Getting data from the search bars
 $("#go-btn").click(function() {
 
-	var MeetupLocation = document.getElementById("meetup-location-input").options[document.getElementById("meetup-location-input").selectedIndex].text;
-	var SelectedDate = document.getElementById("date-input").value;
-	var Keyword = document.getElementById("keyword-input").value;
-	var SelectedFilter = document.getElementById("myList").value;
-	var Location = document.getElementById("location-input").options[document.getElementById("location-input").selectedIndex].text;
-	var csrftoken = getCookie("csrftoken");
-	var Data = {
-		"csrfmiddlewaretoken": csrftoken,
-		"meetup_location": MeetupLocation,
-		"date": SelectedDate,
+	let Keyword = document.getElementById("keyword-input").value;
+	let Location = document.getElementById("location").options[document.getElementById("location").selectedIndex].text;
+	let csrftoken = getCookie("csrftoken");
+	let Data = {
+	  "csrfmiddlewaretoken": csrftoken,
 		"keyword": Keyword,
-		"filter" : SelectedFilter,
 		"location": Location
 	};
 	$.ajax({
@@ -37,26 +31,32 @@ $("#go-btn").click(function() {
 		url: "search/",
 		data: Data,
 		success(a){
-			var x = "";
+		let x="";
+		  if(a.search_results.length==0){
+		     x = `<h3>No Meetups Found</h3>`;
+		  }
+			else{
+			   x = `<div class="row">`;
 			for(var i of a.search_results){
-				x += "<div class=\n" +
-				"'text-bottom ml15'>"+i.location +"<div><a href='../"+i.location_slug+"\n" +
-				"/"+i.meetup_slug+"''>"+i.meetup+"</a>"+"</div>"+i.date+"\n" +
-				"<div><b>"+i.distance+" "+i.unit+"</b></div></div>";			
+			  let link = `../${i.meetup_slug}/`;
+			  x = x + `<div class="col-sm-6 col-md-4">
+			             <div class="thumbnail">
+			                  <div class="caption">
+			                     <h3> ${i.meetup} </h3>
+			                      <h4> ${i.date}  </h4>
+			                      <h5> ${i.location} </h5>
+			                      <h5> ${i.distance}  ${a.unit} </h5>
+			                      <p align="right">
+			                        <a href=${link} class="btn btn-primary" role="button">Checkout</a>
+			                      </p>
+			                  </div>
+			             </div>
+			            </div>`;
+			}
+			x = x + `</div>`;
 			}
 		$("#meetups-list").html(x);
 		},
 		dataType:"json",
 	});
-});
-
-// Hiding the location bar until distance filter is selected
-$("#myList").change(function(){
-	var SelectedFilter = document.getElementById("myList").value;
-	// If date filter is selected
-	if(SelectedFilter === "date"){
-		$("#location").addClass("hidden");
-	}else{
-		$("#location").removeClass("hidden");
-	}
 });

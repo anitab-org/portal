@@ -1,4 +1,4 @@
-{% extends "meetup/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}
   - Request a Meetup
@@ -11,11 +11,11 @@
 {% endblock %}
 
 {% load crispy_forms_tags %}
-{% block meetup_location_page_content %}
+{% block content %}
   <div class="mt20 mb40"></div>
   <div class="row ml20">
     <div class="col-md-12">
-      <h1>Request a meeetup in {{ meetup_location.name }}</h1>
+      <h1>Request a meeetup</h1>
       <hr/>
     </div>
     <div class="col-md-12">
