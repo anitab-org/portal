@@ -1,0 +1,48 @@
+name: Run tests
+on: [push]
+jobs:
+  run:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.7]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+      
+    steps:
+    - uses: actions/checkout@develop
+    - name: Setup Python
+      uses: actions/setup-python@develop
+      with:
+        python-version: 3.7
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'  # See https://hub.docker.com/_/postgres for available versions
+    - name: Setup geckodriver
+    - run: |
+        wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz
+        tar -xzvf geckodriver-v0.20.1-linux64.tar.gz
+        sudo mv geckodriver /usr/local/bin
+    - name: Install dependencies
+    - run: |
+        pip install -r requirements/dev.txt
+        pip install coveralls==0.4.4
+        sudo apt-get install python-gdal
+    - name: Setup after Installation
+    - run: |
+        export GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY
+        export SECRET_KEY=foobarbaz
+        psql -c "CREATE DATABASE systersdb;" -U postgres
+    - name: Check flake8
+    - run: | 
+        flake8 systers_portal
+    - name: Run tests
+    - run: |
+        coverage run systers_portal/manage.py test --settings=systers_portal.settings.testing
+    - name: Upload coverage to Codecov
+    uses: codecov/codecov-action@v1
+    with:
+        name: codecov-umbrella
+        fail_ci_if_error: true
