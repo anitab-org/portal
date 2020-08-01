@@ -5,7 +5,7 @@ django-nose==1.4.6
 flake8==3.8.3
 sphinx-rtd-theme==0.5.0
 pylint==2.5.3
-pytest==5.4.3
+pytest==6.0.1
 pytest-cov==2.10.0
 pytest-django==3.9.0
 pytest-pylint==0.17.0
