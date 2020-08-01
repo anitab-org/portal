@@ -9,7 +9,7 @@ django-guardian==2.3.0
 django-imagekit==4.0.2
 psycopg2==2.8.5
 python3-openid==3.2.0
-geoip2==4.0.1
+geoip2==4.0.2
 django-ipware==3.0.0
 django-apscheduler==0.4.0
 git+https://github.com/Chive/django-multiupload.git#egg=django-multiupload
