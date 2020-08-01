@@ -14,6 +14,5 @@ django-ipware==3.0.1
 django-apscheduler==0.4.1
 git+https://github.com/Chive/django-multiupload.git#egg=django-multiupload
 geoip2==4.0.2
-django-ipware==3.0.0
 nltk==3.5
 gensim==3.8.3

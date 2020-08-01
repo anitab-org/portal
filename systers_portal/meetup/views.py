@@ -220,9 +220,7 @@ class MeetupView(DetailView):
             is_approved=True).order_by('date_created')
         coming_list = Rsvp.objects.filter(meetup=self.object, coming=True)
         plus_one_list = Rsvp.objects.filter(meetup=self.object, plus_one=True)
-        not_coming_list = Rsvp.objects.filter(meetup=self.object, coming=False)
         context['coming_no'] = len(coming_list) + len(plus_one_list)
-        context['not_coming_no'] = len(not_coming_list)
         context['share_message'] = self.object.title + " @systers_org "
         context['images'] = MeetupImages.objects.filter(meetup=self.object)
         return context
