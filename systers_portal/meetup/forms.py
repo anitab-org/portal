@@ -5,8 +5,11 @@ from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
 from meetup.models import (Meetup, Rsvp, SupportRequest,
                            RequestMeetup)
+from multiupload.fields import MultiFileField
 from users.models import SystersUser
 from common.models import Comment
+
+from meetup.models import MeetupImages
 
 
 class RequestMeetupForm(ModelFormWithHelper):
@@ -63,11 +66,13 @@ class AddMeetupForm(ModelFormWithHelper):
     class Meta:
         model = Meetup
         fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description',
-                  'meetup_picture')
+                  'resources')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'index' %}"
+
+    images = MultiFileField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.created_by = kwargs.pop('created_by')
@@ -81,6 +86,9 @@ class AddMeetupForm(ModelFormWithHelper):
         instance.leader = SystersUser.objects.get(user=self.created_by)
         if commit:
             instance.save()
+        if self.cleaned_data['images']:
+            for img in self.cleaned_data['images']:
+                MeetupImages.objects.create(image=img, meetup=instance)
         return instance
 
     def clean_date(self):
@@ -104,13 +112,24 @@ class AddMeetupForm(ModelFormWithHelper):
 class EditMeetupForm(ModelFormWithHelper):
     """Form to edit Meetup"""
 
+    images = MultiFileField(required=False)
+
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'description', 'venue')
+        fields = ('title', 'slug', 'date', 'time', 'description', 'venue',)
         widgets = {'date': forms.DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'time', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
+
+    def save(self, commit=True):
+        """Override save to add created_by and meetup_location to the instance"""
+        instance = super(EditMeetupForm, self).save(commit)
+        MeetupImages.objects.filter(meetup=instance).delete()
+        if self.cleaned_data['images']:
+            for img in self.cleaned_data['images']:
+                MeetupImages.objects.create(image=img, meetup=instance)
+        return instance
 
 
 class AddMeetupCommentForm(ModelFormWithHelper):
@@ -240,3 +259,21 @@ class EditSupportRequestCommentForm(ModelFormWithHelper):
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_support_request' meetup.slug" \
                              " support_request.pk %}"
+
+
+class PastMeetup(ModelFormWithHelper):
+    images = MultiFileField(required=False)
+
+    class Meta:
+        model = Meetup
+        fields = ('resources',)
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'view_meetup' meetup.slug %}"
+
+    def save(self, commit=True):
+        """Override save to add images to the instance"""
+        instance = super(PastMeetup, self).save(commit)
+        if self.cleaned_data['images']:
+            for img in self.cleaned_data['images']:
+                MeetupImages.objects.create(image=img, meetup=instance)
+        return instance

@@ -41,10 +41,10 @@ class JoinRequestManager(models.Manager):
 
 class JoinRequest(models.Model):
     """Model to represent a request to join a community by a user"""
-    user = models.ForeignKey(SystersUser, related_name='created_by')
+    user = models.ForeignKey(SystersUser, related_name='created_by', on_delete=models.CASCADE)
     approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
-                                    related_name='approved_by')
-    community = models.ForeignKey(Community)
+                                    related_name='approved_by', on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
 

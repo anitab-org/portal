@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 
 from common.models import Post
@@ -25,9 +25,9 @@ class Community(models.Model):
                                      related_name='communities',
                                      verbose_name="Members")
     admin = models.ForeignKey(SystersUser, related_name='community',
-                              verbose_name="Community admin")
+                              verbose_name="Community admin", on_delete=models.CASCADE)
     parent_community = models.ForeignKey('self', blank=True, null=True,
-                                         verbose_name="Parent community")
+                                         verbose_name="Parent community", on_delete=models.CASCADE)
     website = models.URLField(max_length=255, blank=True,
                               verbose_name="Website")
     facebook = models.URLField(max_length=255, blank=True,
@@ -144,13 +144,14 @@ class RequestCommunity(models.Model):
     slug = models.SlugField(max_length=150, unique=True, verbose_name="Slug")
     order = models.PositiveIntegerField(
         null=True, blank=True, verbose_name="Order")
-    location = models.ForeignKey(City, verbose_name="Location", default="")
+    location = models.ForeignKey(City, verbose_name="Location",
+                                 default="", on_delete=models.CASCADE)
     email = models.EmailField(max_length=255, blank=True,
                               verbose_name=" At what email address would you like to be contacted?")
     mailing_list = models.EmailField(max_length=255, blank=True,
                                      verbose_name="Mailing list of the community")
     parent_community = models.ForeignKey(Community, blank=True, null=True,
-                                         verbose_name="Parent community")
+                                         verbose_name="Parent community", on_delete=models.CASCADE)
     website = models.URLField(max_length=255, blank=True,
                               verbose_name="Link to the website")
     facebook = models.URLField(max_length=255, blank=True,
@@ -197,10 +198,10 @@ class RequestCommunity(models.Model):
                                     verbose_name=" Will there be real-time meetings in addition to an online community?\
          (Example, at the Grace Hopper Celebration; regional meetings; etc)")
     user = models.ForeignKey(
-        SystersUser, verbose_name="Created by", related_name="requestor")
+        SystersUser, verbose_name="Created by", related_name="requestor", on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=False, verbose_name="Approved")
     approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
-                                    verbose_name='Approved by')
+                                    verbose_name='Approved by', on_delete=models.CASCADE)
     date_created = models.DateTimeField(
         auto_now_add=True, verbose_name="Date created")
 
@@ -228,7 +229,7 @@ class RequestCommunity(models.Model):
 class CommunityPage(Post):
     """Model to represent an arbitrary community page"""
     order = models.IntegerField(verbose_name="Order")
-    community = models.ForeignKey(Community, verbose_name="Community")
+    community = models.ForeignKey(Community, verbose_name="Community", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('community', 'slug'), ('community', 'order'))

@@ -1,7 +1,15 @@
 from django.contrib.auth.models import Group, Permission
+from django.core.mail import send_mail
 from django.db import transaction
+from django.template.loader import render_to_string
 
 from meetup.permissions import groups_templates, group_permissions
+
+from meetup.models import Rsvp
+
+from users.models import UserSetting
+
+from systers_portal.settings.dev import FROM_EMAIL
 
 
 @transaction.atomic
@@ -48,3 +56,57 @@ def assign_permissions(meetup, groups):
         for perm in group_permissions[key]:
             group.permissions.add(Permission.objects.filter(codename=perm).first())
             group.save()
+
+
+def send_reminder(meetup):
+    rsvp_list = Rsvp.objects.filter(meetup=meetup)
+    subject = "Reminder for {0}".format(meetup)
+    for rsvp in rsvp_list:
+        setting = UserSetting.objects.get(user=rsvp.user)
+        if setting.reminder:
+            html_text = render_to_string("templates/meetup/reminder.html",
+                                         context={'meetup': meetup,
+                                                  'user': rsvp.user})
+            send_mail(
+                subject,
+                'Reminder Mail',
+                FROM_EMAIL,
+                [rsvp.user.user.email],
+                html_message=html_text,
+            )
+
+
+def notify_location(meetup):
+    rsvp_list = Rsvp.objects.filter(meetup=meetup)
+    subject = "Notification for change in location for {0}".format(meetup)
+    for rsvp in rsvp_list:
+        setting = UserSetting.objects.get(user=rsvp.user)
+        if setting.location_change:
+            html_text = render_to_string("templates/meetup/location_change_email.html",
+                                         context={'meetup': meetup,
+                                                  'user': rsvp.user})
+            send_mail(
+                subject,
+                'Change in Location',
+                FROM_EMAIL,
+                [rsvp.user.user.email],
+                html_message=html_text,
+            )
+
+
+def notify_time(meetup):
+    rsvp_list = Rsvp.objects.filter(meetup=meetup)
+    subject = "Notification for change in location for {0}".format(meetup)
+    for rsvp in rsvp_list:
+        setting = UserSetting.objects.get(user=rsvp.user)
+        if setting.time_change:
+            html_text = render_to_string("templates/meetup/time_change_email.html",
+                                         context={'meetup': meetup,
+                                                  'user': rsvp.user})
+            send_mail(
+                subject,
+                'Time Changed',
+                FROM_EMAIL,
+                [rsvp.user.user.email],
+                html_message=html_text,
+            )

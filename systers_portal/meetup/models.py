@@ -16,14 +16,13 @@ class Meetup(models.Model):
     venue = models.CharField(max_length=512, verbose_name="Venue", blank=True)
     description = models.TextField(verbose_name="Description")
     leader = models.ForeignKey(SystersUser, null=True, blank=True, related_name='community_leader',
-                               verbose_name="Community leader")
-    meetup_location = models.ForeignKey(City, verbose_name="Meetup Location")
-    created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
+                               verbose_name="Community leader", on_delete=models.CASCADE)
+    meetup_location = models.ForeignKey(
+        City, verbose_name="Meetup Location", on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        SystersUser, null=True, verbose_name="Created By", on_delete=models.CASCADE)
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
-    meetup_picture = models.ImageField(upload_to='meetup/pictures/',
-                                       blank=True,
-                                       null=True,
-                                       verbose_name="Meetup picture")
+    resources = RichTextField(null=True, verbose_name="Meetup Resources", blank=True)
 
     class Meta:
         permissions = (
@@ -39,7 +38,8 @@ class Meetup(models.Model):
             ('delete_support_request', 'Delete Support Request'),
             ('approve_support_request', 'Approve Support Request'),
             ('reject_support_request', "Reject Support Request"),
-            ('add_support_request_comment', 'Add Support Request Comment')
+            ('add_support_request_comment', 'Add Support Request Comment'),
+            ('add_resource', 'Add Meetup Resource')
         )
 
     def __str__(self):
@@ -54,10 +54,12 @@ class RequestMeetup(models.Model):
     time = models.TimeField(verbose_name="Time", blank=True)
     venue = models.CharField(max_length=512, verbose_name="Venue", blank=True)
     description = RichTextField(verbose_name="Description")
-    meetup_location = models.ForeignKey(City, verbose_name="Meetup Location")
-    created_by = models.ForeignKey(SystersUser, null=True, verbose_name="Created By")
+    meetup_location = models.ForeignKey(
+        City, verbose_name="Meetup Location", on_delete=models.CASCADE)
+    created_by = models.ForeignKey(
+        SystersUser, null=True, verbose_name="Created By", on_delete=models.CASCADE)
     approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
-                                    related_name='approvedBy')
+                                    related_name='approvedBy', on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
 
@@ -74,8 +76,8 @@ class RequestMeetup(models.Model):
 
 class Rsvp(models.Model):
     """ Users RSVP for particular meetup """
-    user = models.ForeignKey(SystersUser, verbose_name="User")
-    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    user = models.ForeignKey(SystersUser, verbose_name="User", on_delete=models.CASCADE)
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup", on_delete=models.CASCADE)
     coming = models.BooleanField(default=True)
     plus_one = models.BooleanField(default=False)
 
@@ -88,10 +90,15 @@ class Rsvp(models.Model):
 
 class SupportRequest(models.Model):
     """Manage details of various volunteering activities"""
-    volunteer = models.ForeignKey(SystersUser, verbose_name="Volunteer")
-    meetup = models.ForeignKey(Meetup, verbose_name="Meetup")
+    volunteer = models.ForeignKey(SystersUser, verbose_name="Volunteer", on_delete=models.CASCADE)
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup", on_delete=models.CASCADE)
     description = models.TextField(verbose_name="Description", blank=True)
     is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return "{0} volunteered for meetup {1}".format(self.volunteer, self.meetup)
+
+
+class MeetupImages(models.Model):
+    meetup = models.ForeignKey(Meetup, verbose_name="Meetup", on_delete=models.CASCADE)
+    image = models.FileField(upload_to="meetup/images", verbose_name="Meetup Image")

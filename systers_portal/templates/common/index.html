@@ -1,89 +1,86 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load static %}
 
 {% block content %}
-  <div class="jumbotron jumbotron-custom">
-    <h1 class="index-head">Welcome to Systers Portal!</h1>
+<div class="jumbotron jumbotron-custom">
+  <h1 class="index-head">Welcome to Systers Portal!</h1>
 
-    <p class="lead">Systers is the world’s largest email community of women in
-      technical roles in computing. Systers Portal is a unified platform for
-      Systers and its sub-groups to share information and get the latest news.</p>
-    <p>
-      {% if not user.is_authenticated %}
-        <a class="btn btn-lg btn-success" href="{% url 'account_signup' %}" role="button">Join Systers</a>
-      {% endif %}
-    </p>
+  <p class="lead">Systers is the world’s largest email community of women in
+    technical roles in computing. Systers Portal is a unified platform for
+    Systers and its sub-groups to share information and get the latest news.</p>
+  <p>
+    {% if not user.is_authenticated %}
+    <a class="btn btn-lg btn-success" href="{% url 'account_signup' %}" role="button">Join Systers</a>
+    {% endif %}
+  </p>
+</div>
+<hr class="featurette-divider">
+<div class="row featurette">
+  <div class="col-md-7 col-lg-9">
+    <h2 class="featurette-heading">Systers Communities</h2>
+
+    <p class="lead">Special Interest communities are those communities where
+      Systers can identify themselves culturally to share and offer support in
+      challenges within their communities.</p>
+    <a href="http://anitaborg.org/get-involved/systers/" role="button" target="_blank"
+      class="btn btn-primary btn-lg mb15">Read more</a>
   </div>
-  <hr class="featurette-divider">
-  <div class="row featurette">
-    <div class="col-md-7 col-lg-9">
-      <h2 class="featurette-heading">Systers Communities</h2>
-
-      <p class="lead">Special Interest communities are those communities where
-        Systers can identify themselves culturally to share and offer support in
-        challenges within their communities.</p>
-      <a href="http://anitaborg.org/get-involved/systers/" role="button" target="_blank"
-         class="btn btn-primary btn-lg mb15">Read more</a>
-    </div>
-    <div class="col-md-5 col-lg-3">
-      <img class="img-responsive" src="{% static 'img/systers_communities.jpg' %}"
-           alt="Systers Communities">
-    </div>
+  <div class="col-md-5 col-lg-3">
+    <img class="img-responsive" src="{% static 'img/systers_communities.jpg' %}" alt="Systers Communities">
   </div>
+</div>
 
-  <hr class="featurette-divider">
+<hr class="featurette-divider">
 
-  <div class="row featurette">
-    <div class="col-md-5 col-lg-3">
-      <img class="img-responsive" src="{% static 'img/systers_initiatives.jpg' %}"
-          alt="Systers Initiatives">
-    </div>
-    <div class="col-md-7 col-lg-9 margin-responsive">
-      <h2 class="featurette-heading">Systers Initiatives</h2>
-
-      <p class="lead">In order to honor Anita’s desire to create a network of women
-       in computing actively helping each another, members of the Systers community
-       created the Anita Borg Systers Pass-It-On Awards program.</p>
-      <a href="http://anitaborg.org/get-involved/systers/systers-initiatives/"
-         role="button" target="_blank" class="btn btn-primary btn-lg mb15">Read more</a>
-    </div>
+<div class="row featurette">
+  <div class="col-md-5 col-lg-3">
+    <img class="img-responsive" src="{% static 'img/systers_initiatives.jpg' %}" alt="Systers Initiatives">
   </div>
+  <div class="col-md-7 col-lg-9 margin-responsive">
+    <h2 class="featurette-heading">Systers Initiatives</h2>
 
-  <hr class="featurette-divider">
-
-  <div class="row featurette">
-    <div class="col-md-7 col-lg-9">
-      <h2 class="featurette-heading">Systers and CRA-W</h2>
-
-      <p class="lead"><a href="http://www.cra-w.org/">CRA-W</a> is the Computing
-        Research Association’s (CRA) committee on the Status of Women in Computing
-        research. CRA was the founding sponsor of the Institute’s flagship Conference,
-        the Grace Hopper Celebration of Women in Computing.</p>
-      <a href="http://anitaborg.org/get-involved/systers/systers-co-sponsored-cra-w-lists/"
-         role="button" target="_blank" class="btn btn-primary btn-lg mb15">Read more</a>
-    </div>
-    <div class="col-md-5 col-lg-3">
-      <img class="img-responsive" src="{% static 'img/systers_craw.jpg' %}"
-          alt="Systers and CRA-W">
-    </div>
+    <p class="lead">In order to honor Anita’s desire to create a network of women
+      in computing actively helping each another, members of the Systers community
+      created the Anita Borg Systers Pass-It-On Awards program.</p>
+    <a href="http://anitaborg.org/get-involved/systers/systers-initiatives/" role="button" target="_blank"
+      class="btn btn-primary btn-lg mb15">Read more</a>
   </div>
+</div>
 
-  <hr class="featurette-divider">
+<hr class="featurette-divider">
 
-  <div class="row featurette">
-    <div class="col-md-5 col-lg-3">
-      <img class="img-responsive" src="{% static 'img/systers_technical_interests.jpg' %}"
-          alt="Systers Technical Interests">
-    </div>
-    <div class="col-md-7 col-lg-9 margin-responsive">
-      <h2 class="featurette-heading">Systers Technical Interests</h2>
+<div class="row featurette">
+  <div class="col-md-7 col-lg-9">
+    <h2 class="featurette-heading">Systers and CRA-W</h2>
 
-      <p class="lead">Systers Technical Interests include Entrepreneurs, Systers-TechTalk,
-       Systers-IETF, Systers-FOSS, Systers-Dev, Student-ResearcHers.</p>
-      <a href="http://anitaborg.org/get-involved/systers/technical-interests/"
-         role="button" target="_blank" class="btn btn-primary btn-lg">Read more</a>
-    </div>
+    <p class="lead"><a href="http://www.cra-w.org/">CRA-W</a> is the Computing
+      Research Association’s (CRA) committee on the Status of Women in Computing
+      research. CRA was the founding sponsor of the Institute’s flagship Conference,
+      the Grace Hopper Celebration of Women in Computing.</p>
+    <a href="http://anitaborg.org/get-involved/systers/systers-co-sponsored-cra-w-lists/" role="button" target="_blank"
+      class="btn btn-primary btn-lg mb15">Read more</a>
   </div>
+  <div class="col-md-5 col-lg-3">
+    <img class="img-responsive" src="{% static 'img/systers_craw.jpg' %}" alt="Systers and CRA-W">
+  </div>
+</div>
 
-  <div class="mt40"></div>
+<hr class="featurette-divider">
+
+<div class="row featurette">
+  <div class="col-md-5 col-lg-3">
+    <img class="img-responsive" src="{% static 'img/systers_technical_interests.jpg' %}"
+      alt="Systers Technical Interests">
+  </div>
+  <div class="col-md-7 col-lg-9 margin-responsive">
+    <h2 class="featurette-heading">Systers Technical Interests</h2>
+
+    <p class="lead">Systers Technical Interests include Entrepreneurs, Systers-TechTalk,
+      Systers-IETF, Systers-FOSS, Systers-Dev, Student-ResearcHers.</p>
+    <a href="http://anitaborg.org/get-involved/systers/technical-interests/" role="button" target="_blank"
+      class="btn btn-primary btn-lg">Read more</a>
+  </div>
+</div>
+
+<div class="mt40"></div>
 {% endblock %}

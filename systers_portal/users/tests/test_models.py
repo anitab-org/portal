@@ -6,7 +6,7 @@ from community.models import Community
 from community.utils import create_groups
 from community.permissions import groups_templates
 from membership.models import JoinRequest
-from users.models import SystersUser
+from users.models import SystersUser, UserSetting
 
 
 class SystersUserTestCase(TestCase):
@@ -216,3 +216,21 @@ class UserTestCase(TestCase):
         self.user.last_name = "Bar"
         self.user.save()
         self.assertEqual(str(self.user), 'Foo Bar')
+
+
+class UserSettingTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.user_settings = UserSetting.objects.get(user=self.systers_user)
+
+    def test_create_settings(self):
+        self.assertEqual(UserSetting.objects.count(), 2)
+        self.assertEqual(self.systers_user, self.user_settings.user)
+        self.assertEqual(self.user_settings.weekly_digest, True)
+        self.assertEqual(self.user_settings.reminder, False)
+        self.assertEqual(self.user_settings.location_change, False)
+        self.assertEqual(self.user_settings.time_change, False)
+
+    def test_str(self):
+        self.assertEqual(str(self.user_settings), 'Settings for foo')

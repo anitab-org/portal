@@ -16,7 +16,7 @@ class Post(models.Model):
                                     verbose_name="Date published")
     date_modified = models.DateField(auto_now=True, auto_now_add=False,
                                      verbose_name="Date last modified")
-    author = models.ForeignKey(SystersUser, verbose_name="Author")
+    author = models.ForeignKey(SystersUser, verbose_name="Author", on_delete=models.CASCADE)
     content = RichTextField(verbose_name="Content")
 
     class Meta:
@@ -28,10 +28,10 @@ class Comment(models.Model):
     Intended to be used for News and Resource models."""
     date_created = models.DateField(auto_now=False, auto_now_add=True,
                                     verbose_name="Date created")
-    author = models.ForeignKey(SystersUser, verbose_name="Author")
+    author = models.ForeignKey(SystersUser, verbose_name="Author", on_delete=models.CASCADE)
     is_approved = models.BooleanField(default=True, verbose_name='Is approved')
     body = models.TextField(verbose_name="Body")
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
 

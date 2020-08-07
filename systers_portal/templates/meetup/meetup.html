@@ -1,63 +1,73 @@
 {% extends "meetup/base.html" %}
-
 {% block meetup_page_content %}
-  <h2 id="meetup-title">{{ meetup.title }}</h2>
-  <div class="box-container box-body pt25">
-    <p> 
-      <b> Date: </b> {{ meetup.date }}
-      &nbsp; &nbsp; 
-      <b>Time: </b> {{ meetup.time|time:"H:i" }}
-    </p>
-    <p>
-      <b> Venue: </b> {{ meetup.venue }}
-    </p>
+{% now "Y-m-d" as todays_date %}
+<h2 id="meetup-title">{{ meetup.title }}</h2>
+<div class="box-container box-body pt25">
+  <p> 
+    <b> Date: </b> {{ meetup.date }}
+    &nbsp; &nbsp; 
+    <b>Time: </b> {{ meetup.time|time:"H:i" }}
+  </p>
+  <p>
+    <b> Venue: </b> {{ meetup.venue }}
+  </p>
+  {% include 'meetup/snippets/meetup_carousel.html' %}
+  <hr>
+  {{ meetup.description|safe }} <br/>
+  <hr>
+  {% if todays_date < meetup.date|date:"Y-m-d" %}
+  <table class="table table-hover decoration-none">
+    <thead>
+      <tr>
+        <th>Coming</th>
+        <th>Not Coming</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ coming_no }}</td>
+        <td>{{ not_coming_no }}</td>
+      </tr>
+    </tbody>
+  </table> 
+  <hr>
+  {% else %}
+  <p>
+    <b> Members Attended : </b> {{coming_no }}
     <hr>
-    {{ meetup.description|safe }} <br/>
-    <hr>
-    <table class="table table-hover decoration-none">
-      <thead>
-        <tr>
-          <th>Coming</th>
-          <th>Not Coming</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ coming_no }}</td>
-          <td>{{ not_coming_no }}</td>
-        </tr>
-      </tbody>
-    </table> 
-    <hr>
-    {% if meetup.meetup_picture.name and meetup.meetup_picture.name != "False" %}
-   <img src="{{ meetup.meetup_picture.url }}" class="img-responsive"
-          alt="{{ meetup.title }} meetup picture"/>
-          <hr>
-      {% endif %}
-    {% include 'meetup/snippets/share_buttons.html' %}
-    <p>
-      <a href="{% url 'add_meetup_comment'  meetup.slug %}">Add comment</a>
-    </p>
-  </div>
-  <h3>Discussion Area</h3>
-  {% if not comments %}
-    <div class="box-container box-body pt25">
-      <p>
-        <i>There are no comments yet.</i>
-      </p>
-    </div>
+  </p>
   {% endif %}
-  {% for comment in comments %}
-    <div class="box-container pt25 commentbox">
-      <a href="{{ comment.author.get_absolute_url }}"><strong>{{ comment.author}}</strong></a>
-      <a class="details">commented on {{ comment.date_created}}</a>
-      {% if user == comment.author.user %}
-           <a class="delete" href="{% url 'delete_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
-           <a class="edit" href="{% url 'edit_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
-      {% endif %}
-        <div class="box-body">
-        <p>{{ comment.body }}</p>
-      </div>
-    </div>
-  {% endfor %}
+  {% if meetup.resources %}
+  <b>Resources</b><br>
+  <div>
+  {{ meetup.resources|safe }}
+  </div>
+  <hr>
+  {% endif %}
+  {% include 'meetup/snippets/share_buttons.html' %}
+  <p>
+    <a href="{% url 'add_meetup_comment'  meetup.slug %}">Add comment</a>
+  </p>
+</div>
+<h3>Discussion Area</h3>
+{% if not comments %}
+<div class="box-container box-body pt25">
+  <p>
+    <i>There are no comments yet.</i>
+  </p>
+</div>
+{% endif %}
+{% for comment in comments %}
+<div class="box-container pt25 commentbox">
+  <a href="{{ comment.author.get_absolute_url }}"><strong>{{ comment.author}}</strong></a>
+  <a class="details">commented on {{ comment.date_created}}</a>
+  {% if user == comment.author.user %}
+  <a class="delete" href="{% url 'delete_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-trash"></span></a>
+  <a class="edit" href="{% url 'edit_meetup_comment' meetup.slug comment.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+  {% endif %}
+  <div class="box-body">
+    <p>{{ comment.body }}</p>
+  </div>
+</div>
+{% endfor %}
 {% endblock %}

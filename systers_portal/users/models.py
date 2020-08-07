@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -14,8 +14,9 @@ from membership.constants import (NO_PENDING_JOIN_REQUEST, OK, NOT_MEMBER,
 
 class SystersUser(models.Model):
     """Profile model to store additional information about a user"""
-    user = models.OneToOneField(User)
-    country = models.ForeignKey(Country, blank=True, null=True, verbose_name="Country")
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, blank=True, null=True,
+                                verbose_name="Country", on_delete=models.CASCADE)
     blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
     homepage_url = models.URLField(max_length=255, blank=True,
                                    verbose_name="Homepage")
@@ -189,3 +190,22 @@ def create_systers_user(sender, instance, created, **kwargs):
         if instance is not None:
             systers_user = SystersUser(user=instance)
             systers_user.save()
+
+
+class UserSetting(models.Model):
+    user = models.OneToOneField(SystersUser, on_delete=models.CASCADE)
+    weekly_digest = models.BooleanField(
+        default=True,
+        verbose_name="Receive Weekly Digests from Communities")
+    location_change = models.BooleanField(
+        default=False,
+        verbose_name="Get Notified on Change in Location for Meetups")
+    time_change = models.BooleanField(
+        default=False,
+        verbose_name="Get Notified on Change in Timings for Meetups")
+    reminder = models.BooleanField(
+        default=False,
+        verbose_name="Get Reminders for rsvp'd Meetups")
+
+    def __str__(self):
+        return "Settings for {0}".format(self.user)

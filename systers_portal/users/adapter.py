@@ -1,5 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 import re
 

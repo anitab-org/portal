@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 
 from membership.models import JoinRequest
-from users.forms import UserForm
-from users.models import SystersUser
+from users.forms import UserForm, EditUserSettings
+from users.models import SystersUser, UserSetting
 
 
 class UserView(LoginRequiredMixin, TemplateView):
@@ -44,6 +45,7 @@ class UserProfileView(LoginRequiredMixin, MultiplePermissionsRequiredMixin,
     form_class = UserForm
     model = User
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -86,3 +88,23 @@ class UserProfileView(LoginRequiredMixin, MultiplePermissionsRequiredMixin,
         permissions.extend([request.user.is_superuser])
         permissions.extend([request.user == self.user])
         return any(permissions)
+
+
+class EditSettings(UpdateView, LoginRequiredMixin):
+    model = UserSetting
+    template_name = "users/settings.html"
+    form_class = EditUserSettings
+    raise_exception = True
+    form_valid_message = u"Settings updated Successfully"
+
+    def get_success_url(self):
+        return reverse('user', kwargs={'username': self.request.user.username})
+
+    def get_form_kwargs(self):
+        kwargs = super(EditSettings, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_object(self):
+        systersuser = SystersUser.objects.get(user=self.request.user)
+        return UserSetting.objects.get(user=systersuser)

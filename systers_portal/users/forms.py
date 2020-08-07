@@ -6,6 +6,9 @@ from django.core.exceptions import ValidationError
 from common.helpers import SubmitCancelFormHelper
 from users.models import SystersUser
 
+from common.forms import ModelFormWithHelper
+from users.models import UserSetting
+
 
 class UserForm(forms.ModelForm):
     """User form combined with SystersUserForm"""
@@ -51,3 +54,23 @@ class SystersChangePasswordForm(ChangePasswordForm):
         if self.cleaned_data["newpassword"] == self.cleaned_data.get("oldpassword", None):
             raise ValidationError("New password must differ from the old one.")
         return self.cleaned_data["new_password"]
+
+
+class EditUserSettings(ModelFormWithHelper):
+    class Meta:
+        model = UserSetting
+        fields = ('weekly_digest', 'location_change', 'time_change', 'reminder')
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'index' %}"
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(EditUserSettings, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add user field to the instance"""
+        instance = super(EditUserSettings, self).save(commit=False)
+        instance.user = SystersUser.objects.get(user=self.user)
+        if commit:
+            instance.save()
+        return instance

@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import RedirectView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin

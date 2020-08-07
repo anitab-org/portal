@@ -7,29 +7,29 @@
 {% load crispy_forms_tags %}
 {% block content %}
 {% load socialaccount %}
-{% load staticfiles %}
-  <div class="container">
-    <form class="login form-signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-      <div>
-          <h3>Sign Up Using<a href="{% provider_login_url 'github' %}"><img class="auth-img" src="{% static 'img/github.svg' %}"></a>
-            <a href="{% provider_login_url 'twitter' %}"><img class="auth-img" src="{% static 'img/twitter.png' %}"></a>
-            <a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a>
-            <a href="{% provider_login_url 'facebook' %}"><img class="auth-img" src="{% static 'img/facebook.png' %}"></a></h3>
-      </div>
-      <hr>
-      {% csrf_token %}
-      {{ form|crispy }}
-      {% if redirect_field_value %}
-        <input type="hidden" name="{{ redirect_field_name }}"
-               value="{{ redirect_field_value }}"/>
-      {% endif %}
-      <button class="primaryAction btn btn-lg btn-primary btn-block"
-              type="submit" id="signup_button">Sign Up
-      </button>
-      <p>Already have an account? Then please
-        <a href="/accounts/login/">sign in</a>.</p>
-    </form>
-  </div>
+{% load static %}
+<div class="container">
+  <form class="login form-signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+    <div>
+      <h3>Sign Up Using<a href="{% provider_login_url 'github' %}"><img class="auth-img"
+            src="{% static 'img/github.svg' %}"></a>
+        <a href="{% provider_login_url 'twitter' %}"><img class="auth-img" src="{% static 'img/twitter.png' %}"></a>
+        <a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a>
+        <a href="{% provider_login_url 'facebook' %}"><img class="auth-img" src="{% static 'img/facebook.png' %}"></a>
+      </h3>
+    </div>
+    <hr>
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <button class="primaryAction btn btn-lg btn-primary btn-block" type="submit" id="signup_button">Sign Up
+    </button>
+    <p>Already have an account? Then please
+      <a href="/accounts/login/">sign in</a>.</p>
+  </form>
+</div>
 
-  <div class="mt40"></div>
+<div class="mt40"></div>
 {% endblock %}

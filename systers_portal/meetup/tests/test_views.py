@@ -1,6 +1,6 @@
 import json
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, Client
 from django.utils import timezone
 from cities_light.models import City, Country
@@ -1220,7 +1220,6 @@ class UpcomingMeetupsSearchViewTestCase(MeetupBaseCase, TestCase):
                                               'meetup_slug': 'foobarbaz',
                                               'distance': 900}],
                           'unit': 'kilometers from your location'})
-
         data5 = {'keyword': 'Foo', 'location': 'Baz'}
         response = self.client.post(url, data5, format='json')
         self.assertEqual(json.loads(response.content.decode('utf-8')),

@@ -1,0 +1,8 @@
+{% if user.is_authenticated and user.is_active %}
+{% if perms.meetup.add_resource%}
+      <div class="sidebar-module mb40">
+        <a class="btn btn-success btn-block" href="{% url 'add_resource' meetup.slug%}"
+           role="button">Add Resources</a>
+      </div>
+{% endif %}
+{% endif %}

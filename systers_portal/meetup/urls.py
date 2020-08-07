@@ -11,7 +11,7 @@ from .views import (MeetupView, AddMeetupView, DeleteMeetupView,
                     ApproveRequestMeetupView, RejectMeetupRequestView, ApiForVmsView,
                     AllUpcomingMeetupsView, AddSupportRequestCommentView,
                     EditSupportRequestCommentView, DeleteSupportRequestCommentView,
-                    UpcomingMeetupsSearchView)
+                    UpcomingMeetupsSearchView, AddResourceView)
 
 urlpatterns = [
     url(r'^upcoming/$', UpcomingMeetupsView.as_view(),
@@ -23,6 +23,8 @@ urlpatterns = [
         name='delete_meetup'),
     url(r'^(?P<meetup_slug>[\w-]+)/edit/$', EditMeetupView.as_view(),
         name="edit_meetup"),
+    url(r'^(?P<meetup_slug>[\w-]+)/res/$', AddResourceView.as_view(),
+        name="add_resource"),
     url(r'^request/$', RequestMeetupView.as_view(),
         name="request_meetup"),
     url(r'^view_meetup_requests/$', NewMeetupRequestsListView.as_view(),
@@ -77,11 +79,11 @@ urlpatterns = [
         AddSupportRequestCommentView.as_view(),
         name="add_support_request_comment"),
     url(r'^(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/edit_comment/'
-        '(?P<comment_pk>\d+)/$',
+        r'(?P<comment_pk>\d+)/$',
         EditSupportRequestCommentView.as_view(),
         name="edit_support_request_comment"),
     url(r'^(?P<meetup_slug>[\w-]+)/support_request/(?P<pk>\d+)/delete_comment/'
-        '(?P<comment_pk>\d+)/$',
+        r'(?P<comment_pk>\d+)/$',
         DeleteSupportRequestCommentView.as_view(),
         name="delete_support_request_comment"),
     url(r'^(?P<slug>[\w-]+)/$', MeetupView.as_view(), name="view_meetup"),

@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 
 from common.models import Post
@@ -23,7 +23,7 @@ class ResourceType(models.Model):
 
 class News(Post):
     """Model to represent community news in resource area"""
-    community = models.ForeignKey(Community, verbose_name="Community")
+    community = models.ForeignKey(Community, verbose_name="Community", on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True, verbose_name="Is public")
     is_monitored = models.BooleanField(default=False,
                                        verbose_name="Is monitored")
@@ -45,13 +45,13 @@ class News(Post):
 
 class Resource(Post):
     """Model to represent community resource in resource area"""
-    community = models.ForeignKey(Community, verbose_name="Community")
+    community = models.ForeignKey(Community, verbose_name="Community", on_delete=models.CASCADE)
     is_public = models.BooleanField(default=True, verbose_name="Is public")
     is_monitored = models.BooleanField(default=False,
                                        verbose_name="Is monitored")
     tags = models.ManyToManyField(Tag, blank=True, verbose_name="Tags")
     resource_type = models.ForeignKey(ResourceType, blank=True, null=True,
-                                      verbose_name="Resource type")
+                                      verbose_name="Resource type", on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('community', 'slug')
