@@ -56,7 +56,7 @@ Setup for developers (Unix)
     # Database settings
 
     DB_NAME = systersdb
-    DB_USER = <your-databae-username>
+    DB_USER = <your-database-username>
     DB_PASSWORD = <your-database-password>
     DB_HOST = localhost
     DB_PORT = 5432
@@ -107,7 +107,7 @@ Setup for developers (Windows)
 - Download OSGeo4W using the [OSGeo4W installer](https://trac.osgeo.org/osgeo4w/wiki)
 - Specifically, install pkg-gdal-python, which is within 'Libs' in the installer tree.
 - Add GDAL_LIBRARY_PATH in the `systers_portal/settings/base.py` and make sure the path points to the GDAL Library on your local machine.
-6. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Create `systersdb` database, where `systersdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
 
     ```
@@ -134,7 +134,7 @@ Setup for developers (Windows)
     # Database settings
 
     DB_NAME = systersdb
-    DB_USER = <your-databae-username>
+    DB_USER = <your-database-username>
     DB_PASSWORD = <your-database-password>
     DB_HOST = localhost
     DB_PORT = 5432
