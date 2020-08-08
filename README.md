@@ -43,11 +43,29 @@ Setup for developers (Unix)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON DATABASE systersdb to <the name>;
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `export SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. Optionally to set the
-  shell variable every time you activate the virtualenv, edit `venv/bin/activate`
-  and add to the bottom the export statement.
+1. Make sure to rename `.env.example` to `.env`.
+1. Update the values in the `.env` file with the corresponding values like below.
+- Open the `.env` file 
+
+    ```
+    SECRET_KEY = <your-secret-key>
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    DEBUG = True
+    ALLOWED_HOSTS = *
+
+    # Database settings
+
+    DB_NAME = systersdb
+    DB_USER = <your-databae-username>
+    DB_PASSWORD = <your-database-password>
+    DB_HOST = localhost
+    DB_PORT = 5432
+
+    # Email settings
+
+    EMAIL_HOST = localhost
+    EMAIL_PORT = 1025   
+    ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
@@ -102,10 +120,30 @@ Setup for developers (Windows)
     $ CREATE DATABASE systersdb;
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON systersdb TO <username created above>;
+    ``` 
+1. Make sure to rename `.env.example` to `.env`.
+1. Update the values in the `.env` file with the corresponding values like below.
+- Open the `.env` file
+
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `set SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. 
+    SECRET_KEY = <your-secret-key>
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    DEBUG = True
+    ALLOWED_HOSTS = *
+
+    # Database settings
+
+    DB_NAME = systersdb
+    DB_USER = <your-databae-username>
+    DB_PASSWORD = <your-database-password>
+    DB_HOST = localhost
+    DB_PORT = 5432
+
+    # Email settings
+
+    EMAIL_HOST = localhost
+    EMAIL_PORT = 1025 
+    ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
