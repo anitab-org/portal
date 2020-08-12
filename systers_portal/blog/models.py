@@ -4,6 +4,8 @@ from django.db import models
 from common.models import Post
 from community.models import Community
 
+from users.models import SystersUser
+
 
 class Tag(models.Model):
     """Model to represent the tags news or resource can have"""
@@ -64,3 +66,17 @@ class Resource(Post):
         return reverse('view_community_resource',
                        kwargs={'slug': self.community.slug,
                                'resource_slug': self.slug})
+
+
+class UserPins(models.Model):
+    user = models.OneToOneField(SystersUser, on_delete=models.CASCADE)
+    pins = models.ManyToManyField(Resource, blank=True, related_name="pins", verbose_name="pins")
+
+    def __str__(self):
+        return "Pins for {0}".format(self.user)
+
+    def add_pin(self, resource):
+        self.pins.add(resource)
+
+    def remove_pin(self, resource):
+        self.pins.remove(resource)

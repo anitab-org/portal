@@ -1,0 +1,35 @@
+{% include "base.html" %}
+{% block content %}
+  <h1 align="center">My Pins</h1>
+  {% if pins %}
+  <div class="container">
+    {% for post in pins %}
+      <div class="blog-entry {{post.id}}">
+        <h3 class="title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a><img class="unpin" id="{{post.id}}" src="https://img.icons8.com/metro/26/000000/unpin.png"/></h3>
+
+        <p class="meta">{{ post.date_modified }} | <a
+            href="{{ post.author.get_absolute_url }}">{{ post.author }}</a>
+          {% if post.resource_type %}
+            | <a href="#">{{ post.resource_type }}</a>
+          {% endif %}
+        </p>
+
+        <div class="body">{{ post.content|safe|truncatewords:50 }}</div>
+        {% if post.tags %}
+          <ul class="list-inline tags">
+            {% for tag in post.tags.all %}
+              <li><span class="label label-info">{{ tag }}</span></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      <hr>
+    {% endfor %}
+  </div>
+  {% else %}
+<div class="container">
+    <h3>No Pins</h3>
+</div>
+
+  {% endif %}
+{% endblock %}

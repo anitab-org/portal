@@ -1,51 +1,63 @@
-{% extends "community/base.html" %}
+	{% extends "community/base.html" %}
 
-{% block head %}
-  <script type="text/javascript">
-    stLight.options({publisher: "340b978f-3a42-4f70-bb42-d639f57af637",
-      doNotHash: true,
-      doNotCopy: false,
-      hashAddressBar: false,
-      st_url:
-        {% if post_type == "news" %}
-          "{% url 'view_community_news' community.slug post.slug %}"
-        {% else %}
-          "{% url 'view_community_resource' community.slug post.slug %}"
-        {% endif %}
-    });
-  </script>
-{% endblock %}
+	{% block head %}
+	  <script type="text/javascript">
+	    stLight.options({publisher: "340b978f-3a42-4f70-bb42-d639f57af637",
+	      doNotHash: true,
+	      doNotCopy: false,
+	      hashAddressBar: false,
+	      st_url:
+	        {% if post_type == "news" %}
+	          "{% url 'view_community_news' community.slug post.slug %}"
+	        {% else %}
+	          "{% url 'view_community_resource' community.slug post.slug %}"
+	        {% endif %}
+	    });
+	  </script>
+	{% endblock %}
 
-{% block title %}
-  - {{ community }} - {{ post.title }}
-{% endblock %}
+	{% block title %}
+	  - {{ community }} - {{ post.title }}
+	{% endblock %}
 
-{% block community_page_content %}
-  <div class="blog-container">
-    <div class="blog-entry">
-      <h3 class="title">{{ post.title }}</h3>
+	{% block community_page_content %}
+	  <div class="blog-container">
+	    <div class="blog-entry">
+	      <h3 class="title" id="resource-title">
+	        {{ post.title }}
+	     {% if user.is_authenticated %}
+	        {% if post not in pins %}
+	        <img id="pin" src="https://img.icons8.com/windows/30/000000/pin3.png"/>
+          <img id="remove" src="https://img.icons8.com/metro/26/000000/unpin.png" hidden/>
+	        {% else %}
+	        <img id="pin" src="https://img.icons8.com/windows/30/000000/pin3.png" hidden/>
+	        <img id="remove" src="https://img.icons8.com/metro/26/000000/unpin.png"/>
+	        {% endif %}
+	        {% endif %}
+	      </h3>
 
-      <p class="meta">{{ post.date_modified }} | <a
-          href="{{ post.author.get_absolute_url }}">{{ post.author }}</a></p>
+	      <p class="meta">{{ post.date_modified }} | <a
+	          href="{{ post.author.get_absolute_url }}">{{ post.author }}</a></p>
 
-      <div class="body">{{ post.content|safe }}</div>
-      {% if post.tags %}
-        <ul class="list-inline tags">
-          {% for tag in post.tags.all %}
-            <li><span class="label label-info">{{ tag }}</span></li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-      {% include 'meetup/snippets/share_buttons.html' %}
-    </div>
-  </div>
-{% endblock %}
+	      <div class="body">{{ post.content|safe }}</div>
+	      {% if post.tags %}
+	        <ul class="list-inline tags">
+	          {% for tag in post.tags.all %}
+	            <li><span class="label label-info">{{ tag }}</span></li>
+	          {% endfor %}
+	        </ul>
+	      {% endif %}
+	      {% include 'meetup/snippets/share_buttons.html' %}
+	    </div>
+	  </div>
+	{% endblock %}
 
-{% block extra_sidebar %}
-  {% if post_type == "news" %}
-    {% include 'blog/snippets/news_sidebar.html' with news=post %}
-  {% else %}
-    {% include 'blog/snippets/resources_sidebar.html' with resource=post %}
-  {% endif %}
-  {% include 'blog/snippets/tags_sidebar.html' %}
-{% endblock %}
+	{% block extra_sidebar %}
+	  {% if post_type == "news" %}
+	    {% include 'blog/snippets/news_sidebar.html' with news=post %}
+	  {% else %}
+	    {% include 'blog/snippets/resources_sidebar.html' with resource=post %}
+	  {% endif %}
+	  {% include 'blog/snippets/tags_sidebar.html' %}
+	{% endblock %}
+		
