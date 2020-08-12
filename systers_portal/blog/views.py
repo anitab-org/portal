@@ -1,7 +1,8 @@
+from django.http import JsonResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.views.generic import (ListView, DetailView, CreateView, UpdateView,
-                                  DeleteView)
+                                  DeleteView, TemplateView)
 from django.views.generic.detail import SingleObjectMixin
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
@@ -12,6 +13,10 @@ from blog.forms import (AddNewsForm, EditNewsForm, AddResourceForm,
                         EditResourceForm, TagForm, ResourceTypeForm)
 from blog.mixins import ResourceTypesMixin
 from blog.models import News, Resource, ResourceType, Tag
+
+from users.models import SystersUser
+
+from blog.models import UserPins
 
 
 class CommunityNewsListView(UserDetailsMixin, CommunityMenuMixin,
@@ -78,6 +83,7 @@ class AddCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
     model = News
     form_class = AddNewsForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -119,6 +125,7 @@ class EditCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
     slug_url_kwarg = "news_slug"
     form_class = EditNewsForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -148,6 +155,7 @@ class DeleteCommunityNewsView(LoginRequiredMixin, PermissionRequiredMixin,
     model = News
     slug_url_kwarg = "news_slug"
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -223,8 +231,16 @@ class CommunityResourceView(UserDetailsMixin, CommunityMenuMixin, DetailView):
         context"""
         context = super(CommunityResourceView, self).get_context_data(**kwargs)
         context["community"] = self.object
-
         resource_slug = self.kwargs['resource_slug']
+        if self.request.user.is_authenticated:
+            user = SystersUser.objects.get(user=self.request.user)
+            user_pins = UserPins.objects.filter(user=user)
+            if user_pins:
+                context['pins'] = user_pins.first().pins.all()
+            else:
+                context['pins'] = []
+        else:
+            context['pins'] = []
         context["post"] = get_object_or_404(Resource, community=self.object,
                                             slug=resource_slug)
         context["post_type"] = "resource"
@@ -246,6 +262,7 @@ class AddCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
     model = Resource
     form_class = AddResourceForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -287,6 +304,7 @@ class EditCommunityResourcesView(LoginRequiredMixin, PermissionRequiredMixin,
     slug_url_kwarg = "resource_slug"
     form_class = EditResourceForm
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -318,6 +336,7 @@ class DeleteCommunityResourceView(LoginRequiredMixin, PermissionRequiredMixin,
     model = Resource
     slug_url_kwarg = "resource_slug"
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -349,6 +368,7 @@ class AddTagView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = TagForm
     permission_required = "blog.add_tag"
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -374,6 +394,7 @@ class AddResourceTypeView(LoginRequiredMixin, PermissionRequiredMixin,
     form_class = ResourceTypeForm
     permission_required = "blog.add_resourcetype"
     raise_exception = True
+
     # TODO: add `redirect_unauthenticated_users = True` when django-braces will
     # reach version 1.5
 
@@ -389,3 +410,57 @@ class AddResourceTypeView(LoginRequiredMixin, PermissionRequiredMixin,
                                                  slug=self.kwargs['slug'])
         context['tag_type'] = "Resource Type"
         return context
+
+
+class UserPinView(LoginRequiredMixin, ListView):
+    template_name = "blog/post.html"
+    model = Resource
+
+    def post(self, request, resource_slug, slug):
+        if request.method == "POST":
+            community = get_object_or_404(Community, slug=slug)
+            resource = get_object_or_404(Resource, community=community,
+                                         slug=resource_slug)
+            user = SystersUser.objects.get(user=self.request.user)
+            user_pins = UserPins.objects.filter(user=user)
+            if user_pins:
+                user_pins.first().add_pin(resource)
+            else:
+                user_pins = UserPins.objects.create(user=user)
+                user_pins.add_pin(resource)
+            return JsonResponse({}, safe=False, status=200)
+
+
+class RemovePinView(LoginRequiredMixin, ListView):
+    template_name = "blog/post.html"
+    model = Resource
+
+    def post(self, request, resource_slug, slug):
+        if request.method == "POST":
+            status_code = 200
+            community = get_object_or_404(Community, slug=slug)
+            resource = get_object_or_404(Resource, community=community,
+                                         slug=resource_slug)
+            user = SystersUser.objects.get(user=self.request.user)
+            user_pins = UserPins.objects.filter(user=user)
+            if resource in user_pins.first().pins.all():
+                user_pins.first().remove_pin(resource)
+            else:
+                status_code = 404
+            return JsonResponse({}, safe=False, status=status_code)
+
+
+class RemovePinFromListView(LoginRequiredMixin, TemplateView):
+    template_name = "users/pins.html"
+
+    def post(self, request, username):
+        if request.method == "POST":
+            status_code = 200
+            user = SystersUser.objects.get(user=self.request.user)
+            user_pins = UserPins.objects.filter(user=user)
+            resource = get_object_or_404(Resource, id=request.POST.get('id'))
+            if resource in user_pins.first().pins.all():
+                user_pins.first().remove_pin(resource)
+            else:
+                status_code = 404
+            return JsonResponse({}, safe=False, status=status_code)

@@ -16,7 +16,7 @@ from community.models import Community
 
 from systers_portal.settings.dev import FROM_EMAIL
 
-scheduler = BackgroundScheduler(settings.SCHEDULER_CONFIG)
+scheduler = BackgroundScheduler()
 
 
 @register_job(scheduler, 'cron', day_of_week='mon', hour=5, minute=30, replace_existing=True)
@@ -27,7 +27,7 @@ def weekly_digest():
         count = community.members.count()
         for member in community.members:
             html_text = \
-                render_to_string("templates/community/weekly_digest_email.html",
+                render_to_string("community/weekly_digest_email.html",
                                  {'user': member,
                                   'count': count,
                                   'community': community})

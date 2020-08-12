@@ -8,6 +8,7 @@ from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 from membership.models import JoinRequest
 from users.forms import UserForm, EditUserSettings
 from users.models import SystersUser, UserSetting
+from blog.models import UserPins
 
 
 class UserView(LoginRequiredMixin, TemplateView):
@@ -108,3 +109,17 @@ class EditSettings(UpdateView, LoginRequiredMixin):
     def get_object(self):
         systersuser = SystersUser.objects.get(user=self.request.user)
         return UserSetting.objects.get(user=systersuser)
+
+
+class UserPinsListView(LoginRequiredMixin, TemplateView):
+    template_name = "users/pins.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(UserPinsListView, self).get_context_data(**kwargs)
+        user = SystersUser.objects.get(user=self.request.user)
+        user_pins = UserPins.objects.filter(user=user)
+        if user_pins:
+            context['pins'] = user_pins.first().pins.all()
+        else:
+            context['pins'] = []
+        return context

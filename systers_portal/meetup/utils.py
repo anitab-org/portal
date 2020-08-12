@@ -71,7 +71,7 @@ def send_reminder(meetup):
     for rsvp in rsvp_list:
         setting = UserSetting.objects.get(user=rsvp.user)
         if setting.reminder:
-            html_text = render_to_string("templates/meetup/reminder.html",
+            html_text = render_to_string("meetup/reminder.html",
                                          context={'meetup': meetup,
                                                   'user': rsvp.user})
             send_mail(
@@ -89,7 +89,7 @@ def notify_location(meetup):
     for rsvp in rsvp_list:
         setting = UserSetting.objects.get(user=rsvp.user)
         if setting.location_change:
-            html_text = render_to_string("templates/meetup/location_change_email.html",
+            html_text = render_to_string("meetup/location_change_email.html",
                                          context={'meetup': meetup,
                                                   'user': rsvp.user})
             send_mail(
@@ -107,7 +107,7 @@ def notify_time(meetup):
     for rsvp in rsvp_list:
         setting = UserSetting.objects.get(user=rsvp.user)
         if setting.time_change:
-            html_text = render_to_string("templates/meetup/time_change_email.html",
+            html_text = render_to_string("meetup/time_change_email.html",
                                          context={'meetup': meetup,
                                                   'user': rsvp.user})
             send_mail(
