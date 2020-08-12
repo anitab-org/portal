@@ -43,7 +43,7 @@ Setup for developers (Unix)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON DATABASE systersdb to <the name>;
     ```
-1. Make sure to rename `.env.example` to `.env`.
+1. Rename `.env.example` to `.env`.
 1. Update the values in the `.env` file with the corresponding values like below.
 - Open the `.env` file 
 
@@ -121,7 +121,7 @@ Setup for developers (Windows)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON systersdb TO <username created above>;
     ``` 
-1. Make sure to rename `.env.example` to `.env`.
+1. Rename `.env.example` to `.env`.
 1. Update the values in the `.env` file with the corresponding values like below.
 - Open the `.env` file
 
