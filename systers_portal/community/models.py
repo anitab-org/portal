@@ -83,28 +83,24 @@ class Community(models.Model):
 
     def has_changed_name(self):
         """Check if community has a new name
-
         :return: True if community changed name, False otherwise
         """
         return self.name != self.original_name
 
     def has_changed_admin(self):
         """Check if community has a new admin
-
         :return: True if community changed admin, False otherwise
         """
         return self.admin != self.original_admin
 
     def add_member(self, systers_user):
         """Add community member
-
         :param systers_user: SystersUser objects
         """
         self.members.add(systers_user)
 
     def remove_member(self, systers_user):
         """Remove community member
-
         :param systers_user: SystersUser object
         :return:
         """
@@ -112,7 +108,6 @@ class Community(models.Model):
 
     def get_fields(self):
         """Get model fields of a Community object
-
         :return: list of tuples (fieldname, fieldvalue)
         """
         return [(field.name, getattr(self, field.name)) for field in
@@ -120,7 +115,6 @@ class Community(models.Model):
 
     def set_new_admin(self, new_admin):
         """Transfer the admin role from the old to the new admin
-
         :param new_admin: SystersUser object new admin of the community
         :return: OK if setting was successful, NOT_MEMBER if settings was
                  unsuccessful, since the new admin is not a member of the
@@ -210,7 +204,6 @@ class RequestCommunity(models.Model):
 
     def get_fields(self):
         """Get model fields of a RequestCommunity object
-
         :return: list of tuples (fieldname, fieldvalue)
         """
         return [(field.name, getattr(self, field.name)) for field in
@@ -218,7 +211,6 @@ class RequestCommunity(models.Model):
 
     def get_verbose_fields(self):
         """Get verbose names of RequestCommunity object's model fields
-
         :return: list of tuples (verbosefieldname, fieldvalue)
         """
 

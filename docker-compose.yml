@@ -1,5 +1,10 @@
 db:
   image: postgres:9.4
+  ports:
+    - "5432:5432"
+  environment:
+    - POSTGRES_HOST_AUTH_METHOD=trust
+
 web:
   build: .
   command: python systers_portal/manage.py runserver 0.0.0.0:8000
@@ -10,5 +15,5 @@ web:
   links:
     - db
   environment:
+    - SECRET_KEY=foobarbaz
     - DJANGO_SETTINGS_MODULE=systers_portal.settings.docker
-

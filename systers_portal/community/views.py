@@ -230,11 +230,9 @@ class CommunityLandingView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         """Provide a redirect url based on the following conditions:
-
         * if a Community has no pages, redirect to the news list views
         * if a Community has at least one page, redirect to the page with the
-          lowest order (aka first page)
-        """
+          lowest order (aka first page)"""
         community = get_object_or_404(Community, slug=kwargs['slug'])
         community_pages = CommunityPage.objects.filter(
             community=community).order_by('order')
@@ -293,17 +291,13 @@ class CommunityPageView(UserDetailsMixin, CommunityMenuMixin, DetailView):
     def get_community(self):
         """Overrides the method from CommunityMenuMixin to extract the current
         community.
-
-        :return: Community object
-        """
+        :return: Community object"""
         return self.object
 
     def get_page_slug(self):
         """Overrides the method from CommunityMenuMixin to extract the current
         page slug or the lack of it.
-
-        :return: string CommunityPage slug
-        """
+        :return: string CommunityPage slug"""
         return self.kwargs['page_slug']
 
 

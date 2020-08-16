@@ -146,12 +146,30 @@ production at the moment. It may be configured to do so in the future.
 1. **This step will require the Django SECRET_KEY.**
    Run `docker run -e SECRET_KEY=foobarbaz portal_web`.
 1. Run `docker-compose run web python systers_portal/manage.py migrate`.
+
+     * After above command now Run `docker-compose run web python systers_portal/manage.py makemigrations`
+       for complete migration and then re-run `docker-compose run web python systers_portal/manage.py migrate`.
+     * Note: If you face any error like **Docker cannot link or db not running**
+       then run the following command in another terminal `docker-compose up db`
+       and again run the above following command
+
 1. Run `docker-compose run web python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. *Optional:*
    Run `docker-compose run web python systers_portal/manage.py createsuperuser`
    if you wish to create a superuser to access the admin panel.
+   
+   For working with database open up new terminal and run `docker-compose run db bash`
+   and then run `psql -U postgres -d postgres -h db` to enter in postgres db.
+   Run `\dt` for checking tables and `\q` for exiting the postgres terminal  
+   and stop the container's bash using CTRL+D.
+
+1. Navigate to `systers_portal/systers_portal/settings/base.py` file and change to `ALLOWED_HOST=['O.O.O.O']`
+   so that we can access the docker-container from any ip address.
+   
 1. Run `docker-compose up` to start the webserver for the Django Systers Portal
    project.
+     * Note If you face any error like **portal_web cannot start service web** then run 
+       following command `service docker restart` then again run the above following command
 1. Systers Portal should be running on port 8000.
      * If you are on Linux, enter `http://0.0.0.0:8000` in your browser.
      * If you are using boot2docker on Windows or Mac OS X, enter
