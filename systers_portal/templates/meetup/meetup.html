@@ -69,3 +69,24 @@
 </div>
 {% endfor %}
 {% endblock %}
+{%if suggested_meetups%}
+{%block endpanel%}
+  <h3>You can have a look at these too</h3>
+  <hr>
+<div class="rows">
+  <a href="{% url 'upcoming_meetups'}" ><p align="right">View All</p></a>
+  {% for meetup in suggested_meetups %}
+        <div class="col-sm-6 col-md-4">
+          <div class="thumbnail">
+            <div class="caption">
+              <h3>{{meetup.title}}</h3>
+                <p>To be held on {{meetup.date}}</p>
+                <p>Location: {{meetup.meetup_location}}</p>
+                <p><a href="{%url 'view_meetup' meetup.slug%}" class="btn btn-primary" role="button">View</a></p>
+            </div>
+          </div>
+        </div>
+  {% endfor %}
+</div>
+{% endblock %}
+{% endif %}

@@ -19,6 +19,7 @@ from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
 from geopy import Nominatim
 from ipware import get_client_ip
 
+from .compare import compare
 from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                     EditSupportRequestForm, AddSupportRequestCommentForm,
@@ -223,6 +224,21 @@ class MeetupView(DetailView):
         context['coming_no'] = len(coming_list) + len(plus_one_list)
         context['share_message'] = self.object.title + " @systers_org "
         context['images'] = MeetupImages.objects.filter(meetup=self.object)
+        meetups =\
+            Meetup.objects.filter(~Q(slug=self.object.slug)).filter(date__gte=datetime.date.today())
+        compare_scores = []
+        if meetups:
+            for meetup in meetups:
+                val = compare(self.object.description, meetup.description)
+                compare_scores.append({'id': meetup.id, 'score': val})
+            compare_scores.sort(key=operator.itemgetter('score'), reverse=True)
+            suggested_meetups = []
+            for item in compare_scores[0:3]:
+                obj = Meetup.objects.get(id=item['id'])
+                suggested_meetups.append(obj)
+            context['suggested_meetups'] = suggested_meetups
+        else:
+            context['suggested_meetups'] = []
         return context
 
 
