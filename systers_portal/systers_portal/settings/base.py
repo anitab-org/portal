@@ -13,6 +13,9 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
+ZOOM_API_KEY = os.environ.get('ZOOM_API_KEY')
+ZOOM_API_SECRET = os.environ.get('ZOOM_API_SECRET')
+ZOOM_USER_ID = os.environ.get('ZOOM_USER_ID')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/

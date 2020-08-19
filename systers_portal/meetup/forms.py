@@ -11,6 +11,10 @@ from common.models import Comment
 
 from meetup.models import MeetupImages
 
+from meetup.utils import create_meetup
+
+from meetup.utils import edit_meetup, get_meetup
+
 
 class RequestMeetupForm(ModelFormWithHelper):
     """ Form to create a new Meetup Request. """
@@ -65,8 +69,8 @@ class AddMeetupForm(ModelFormWithHelper):
 
     class Meta:
         model = Meetup
-        fields = ('title', 'slug', 'date', 'time', 'meetup_location', 'venue', 'description',
-                  'resources')
+        fields = ('title', 'slug', 'date', 'time', 'is_virtual', 'meetup_location',
+                  'venue', 'description', 'resources')
         widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
                    'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
         helper_class = SubmitCancelFormHelper
@@ -84,6 +88,11 @@ class AddMeetupForm(ModelFormWithHelper):
         instance = super(AddMeetupForm, self).save(commit=False)
         instance.created_by = SystersUser.objects.get(user=self.created_by)
         instance.leader = SystersUser.objects.get(user=self.created_by)
+        if instance.is_virtual:
+            meet_data = create_meetup(instance)
+            instance.meet_link = meet_data['join_url']
+            instance.start_url = meet_data['start_url']
+            instance.meeting_id = meet_data['id']
         if commit:
             instance.save()
         if self.cleaned_data['images']:
@@ -129,6 +138,12 @@ class EditMeetupForm(ModelFormWithHelper):
         if self.cleaned_data['images']:
             for img in self.cleaned_data['images']:
                 MeetupImages.objects.create(image=img, meetup=instance)
+        if instance.is_virtual:
+            edit_meetup(instance)
+            meet_data = get_meetup(instance)
+            instance.meet_link = meet_data['join_url']
+            instance.start_url = meet_data['start_url']
+            instance.meeting_id = meet_data['id']
         return instance
 
 
@@ -277,3 +292,47 @@ class PastMeetup(ModelFormWithHelper):
             for img in self.cleaned_data['images']:
                 MeetupImages.objects.create(image=img, meetup=instance)
         return instance
+
+
+class RequestVirtualMeetupForm(ModelFormWithHelper):
+    """ Form to create a new Meetup Request. """
+
+    class Meta:
+        model = RequestMeetup
+        fields = ('title', 'slug', 'date', 'time', 'description')
+        widgets = {'date': forms.DateInput(attrs={'type': 'text', 'class': 'datepicker'}),
+                   'time': forms.TimeInput(attrs={'type': 'text', 'class': 'timepicker'})}
+        helper_class = SubmitCancelFormHelper
+        helper_cancel_href = "{% url 'index' %}"
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('created_by')
+        super(RequestVirtualMeetupForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Override save to add admin to the instance"""
+        instance = super(RequestVirtualMeetupForm, self).save(commit=False)
+        instance.created_by = SystersUser.objects.get(user=self.user)
+        instance.is_virtual = True
+        if commit:
+            instance.save()
+        return instance
+
+    def clean_date(self):
+        """Check if the date is less than the current date. If so, raise an error."""
+        date = self.cleaned_data.get('date')
+        if date < timezone.now().date():
+            raise forms.ValidationError("Date should not be before today's date.",
+                                        code="date_in_past")
+        return date
+
+    def clean_time(self):
+        """Check that if the date is the current date, the time is not the current time. If so,
+        raise an error."""
+        time = self.cleaned_data.get('time')
+        date = self.cleaned_data.get('date')
+        if time:
+            if date == timezone.now().date() and time < timezone.now().time():
+                raise forms.ValidationError("Time should not be a time that has already passed.",
+                                            code="time_in_past")
+        return time

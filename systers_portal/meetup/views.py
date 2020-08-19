@@ -24,7 +24,7 @@ from .forms import (AddMeetupForm, EditMeetupForm, AddMeetupCommentForm,
                     EditMeetupCommentForm, RsvpForm, AddSupportRequestForm,
                     EditSupportRequestForm, AddSupportRequestCommentForm,
                     EditSupportRequestCommentForm,
-                    RequestMeetupForm, PastMeetup)
+                    RequestMeetupForm, PastMeetup, RequestVirtualMeetupForm)
 from .models import (Meetup, Rsvp, SupportRequest,
                      RequestMeetup, MeetupImages)
 from .constants import (OK, SLUG_ALREADY_EXISTS, SLUG_ALREADY_EXISTS_MSG,
@@ -33,6 +33,8 @@ from users.models import SystersUser
 from common.models import Comment
 from rest_framework.views import APIView
 from cities_light.models import City
+
+from .utils import create_meetup
 
 
 class RequestMeetupView(LoginRequiredMixin, CreateView):
@@ -124,9 +126,19 @@ class ApproveRequestMeetupView(LoginRequiredMixin, PermissionRequiredMixin, Redi
         new_meetup.slug = meetup_request.slug
         new_meetup.date = meetup_request.date
         new_meetup.time = meetup_request.time
-        new_meetup.venue = meetup_request.venue
         new_meetup.description = meetup_request.description
-        new_meetup.meetup_location = meetup_request.meetup_location
+        if not meetup_request.is_virtual:
+            new_meetup.venue = meetup_request.venue
+            new_meetup.meetup_location = meetup_request.meetup_location
+        if meetup_request.is_virtual:
+            try:
+                meet_data = create_meetup(new_meetup)
+                new_meetup.meet_link = meet_data['join_url']
+                new_meetup.is_virtual = meetup_request.is_virtual
+                new_meetup.meeting_id = meet_data['id']
+                new_meetup.start_url = meet_data['start_url']
+            except KeyError as e:
+                print(e)
         new_meetup.leader = meetup_request.created_by
         meetup_request.is_approved = True
         meetup_request.approved_by = get_object_or_404(
@@ -863,3 +875,26 @@ class AddResourceView(FormValidMessageMixin, FormInvalidMessageMixin, LoginRequi
         """Check if the request user has the permission to add resources to a meetup.
         The permission holds true for superusers."""
         return request.user.has_perm('meetup.add_resource')
+
+
+class RequestVirtualMeetupView(LoginRequiredMixin, CreateView):
+    """View to Request a new virtual meetup"""
+    template_name = "meetup/request_virtual_meetup.html"
+    model = RequestMeetup
+    form_class = RequestVirtualMeetupForm
+    raise_exception = True
+
+    def get_success_url(self):
+        """Supply the redirect URL in case of successful submit"""
+        message = "Your request for a new meetup is successfully submitted. " \
+                  "Please wait until someone reviews your request. "
+        messages.add_message(self.request, messages.SUCCESS, message)
+        return reverse('upcoming_meetups')
+
+    def get_form_kwargs(self):
+        """Add request user to the form kwargs.
+        Used to autofill form fields with requestor without
+        explicitly filling them up in the form."""
+        kwargs = super(RequestVirtualMeetupView, self).get_form_kwargs()
+        kwargs.update({'created_by': self.request.user})
+        return kwargs

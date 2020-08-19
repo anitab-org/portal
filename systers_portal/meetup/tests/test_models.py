@@ -50,7 +50,7 @@ class RequestMeetupTestCase(MeetupBaseTestCase, TestCase):
 
     def test_get_verbose_fields(self):
         fields = self.meetup_request.get_verbose_fields()
-        self.assertEqual(len(fields), 12)
+        self.assertEqual(len(fields), 13)
         self.assertTrue(fields[1], ('Title', 'Test Meetup Request'))
 
 

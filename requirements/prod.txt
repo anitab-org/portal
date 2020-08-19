@@ -15,3 +15,4 @@ django-apscheduler==0.4.2
 git+https://github.com/Chive/django-multiupload.git#egg=django-multiupload
 nltk==3.5
 gensim==3.8.3
+pyjwt==1.7.1

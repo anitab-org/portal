@@ -11,7 +11,7 @@ from .views import (MeetupView, AddMeetupView, DeleteMeetupView,
                     ApproveRequestMeetupView, RejectMeetupRequestView, ApiForVmsView,
                     AllUpcomingMeetupsView, AddSupportRequestCommentView,
                     EditSupportRequestCommentView, DeleteSupportRequestCommentView,
-                    UpcomingMeetupsSearchView, AddResourceView)
+                    UpcomingMeetupsSearchView, AddResourceView, RequestVirtualMeetupView)
 
 urlpatterns = [
     url(r'^upcoming/$', UpcomingMeetupsView.as_view(),
@@ -27,6 +27,8 @@ urlpatterns = [
         name="add_resource"),
     url(r'^request/$', RequestMeetupView.as_view(),
         name="request_meetup"),
+    url(r'^request_virtual/$', RequestVirtualMeetupView.as_view(),
+        name="request_virtual_meetup"),
     url(r'^view_meetup_requests/$', NewMeetupRequestsListView.as_view(),
         name="new_meetup_requests"),
     url(r'^(?P<meetup_slug>[\w-]+)/view_meetup_requests/$',

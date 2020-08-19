@@ -7,10 +7,12 @@
    <table class="table table-hover table-custom">
         <tbody>
           {% for field,value in meetup_request_fields %}
+          {% if value %}
           <tr class="profile-row">
             <td>{{ field }}</td>
             <td>{{ value }}</td>
           </tr>
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>

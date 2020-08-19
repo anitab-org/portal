@@ -10,6 +10,13 @@ from meetup.models import Rsvp
 from users.models import UserSetting
 
 from systers_portal.settings.dev import FROM_EMAIL
+import http.client
+import jwt
+import datetime
+import json
+
+from systers_portal.settings.base import ZOOM_API_KEY,\
+    ZOOM_API_SECRET, ZOOM_USER_ID
 
 
 @transaction.atomic
@@ -110,3 +117,84 @@ def notify_time(meetup):
                 [rsvp.user.user.email],
                 html_message=html_text,
             )
+
+
+def create_meetup(meetup):
+    conn = http.client.HTTPSConnection("api.zoom.us")
+
+    payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+        'iss': ZOOM_API_KEY
+    }
+    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+
+    headers = {
+        'authorization': "Bearer " + token,
+        'content-type': "application/json"
+    }
+    start_datetime = datetime.datetime.combine(meetup.date, meetup.time)
+    date_str = start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    body = {
+        "topic": meetup.title,
+        "type": 2,
+        "start_time": date_str,
+        "duration": 60,
+        "timezone": "UTC",
+        "agenda": meetup.description,
+    }
+    json_data = json.dumps(body)
+    conn.request("POST", "/v2/users/{0}/meetings".format(ZOOM_USER_ID),
+                 headers=headers, body=json_data)
+
+    res = conn.getresponse()
+    data = res.read()
+    meet_details = json.loads(data.decode("utf-8"))
+    return meet_details
+
+
+def edit_meetup(meetup):
+    conn = http.client.HTTPSConnection("api.zoom.us")
+
+    payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+        'iss': ZOOM_API_KEY
+    }
+    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+
+    headers = {
+        'authorization': "Bearer " + token,
+        'content-type': "application/json"
+    }
+    start_datetime = datetime.datetime.combine(meetup.date, meetup.time)
+    date_str = start_datetime.strftime('%Y-%m-%dT%H:%M:%S')
+    body = {
+        "topic": meetup.title,
+        "type": 2,
+        "start_time": date_str,
+        "duration": 60,
+        "timezone": "UTC",
+        "agenda": meetup.description,
+    }
+    json_data = json.dumps(body)
+    conn.request("PATCH", "/v2/meetings/{0}".format(meetup.meeting_id),
+                 headers=headers, body=json_data)
+
+
+def get_meetup(meetup):
+    conn = http.client.HTTPSConnection("api.zoom.us")
+
+    payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+        'iss': ZOOM_API_KEY
+    }
+    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+
+    headers = {
+        'authorization': "Bearer " + token,
+        'content-type': "application/json"
+    }
+    conn.request("GET", "/v2/meetings/{0}".format(meetup.meeting_id), headers=headers)
+    res = conn.getresponse()
+    data = res.read()
+    meet_details = json.loads(data.decode("utf-8"))
+    return meet_details

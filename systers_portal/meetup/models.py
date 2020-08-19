@@ -18,11 +18,17 @@ class Meetup(models.Model):
     leader = models.ForeignKey(SystersUser, null=True, blank=True, related_name='community_leader',
                                verbose_name="Community leader", on_delete=models.CASCADE)
     meetup_location = models.ForeignKey(
-        City, verbose_name="Meetup Location", on_delete=models.CASCADE)
+        City, verbose_name="Meetup Location", on_delete=models.CASCADE, blank=True, null=True)
     created_by = models.ForeignKey(
         SystersUser, null=True, verbose_name="Created By", on_delete=models.CASCADE)
     last_updated = models.DateTimeField(auto_now=True, verbose_name="Last Update")
     resources = RichTextField(null=True, verbose_name="Meetup Resources", blank=True)
+    meet_link = models.URLField(verbose_name="Link for the Meeting", null=True, blank=True)
+    is_virtual = models.BooleanField(default=False)
+    start_url = models.URLField(verbose_name="link for the Host to start the Meeting",
+                                max_length=1000,
+                                null=True, blank=True)
+    meeting_id = models.CharField(verbose_name="Meeting ID", null=True, blank=True, max_length=200)
 
     class Meta:
         permissions = (
@@ -55,13 +61,14 @@ class RequestMeetup(models.Model):
     venue = models.CharField(max_length=512, verbose_name="Venue", blank=True)
     description = RichTextField(verbose_name="Description")
     meetup_location = models.ForeignKey(
-        City, verbose_name="Meetup Location", on_delete=models.CASCADE)
+        City, verbose_name="Meetup Location", on_delete=models.CASCADE, blank=True, null=True)
     created_by = models.ForeignKey(
         SystersUser, null=True, verbose_name="Created By", on_delete=models.CASCADE)
     approved_by = models.ForeignKey(SystersUser, blank=True, null=True,
                                     related_name='approvedBy', on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
+    is_virtual = models.BooleanField(default=False)
 
     def get_verbose_fields(self):
         """Get verbose names of RequestMeetup object's model fields

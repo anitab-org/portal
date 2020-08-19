@@ -8,9 +8,20 @@
     &nbsp; &nbsp; 
     <b>Time: </b> {{ meetup.time|time:"H:i" }}
   </p>
-  <p>
+  {% if not meetup.is_virtual %}
+    <p>
     <b> Venue: </b> {{ meetup.venue }}
+    </p>
+  {% else %}
+    <p>
+    <b> Join URL: </b> {{ meetup.meet_link|urlizetrunc:50 }}
   </p>
+  {% if perms.meetup.add_meetup %}
+  <p>
+    <b> Start URL: </b> {{ meetup.start_url | urlizetrunc:50  }}
+  </p>
+  {% endif %}
+  {% endif %}
   {% include 'meetup/snippets/meetup_carousel.html' %}
   <hr>
   {{ meetup.description|safe }} <br/>
