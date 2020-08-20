@@ -7,5 +7,5 @@ RUN mkdir portal
 RUN cd portal
 WORKDIR /usr/src/portal
 COPY requirements/prod.txt /usr/src/portal/requirements/prod.txt
-RUN pip install -r requirements/prod.txt
+RUN pip install --no-cache-dir -r requirements/prod.txt
 
