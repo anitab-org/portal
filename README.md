@@ -49,7 +49,6 @@ Setup for developers (Unix)
 
     ```
     SECRET_KEY = <your-secret-key>
-    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
     DEBUG = True
     ALLOWED_HOSTS = *
 
@@ -64,7 +63,14 @@ Setup for developers (Unix)
     # Email settings
 
     EMAIL_HOST = localhost
-    EMAIL_PORT = 1025   
+    EMAIL_PORT = 1025
+
+    # External APIs
+
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    ZOOM_API_KEY = <your-zoom-api-key>
+    ZOOM_API_SECRET = <your-zoom-api-secret-key>
+    ZOOM_USER_ID = <your-zoom-user-id>   
     ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
@@ -127,7 +133,6 @@ Setup for developers (Windows)
 
     ```
     SECRET_KEY = <your-secret-key>
-    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
     DEBUG = True
     ALLOWED_HOSTS = *
 
@@ -142,7 +147,14 @@ Setup for developers (Windows)
     # Email settings
 
     EMAIL_HOST = localhost
-    EMAIL_PORT = 1025 
+    EMAIL_PORT = 1025
+
+    # External APIs
+
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    ZOOM_API_KEY = <your-zoom-api-key>
+    ZOOM_API_SECRET = <your-zoom-api-secret-key>
+    ZOOM_USER_ID = <your-zoom-user-id> 
     ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
