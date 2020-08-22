@@ -60,7 +60,7 @@ Setup for developers (Unix)
     DB_HOST = localhost
     DB_PORT = 5432
 
-    # Email settings
+    # Email settings (Optional)
 
     EMAIL_HOST = localhost
     EMAIL_PORT = 1025
