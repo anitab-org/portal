@@ -1,0 +1,41 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install Dependencies
+      run: |
+        cp .env.example .env
+        python -m pip install --upgrade pip
+        pip install -r requirements/dev.txt
+        sudo apt-get install python-gdal
+        python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+    
+    - name: Run Flake Test
+      run: flake8 systers_portal
+    
+    - name: Run Tests
+      run: coverage run systers_portal/manage.py test --settings=systers_portal.settings.testing
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+          name: codecov-umbrella
+          fail_ci_if_error: true

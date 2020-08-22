@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.utils.timezone import timedelta
 from cities_light.models import City, Country
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
 
 
 from meetup.forms import (AddMeetupForm, EditMeetupForm,
@@ -61,9 +60,9 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         date = (timezone.now() - timedelta(2)).date()
         time = timezone.now().time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
-                'meetup_location': self.location,
+                'meetup_location': self.location.id,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
+        form = RequestMeetupForm(data=data, created_by=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['date'], ["Date should not be before today's date."])
 
@@ -72,13 +71,12 @@ class RequestMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):
         date = timezone.now().date()
         time = (timezone.now() - timedelta(2)).time()
         data = {'title': 'Foo', 'slug': 'foo', 'date': date, 'time': time,
-                'meetup_location': self.location,
+                'meetup_location': self.location.id,
                 'description': "It's a test meetup."}
-        form = AddMeetupForm(data=data, created_by=self.systers_user, leader=self.systers_user)
+        form = RequestMeetupForm(data=data, created_by=self.systers_user)
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors['time'],
                         ["Time should not be a time that has already passed."])
-        self.assertRaises(ValidationError, form.clean_time())
 
 
 class AddMeetupFormTestCase(MeetupFormTestCaseBase, TestCase):

@@ -1,4 +1,4 @@
-Systers Portal [![Build Status](https://travis-ci.org/systers/portal.svg?branch=master)](https://travis-ci.org/systers/portal) [![Coverage Status](https://coveralls.io/repos/github/systers/portal/badge.svg?branch=master)](https://coveralls.io/r/systers/portal?branch=master)
+Systers Portal [![Build Status](https://codecov.io/gh/anitab-org/portal/branch/develop/graph/badge.svg)](https://codecov.io/gh/anitab-org/portal/) [![Coverage Status](https://coveralls.io/repos/github/systers/portal/badge.svg?branch=master)](https://coveralls.io/r/systers/portal?branch=master)
 ==============
 
 Systers Portal is for Systers communities to post and share information within
