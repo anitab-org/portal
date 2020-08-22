@@ -65,7 +65,7 @@ Setup for developers (Unix)
     EMAIL_HOST = localhost
     EMAIL_PORT = 1025
 
-    # External APIs (optional)
+    # External APIs (Optional)
 
     GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
     ZOOM_API_KEY = <your-zoom-api-key>
@@ -144,12 +144,12 @@ Setup for developers (Windows)
     DB_HOST = localhost
     DB_PORT = 5432
 
-    # Email settings
+    # Email settings (Optional)
 
     EMAIL_HOST = localhost
     EMAIL_PORT = 1025
 
-    # External APIs
+    # External APIs (Optional)
 
     GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
     ZOOM_API_KEY = <your-zoom-api-key>
