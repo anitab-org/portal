@@ -43,11 +43,35 @@ Setup for developers (Unix)
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON DATABASE systersdb to <the name>;
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `export SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. Optionally to set the
-  shell variable every time you activate the virtualenv, edit `venv/bin/activate`
-  and add to the bottom the export statement.
+1. Rename `.env.example` to `.env`.
+1. Update the values in the `.env` file with the corresponding values like below.
+- Open the `.env` file 
+
+    ```
+    SECRET_KEY = <your-secret-key>
+    DEBUG = True
+    ALLOWED_HOSTS = *
+
+    # Database settings
+
+    DB_NAME = systersdb
+    DB_USER = <your-database-username>
+    DB_PASSWORD = <your-database-password>
+    DB_HOST = localhost
+    DB_PORT = 5432
+
+    # Email settings (Optional)
+
+    EMAIL_HOST = localhost
+    EMAIL_PORT = 1025
+
+    # External APIs (Optional)
+
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    ZOOM_API_KEY = <your-zoom-api-key>
+    ZOOM_API_SECRET = <your-zoom-api-secret-key>
+    ZOOM_USER_ID = <your-zoom-user-id>   
+    ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
@@ -89,7 +113,7 @@ Setup for developers (Windows)
 - Download OSGeo4W using the [OSGeo4W installer](https://trac.osgeo.org/osgeo4w/wiki)
 - Specifically, install pkg-gdal-python, which is within 'Libs' in the installer tree.
 - Add GDAL_LIBRARY_PATH in the `systers_portal/settings/base.py` and make sure the path points to the GDAL Library on your local machine.
-6. Create `systersdb` database, where `systersdb` might be any suitable name.
+1. Create `systersdb` database, where `systersdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
 
     ```
@@ -102,10 +126,36 @@ Setup for developers (Windows)
     $ CREATE DATABASE systersdb;
     $ \c systersdb;
     $ GRANT ALL PRIVILEGES ON systersdb TO <username created above>;
+    ``` 
+1. Rename `.env.example` to `.env`.
+1. Update the values in the `.env` file with the corresponding values like below.
+- Open the `.env` file
+
     ```
-1. Fill in the database details in `systers_portal/settings/dev.py`.
-1. Run `set SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
-  should be 40 characters long, unique and unpredictable. 
+    SECRET_KEY = <your-secret-key>
+    DEBUG = True
+    ALLOWED_HOSTS = *
+
+    # Database settings
+
+    DB_NAME = systersdb
+    DB_USER = <your-database-username>
+    DB_PASSWORD = <your-database-password>
+    DB_HOST = localhost
+    DB_PORT = 5432
+
+    # Email settings (Optional)
+
+    EMAIL_HOST = localhost
+    EMAIL_PORT = 1025
+
+    # External APIs (Optional)
+
+    GOOGLE_MAPS_API_KEY = <your-google-maps-api-key>
+    ZOOM_API_KEY = <your-zoom-api-key>
+    ZOOM_API_SECRET = <your-zoom-api-secret-key>
+    ZOOM_USER_ID = <your-zoom-user-id> 
+    ```
 1. Run `python systers_portal/manage.py migrate`.
 1. Run `python systers_portal/manage.py cities_light` for downloading and importing data for django-cities-light.
 1. Run `python systers_portal/manage.py createsuperuser` to create a superuser for the admin panel.
