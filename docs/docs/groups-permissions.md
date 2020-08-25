@@ -1,3 +1,8 @@
+---
+id: groups-permissions
+title: Groups and Permissions
+---
+
 Groups and Permissions
 ======================
 

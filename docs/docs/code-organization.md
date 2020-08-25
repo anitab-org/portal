@@ -1,5 +1,7 @@
-Architecture
-============
+---
+id: code-org
+title: Code Organization
+---
 
 This page will give you a generic overview on Systers Portal project architecture.
 As any other Django project Portal organizes its functionality in several apps:
