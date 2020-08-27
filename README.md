@@ -106,7 +106,7 @@ Setup for developers (Windows)
  
      ```bash
      $ virtualenv venv
-     $ ./venv/Scripts/activate
+     $ .\venv\Scripts\activate
      $ pip install -r requirements/dev.txt 
      ```
 1. Make sure you have GDAL installed. 
