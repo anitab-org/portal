@@ -193,7 +193,7 @@ def create_systers_user(sender, instance, created, **kwargs):
 
 
 class UserSetting(models.Model):
-    user = models.OneToOneField(SystersUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(SystersUser, on_delete=models.CASCADE)
     weekly_digest = models.BooleanField(
         default=True,
         verbose_name="Receive Weekly Digests from Communities")

@@ -91,12 +91,20 @@ class UserProfileView(LoginRequiredMixin, MultiplePermissionsRequiredMixin,
         return any(permissions)
 
 
-class EditSettings(UpdateView, LoginRequiredMixin):
+class EditSettings(LoginRequiredMixin, UpdateView):
     model = UserSetting
     template_name = "users/settings.html"
     form_class = EditUserSettings
     raise_exception = True
     form_valid_message = u"Settings updated Successfully"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Override dispatch method to add to the view User and SystersUser
+        objects, of which the profile is displayed."""
+        username = kwargs.get('username')
+        self.user = get_object_or_404(User, username=username)
+        self.systersuser = get_object_or_404(SystersUser, user=self.user)
+        return super(EditSettings, self).dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('user', kwargs={'username': self.request.user.username})

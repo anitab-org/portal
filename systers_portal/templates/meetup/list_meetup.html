@@ -39,7 +39,7 @@
           <div class="caption">
             <h3>{{meetup.title}}</h3>
             <h4>{{meetup.date}}</h4>
-            <h5>{{meetup.meetup_location}}</h5>
+            <h5>{% if meetup.meetup_location %}{{meetup.meetup_location}}{% else %}Held Virtually on Zoom{% endif %}</h5>
             <p align="right"><a href="{%url 'view_meetup' meetup.slug%}" class="btn btn-primary" role="button">Checkout</a></p>
           </div>
         </div>

@@ -5,7 +5,7 @@ from django.test import TestCase, Client
 
 from community.models import Community
 from membership.models import JoinRequest
-from users.models import SystersUser
+from users.models import SystersUser, UserSetting
 
 
 class UserViewTestCase(TestCase):
@@ -189,3 +189,48 @@ class UserProfileViewTestCase(TestCase):
 
         self.assertContains(response, "Edit my profile")
         self.assertContains(response, "/users/bar/")
+
+
+class EditSettingsViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.systers_user = SystersUser.objects.get(user=self.user)
+        self.client = Client()
+
+    def test_user_setting_get(self):
+        settings_url = reverse('edit_settings', kwargs={'username': 'foo'})
+        response = self.client.get(settings_url)
+        self.assertEqual(response.status_code, 403)
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(settings_url)
+        self.assertEqual(response.status_code, 200)
+
+        non_existent_url = reverse('edit_settings', kwargs={'username': 'bar'})
+        response1 = self.client.get(non_existent_url)
+        self.assertEqual(response1.status_code, 404)
+
+        self.user1 = User.objects.create_user(username='bar', password='foobar')
+        self.systers_user1 = SystersUser.objects.get(user=self.user1)
+        settings_url = reverse('edit_settings', kwargs={'username': 'bar'})
+        self.client.login(username='bar', password='foobar')
+        response = self.client.get(settings_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_setting_post(self):
+        self.client.login(username='foo', password='foobar')
+        settings_url = reverse('edit_settings', kwargs={'username': 'foo'})
+        response = self.client.post(settings_url, data={'location_change': True})
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('/users/foo/'))
+        settings = UserSetting.objects.get(user=self.systers_user)
+        self.assertEqual(settings.location_change, True)
+        self.assertEqual(settings.weekly_digest, False)
+        self.assertEqual(settings.time_change, False)
+
+    def test_settings_template(self):
+        self.client.login(username='foo', password='foobar')
+        settings_url = reverse('edit_settings', kwargs={'username': 'foo'})
+        response = self.client.get(settings_url)
+        self.assertTemplateUsed(response, "users/settings.html")
+        self.assertContains(response, "Email Subscription Settings")
+        self.assertContains(response, "/users/foo/settings/")
