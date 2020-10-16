@@ -11,6 +11,6 @@ pytest-django==3.10.0
 pytest-pylint==0.17.0
 python-decouple==3.3
 selenium==3.141.0
-djangorestframework==3.11.0
+djangorestframework==3.12.1
 geopy==2.0.0
 pinax-notifications==6.0.0
