@@ -4,7 +4,7 @@ django-allauth==0.44.0
 django-braces==1.14.0
 django-cities-light==3.8.1
 django-ckeditor==6.0.0
-django-crispy-forms==1.9.2
+django-crispy-forms==1.10.0
 django-guardian==2.3.0
 django-imagekit==4.0.2
 psycopg2==2.8.6
