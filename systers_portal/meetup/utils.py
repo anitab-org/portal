@@ -117,16 +117,16 @@ def notify_time(meetup):
                 [rsvp.user.user.email],
                 html_message=html_text,
             )
-
+payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+        'iss': ZOOM_API_KEY
+    }
+token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
 
 def create_meetup(meetup):
     conn = http.client.HTTPSConnection("api.zoom.us")
 
-    payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
-        'iss': ZOOM_API_KEY
-    }
-    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+    
 
     headers = {
         'authorization': "Bearer " + token,
@@ -155,11 +155,7 @@ def create_meetup(meetup):
 def edit_meetup(meetup):
     conn = http.client.HTTPSConnection("api.zoom.us")
 
-    payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
-        'iss': ZOOM_API_KEY
-    }
-    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+    
 
     headers = {
         'authorization': "Bearer " + token,
@@ -183,11 +179,7 @@ def edit_meetup(meetup):
 def get_meetup(meetup):
     conn = http.client.HTTPSConnection("api.zoom.us")
 
-    payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
-        'iss': ZOOM_API_KEY
-    }
-    token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+   
 
     headers = {
         'authorization': "Bearer " + token,
