@@ -18,6 +18,11 @@ import json
 from systers_portal.settings.base import ZOOM_API_KEY,\
     ZOOM_API_SECRET, ZOOM_USER_ID
 
+payload = {
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
+        'iss': ZOOM_API_KEY
+    }
+token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
 
 @transaction.atomic
 def create_groups(meetup):
@@ -117,11 +122,7 @@ def notify_time(meetup):
                 [rsvp.user.user.email],
                 html_message=html_text,
             )
-payload = {
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=30),
-        'iss': ZOOM_API_KEY
-    }
-token = jwt.encode(payload, ZOOM_API_SECRET).decode("utf-8")
+
 
 def create_meetup(meetup):
     conn = http.client.HTTPSConnection("api.zoom.us")
