@@ -12,5 +12,5 @@ pytest-pylint==0.18.0
 python-decouple==3.4
 selenium==3.141.0
 djangorestframework==3.12.2
-geopy==2.0.0
+geopy==2.1.0
 pinax-notifications==6.0.0
